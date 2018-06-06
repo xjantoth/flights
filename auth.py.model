@@ -1,0 +1,6 @@
+login = {
+    "password" : "...",
+    "username" : "...",
+    "url_token": "...",
+    "url_list": "..."
+}
