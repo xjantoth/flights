@@ -300,7 +300,7 @@ if socket.gethostname() != "nb-toth":
             tables, allUniqueDays, dataframe, plain, allUniqueReg, list_view_by_dates = render_tables(render)
             listx, aggrx, udays, detail_aggr, detail_list = process_tables_to_html(tables, allUniqueDays, allUniqueReg, list_view_by_dates)
             create_files_main_dates(listx, aggrx, udays, linux_template, day_tamplate, allUniqueReg)
-            create_files_reg(listx, aggrx, udays, linux_template, reg_tamplate, allUniqueReg, detail_aggr, detail_list, detail_list_view)
+            create_files_reg(listx, aggrx, udays, linux_template, reg_template, allUniqueReg, detail_aggr, detail_list, detail_list_view)
             create_main(linux_template, main_template, udays)
             time.sleep(sleep_period)
         except Exception as e:
