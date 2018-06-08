@@ -12,7 +12,7 @@
 
         .hoverable {
             height: 20px;
-            min-width: 250px;
+            width: 250px;
             overflow: hidden;
 
         }
