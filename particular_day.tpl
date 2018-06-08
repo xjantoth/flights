@@ -35,12 +35,12 @@
         }
         table {
             border: none;
-            {#border-collapse: collapse;#}
-            {#text-align:left;#}
-            {#padding: 10px;#}
-            {#margin-bottom: 40px;#}
-            {#font-size: 0.9em;#}
-            {#overflow: hidden;#}
+            border-collapse: collapse;
+            text-align:left;
+            padding: 10px;
+            margin-bottom: 40px;
+            font-size: 0.9em;
+            overflow: hidden;
         }
     </style>
 </head>
