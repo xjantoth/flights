@@ -69,10 +69,10 @@ def render_tables(_data):
     
     _compare['Departure'] = pd.to_datetime(_df['local_std_date'] + ' ' + _df['local_std_time'])
     _compare['Depart'] = _compare['Departure']
+    _compare['Arrival'] = pd.to_datetime(_df['local_sta_date'] + ' ' + _df['local_sta_time']) 
     _compare['Flight'] = _df['flight_number']
     _compare['Aircraft'] = _df['aircraft_config']
-    _compare['Reg'] = _df['aircraft_reg']
-    _compare['Arrival'] = pd.to_datetime(_df['local_sta_date'] + ' ' + _df['local_sta_time'])    
+    _compare['Reg'] = _df['aircraft_reg']   
     _compare["Meal"] = _df["catering_order.flight_meal_type"]
     _compare['Direction'] = _df['departure_iata'].map(determine_direction)
     _compare['Production'] = _df['departure_iata'].map(determine_production)
@@ -88,9 +88,7 @@ def render_tables(_data):
     _compare['Note'] = _df['catering_order.general_note'].map(lambda x: "{0}{1}{2}".format(div_start, str(x), div_end))
     _compare['Note'] = _compare['Note'].map(lambda x: str(x).replace('\n', "<br>"))
     _compare['Note'] = _compare['Note'].map(lambda x: str(x).replace('\r', ''))
-    _compare = _compare.sort_values(['Departure', 'Meal'],ascending=[True, True])
-    
-    # exchange NaN to 0
+    # _compare = _compare.sort_values(['Departure', 'Meal'],ascending=[True, True])
     _compare['Quantity'] = _compare['Quantity'].fillna(0)
     _compare['Crew'] = _compare['Crew'].fillna(0)
     
@@ -121,7 +119,6 @@ def render_tables(_data):
                 temp_storage[_reg] = "<empty>"
             
         tables[i] = temp_storage
-        
         
     # ****************************************************************
     # tables = {"2018-06-03": ".......", "2018-06-04": ".......", ...}
