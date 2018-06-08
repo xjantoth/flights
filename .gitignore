@@ -6,3 +6,4 @@ twowings/*-*-*.html
 .ipynb_checkpoints/
 *-*-*.html
 index.html
+*.pyc

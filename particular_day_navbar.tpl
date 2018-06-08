@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <head>
     <meta charset="UTF-8">
     <title>{{particular_day_title}}</title>
@@ -9,12 +8,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
     <style>
-
         .hoverable {
             height: 20px;
             width: 250px;
             overflow: hidden;
-
         }
         .hoverable:hover {
             position: absolute;
@@ -53,31 +50,49 @@
 </head>
 <body>
 
-<div class="sticky-top">
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12" style="padding: 0">
+            <nav class="navbar navbar-expand-lg navbar-light bg-light">
 
-    <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                    <span class="navbar-toggler-icon"></span>
+                </button> <a class="navbar-brand" href="#" id="detail-{{ xday }}" onclick="detail_view(this.id)">Detail</a>
+                <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                    <ul class="navbar-nav">
+                        {% for _reg in unique_reg %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="#" id="{{ _reg }}-{{ xday }}" onclick="reg_click(this.id)">{{_reg}}</a>
+                            </li>
+                        {% endfor %}
+{#                        <li class="nav-item">#}
+{#                            <a class="nav-link" href="#" id="timeStamp">{{timeStamp}}</a>#}
+{#                        </li>#}
 
-{#        {% for key in particular_day_content_aggr.keys() %}#}
-            <div class="card mb-3 shadow">
-                <div class="card-body border-bottom text-white bg-success">
-                    <h4 class="card-title mb-0">
-                        <span class="font-weight-light">Aircraft ID: </span>
-                        <span>{{ reg_key }}</span>
-                    </h4>
+                    </ul>
+
                 </div>
-                <ul class="list-group list-group-flush">
-                    <li class="list-group-item">
-                        {{ particular_day_content_aggr }}
-                    </li>
-                    <li class="list-group-item">
-                        {{ particular_day_content_list }}
-                    </li>
-                </ul>
+            </nav>
+
+            <div class="embed-responsive embed-responsive-16by9">
+                <iframe class="embed-responsive-item" id="particular_day_nav" src="detail-{{ xday }}.html" frameborder="0" allowfullscreen></iframe>
             </div>
-{#        {% endfor %}#}
-
+        </div>
     </div>
-
 </div>
+
+<script>
+    const iframe = document.querySelector('iframe');
+    function reg_click(_regg)
+    {
+        iframe.src = _regg + '.html';
+    }
+
+    function detail_view(id_file_name) {
+        const detailed_file = id_file_name + '.html';
+        iframe.src = detailed_file;
+    }
+</script>
+
 </body>
 </html>

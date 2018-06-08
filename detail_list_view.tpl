@@ -61,16 +61,16 @@
             <div class="card mb-3 shadow">
                 <div class="card-body border-bottom text-white bg-success">
                     <h4 class="card-title mb-0">
-                        <span class="font-weight-light">Aircraft ID: </span>
-                        <span>{{ reg_key }}</span>
+                        <span class="font-weight-light">Detail list view:</span>
+                        <span>{{ detail_day }}</span>
                     </h4>
                 </div>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item">
-                        {{ particular_day_content_aggr }}
+                        {{ detail_day_content_aggr }}
                     </li>
                     <li class="list-group-item">
-                        {{ particular_day_content_list }}
+                        {{ detail_day_content_list }}
                     </li>
                 </ul>
             </div>

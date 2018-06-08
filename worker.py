@@ -99,9 +99,11 @@ def render_tables(_data):
     _allUniqueReg = _df['aircraft_reg'].unique()
     
     tables = {}
+    _list_view_by_dates = {}
     for i in _allUniqueDays:
         # split _comapre dataframe by days first
         temp_table_day_chunck = _compare.loc[i]
+        _list_view_by_dates[i] = temp_table_day_chunck
         # taking partuicular day and sorting it by 'aircraft_reg' and then by 'departure date'
         # splitting particular day into unique 'aircraft_reg' - something like car plates :)
         temp_storage = {}
@@ -120,18 +122,26 @@ def render_tables(_data):
             
         tables[i] = temp_storage
         
+        
     # ****************************************************************
-    # tables = {"2018-06-03": ".......", "2018-06-04": ".......", ...}
+    # _list_view_by_dates = {"2018-06-03": "...", "2018-06-04": "....", ...}
     # ****************************************************************
-    return tables, _allUniqueDays, _compare, _df, _allUniqueReg
+    return tables, _allUniqueDays, _compare, _df, _allUniqueReg, _list_view_by_dates
 
 
-def process_tables_to_html(_tables, _allUniqueDays, _allUniqueReg):
+def process_tables_to_html(_tables, _allUniqueDays, _allUniqueReg, _list_view_by_dates):
     tables_html_aggr = {}
     tables_html_list = {}
+    _detail_aggr = {}
+    _detail_list = {}
     
     for k in _allUniqueDays:    
         # aggregation table - little 
+        
+        _detail_aggr[k] = _list_view_by_dates[k].groupby(['Meal','Direction']).sum().to_html(classes="table table-sm table-hover table-striped table-responsive", escape=False)
+        # _compare = _compare.sort_values(['Departure', 'Meal'],ascending=[True, True])
+        _detail_list[k] = _list_view_by_dates[k].sort_values(['Departure', 'Meal'],ascending=[True, True]).drop('Departure', axis=1).to_html(classes="table table-sm table-hover table-striped table-responsive-xl first-bold", escape=False, index=False)
+             
         temp_aggr_dict = {}
         temp_list_table_dict = {}
         for _reg in _allUniqueReg:
@@ -144,31 +154,40 @@ def process_tables_to_html(_tables, _allUniqueDays, _allUniqueReg):
                 
             try:
                 # Remove column
-                remove_column = _tables[k][_reg].drop('Departure', axis=1)
+                removed_column = _tables[k][_reg].drop('Departure', axis=1)
                 # Remove empty row 
-                temp_list_table_dict[_reg] = remove_column.to_html(classes="table table-sm table-hover table-striped table-responsive-xl first-bold", escape=False, index=False)
+                temp_list_table_dict[_reg] = removed_column.to_html(classes="table table-sm table-hover table-striped table-responsive-xl first-bold", escape=False, index=False)
                 
             except Exception as list_table_error:
                 pass
                 # print('No such REG key for list view: {}'.format(list_table_error))
+        # ******************************************
+        
+        
         
         tables_html_aggr[k] = temp_aggr_dict
         tables_html_list[k] = temp_list_table_dict
         
-    return tables_html_list, tables_html_aggr, allUniqueDays
+    return tables_html_list, tables_html_aggr, allUniqueDays, _detail_aggr, _detail_list
         
         
-def create_files(_tables_html_list, 
+def create_files_main_dates(_tables_html_list, 
                 _tables_html_aggr, 
                 _allUniqueDays,
                 _path_template,
-                _day_tamplate):
-    
+                _day_tamplate,
+                _allUniqueReg):
+    ts = "Last update on: {} time: {}".format(datetime.date.today().strftime("%d/%B/%Y"), time.strftime("%H:%M:%S"))
     for _day in np.sort(allUniqueDays):
         j2_env = Environment(loader=FileSystemLoader(_path_template))
+        # unique set of REGs
+        _ureg = list(listx[_day].keys())
         _data = j2_env.get_template(_day_tamplate).render(particular_day_content_list=_tables_html_list[_day],
-                                                          particular_day_content_aggr=_tables_html_aggr[_day]
-                                                          )
+                                                          particular_day_content_aggr=_tables_html_aggr[_day],
+                                                          unique_reg=_ureg,
+                                                          xday=_day,
+                                                          timeStamp=ts)
+        
         _filename = str(_day + ".html")
         if socket.gethostname() != "nb-toth":
             _serve = 'twowings'
@@ -177,6 +196,59 @@ def create_files(_tables_html_list,
             _oname = os.path.join(_path_template, _filename)
         with open(_oname, 'w') as f:
             f.write(_data)
+            
+def create_files_reg(_tables_html_list, 
+                     _tables_html_aggr, 
+                     _allUniqueDays,
+                     _path_template,
+                     _reg_tamplate,
+                     _allUniqueReg,
+                     _detail_aggr, 
+                     _detail_list,
+                     _detail_list_view):
+    ts = "Last update on: {} time: {}".format(datetime.date.today().strftime("%d/%B/%Y"), time.strftime("%H:%M:%S"))
+    for _day in np.sort(allUniqueDays):
+        j2_env = Environment(loader=FileSystemLoader(_path_template))
+        
+        # ************************************************************
+        _detail_filename = str("detail" + "-"+ _day + ".html")
+        _detail_data = j2_env.get_template(_detail_list_view).render(detail_day_content_aggr=_detail_aggr[_day],
+                                                                     detail_day_content_list=_detail_list[_day],
+                                                                     detail_day=_day
+                                                                     )
+        
+        if socket.gethostname() != "nb-toth":
+            _serve = 'twowings'
+            _oname = os.path.join(_path_template, _serve, _detail_filename)
+        else:
+            _oname = os.path.join(_path_template, _detail_filename)
+        with open(_oname, 'w') as f:
+            f.write(_detail_data)
+        # ************************************************************
+        
+        for _r in _allUniqueReg:
+            try:
+                _filename = str(_r + "-"+ _day + ".html")
+                _data = j2_env.get_template(_reg_tamplate).render(particular_day_content_list=_tables_html_list[_day][_r],
+                                                                  particular_day_content_aggr=_tables_html_aggr[_day][_r],
+                                                                  unique_reg=_allUniqueReg,
+                                                                  xday=_day,
+                                                                  timeStamp=ts,
+                                                                  reg_key=_r)
+                
+                # {{ _reg }}-{{ xday }}
+                if socket.gethostname() != "nb-toth":
+                    _serve = 'twowings'
+                    _oname = os.path.join(_path_template, _serve, _filename)
+                else:
+                    _oname = os.path.join(_path_template, _filename)
+                with open(_oname, 'w') as f:
+                    f.write(_data)
+            
+            except Exception as missing_key:
+                #print('Missing key: {}, I am not going to create this file: {}'.format(missing_key, _filename))
+                pass
+            
             
 def create_main(_path_template,
                 _main_tamplate,
@@ -191,7 +263,7 @@ def create_main(_path_template,
         _omain = os.path.join(_path_template, _serve, _filename)
     else:
         _omain = os.path.join(_path_template, _filename)
-        print('saving to {}'.format(_omain))
+        # print('saving to {}'.format(_omain))
     with open(_omain, 'w') as f:
         f.write(_data)
         
@@ -212,7 +284,10 @@ def get_cred():
 
 path_template = "C:\\Users\\jan.toth\\Documents\\2w"
 linux_template = "/opt/twowings"
-day_tamplate = "particular_day.tpl"
+day_tamplate = "particular_day_navbar.tpl"
+reg_template = "particular_day.tpl"
+detail_list_view = "detail_list_view.tpl"
+
 main_template = "main.tpl"
 sleep_period = 300
 
@@ -222,9 +297,10 @@ if socket.gethostname() != "nb-toth":
             auth_data, url_token, url_list = get_cred()
             token = get_token(auth_data, url_token)
             render = get_data(token, url_list)
-            tables, allUniqueDays, dataframe, plain, allUniqueReg = render_tables(render)
-            listx, aggrx, udays = process_tables_to_html(tables, allUniqueDays, allUniqueReg)
-            create_files(listx, aggrx, udays, linux_template, day_tamplate)
+            tables, allUniqueDays, dataframe, plain, allUniqueReg, list_view_by_dates = render_tables(render)
+            listx, aggrx, udays, detail_aggr, detail_list = process_tables_to_html(tables, allUniqueDays, allUniqueReg, list_view_by_dates)
+            create_files_main_dates(listx, aggrx, udays, linux_template, day_tamplate, allUniqueReg)
+            create_files_reg(listx, aggrx, udays, linux_template, reg_tamplate, allUniqueReg, detail_aggr, detail_list, detail_list_view)
             create_main(linux_template, main_template, udays)
             time.sleep(sleep_period)
         except Exception as e:
@@ -238,9 +314,10 @@ if socket.gethostname() == "nb-toth":
     auth_data, url_token, url_list = get_cred()
     token = get_token(auth_data, url_token)
     render = get_data(token, url_list)
-    tables, allUniqueDays, dataframe, plain, allUniqueReg = render_tables(render)
-    listx, aggrx, udays = process_tables_to_html(tables, allUniqueDays, allUniqueReg)
-    create_files(listx, aggrx, udays, path_template, day_tamplate)
+    tables, allUniqueDays, dataframe, plain, allUniqueReg, list_view_by_dates = render_tables(render)
+    listx, aggrx, udays, detail_aggr, detail_list = process_tables_to_html(tables, allUniqueDays, allUniqueReg, list_view_by_dates)
+    create_files_main_dates(listx, aggrx, udays, path_template, day_tamplate, allUniqueReg)
+    create_files_reg(listx, aggrx, udays, path_template, reg_template, allUniqueReg, detail_aggr, detail_list, detail_list_view)
     create_main(path_template, main_template, udays)
     print("Done!")
 
