@@ -12,7 +12,7 @@
 
         .hoverable {
             height: 20px;
-            width: 250px;
+            min-width: 250px;
             overflow: hidden;
 
         }
@@ -49,8 +49,8 @@
 <div class="sticky-top">
 
     {% for key in particular_day_content_aggr.keys() %}
-        <div class="card mt-3">
-            <h3 class="card-header bg-dark text-white">
+        <div class="card card border-success mt-3">
+            <h3 class="card-header bg-success text-white">
                 <small>Aircraft ID:</small> {{ key }}
             </h3>
             <div class="card-body">
