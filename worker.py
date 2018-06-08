@@ -62,57 +62,44 @@ def extra_catering_code(x):
     except:
         return 0    
     
-   
         
 def render_tables(_data):
     _df = json_normalize(_data['data']['flight']['data'])
     _compare = pd.DataFrame()
-    _compare['flight_number'] = _df['flight_number']
-    _compare['aircraft_config'] = _df['aircraft_config']
-    _compare['aircraft_reg'] = _df['aircraft_reg']
-    _compare['local_departure'] = pd.to_datetime(_df['local_std_date'] + ' ' + _df['local_std_time'])
-    _compare['xDeparture'] = _compare['local_departure']
-    _compare['local_arrival'] = pd.to_datetime(_df['local_sta_date'] + ' ' + _df['local_sta_time'])    
-    _compare["catering_order.flight_meal_type"] = _df["catering_order.flight_meal_type"]
-    _compare['smer'] = _df['departure_iata'].map(determine_direction)
-    _compare['produkcia'] = _df['departure_iata'].map(determine_production)
-    _compare['departure_iata'] = _df['departure_iata']
-    _compare['destination_iata'] = _df['destination_iata']
-    _compare['catering_order.quantity_y'] = _df['catering_order.quantity_y']
-    _compare['catering_order.quantity_crew'] = _df['catering_order.quantity_crew']
+    
+    _compare['Departure'] = pd.to_datetime(_df['local_std_date'] + ' ' + _df['local_std_time'])
+    _compare['Depart'] = _compare['Departure']
+    _compare['Flight'] = _df['flight_number']
+    _compare['Aircraft'] = _df['aircraft_config']
+    _compare['Reg'] = _df['aircraft_reg']
+    _compare['Arrival'] = pd.to_datetime(_df['local_sta_date'] + ' ' + _df['local_sta_time'])    
+    _compare["Meal"] = _df["catering_order.flight_meal_type"]
+    _compare['Direction'] = _df['departure_iata'].map(determine_direction)
+    _compare['Production'] = _df['departure_iata'].map(determine_production)
+    _compare['From'] = _df['departure_iata']
+    _compare['To'] = _df['destination_iata']
+    _compare['Quantity'] = _df['catering_order.quantity_y']
+    _compare['Crew'] = _df['catering_order.quantity_crew']
     _compare['Extra Count'] = _df['extra_catering'].map(extra_catering)
     _compare['Extra Code'] = _df['extra_catering'].map(extra_catering_code)
     
     div_start = """<div class="hoverable">"""
     div_end = "</div>"
-    _compare['catering_order.general_note'] = _df['catering_order.general_note'].map(lambda x: "{0}{1}{2}".format(div_start, str(x), div_end))
-    _compare['catering_order.general_note'] = _compare['catering_order.general_note'].map(lambda x: str(x).replace('\n', "<br>"))
-    _compare['catering_order.general_note'] = _compare['catering_order.general_note'].map(lambda x: str(x).replace('\r', ''))
-    _compare = _compare.sort_values(['local_departure', 'catering_order.flight_meal_type'],ascending=[True, True])
+    _compare['Note'] = _df['catering_order.general_note'].map(lambda x: "{0}{1}{2}".format(div_start, str(x), div_end))
+    _compare['Note'] = _compare['Note'].map(lambda x: str(x).replace('\n', "<br>"))
+    _compare['Note'] = _compare['Note'].map(lambda x: str(x).replace('\r', ''))
+    _compare = _compare.sort_values(['Departure', 'Meal'],ascending=[True, True])
     
     # exchange NaN to 0
-    _compare['catering_order.quantity_y'] = _compare['catering_order.quantity_y'].fillna(0)
-    _compare['catering_order.quantity_crew'] = _compare['catering_order.quantity_crew'].fillna(0)
-    # Rename columns 
-    _compare = _compare.rename(columns={'flight_number':'Flight'})   
-    _compare = _compare.rename(columns={'catering_order.flight_meal_type':'Meal'})   
-    _compare = _compare.rename(columns={'aircraft_config':'Aircraft'})
-    _compare = _compare.rename(columns={'aircraft_reg':'Reg'})
-    _compare = _compare.rename(columns={'local_departure':'Departure'})
-    _compare = _compare.rename(columns={'local_arrival':'Arrival'})
-    _compare = _compare.rename(columns={'departure_iata':'FROM'})
-    _compare = _compare.rename(columns={'destination_iata':'TO'})
-    _compare = _compare.rename(columns={'catering_order.quantity_y':'Quantity'})
-    _compare = _compare.rename(columns={'catering_order.quantity_crew':'Crew'})
-#     _compare = _compare.rename(columns={'extra_catering':'Extra'})
-    _compare = _compare.rename(columns={'catering_order.general_note':'Poznamka'})
+    _compare['Quantity'] = _compare['Quantity'].fillna(0)
+    _compare['Crew'] = _compare['Crew'].fillna(0)
     
     _compare.index = _compare['Departure']
     
     _allUniqueDays = _df['local_std_date'].unique()
     _allUniqueDays = np.sort(_allUniqueDays)
     _allUniqueReg = _df['aircraft_reg'].unique()
-    # sort_values(["Reg","xDeparture"], ascending=True)
+    
     tables = {}
     for i in _allUniqueDays:
         # split _comapre dataframe by days first
@@ -122,7 +109,7 @@ def render_tables(_data):
         temp_storage = {}
         for _reg in _allUniqueReg:
             
-            sorting_particular_day_df = temp_table_day_chunck.sort_values(["Reg","xDeparture"], ascending=True)
+            sorting_particular_day_df = temp_table_day_chunck.sort_values(["Reg","Depart"], ascending=True)
             try:
                 is_dataframe = sorting_particular_day_df.loc[sorting_particular_day_df['Reg'] == _reg]
                 if not is_dataframe.empty:
@@ -152,7 +139,7 @@ def process_tables_to_html(_tables, _allUniqueDays, _allUniqueReg):
         temp_list_table_dict = {}
         for _reg in _allUniqueReg:
             try:
-                temp_aggr = _tables[k][_reg].groupby(['Meal','smer']).sum()
+                temp_aggr = _tables[k][_reg].groupby(['Meal','Direction']).sum()
                 temp_aggr_dict[_reg] = temp_aggr.to_html(classes="table table-sm table-hover table-striped table-responsive", escape=False)
             except Exception as aggr_exists_error:
                 pass
@@ -162,7 +149,7 @@ def process_tables_to_html(_tables, _allUniqueDays, _allUniqueReg):
                 # Remove column
                 remove_column = _tables[k][_reg].drop('Departure', axis=1)
                 # Remove empty row 
-                temp_list_table_dict[_reg] = remove_column.to_html(classes="table table-sm table-hover table-striped table-responsive-xl", escape=False)
+                temp_list_table_dict[_reg] = remove_column.to_html(classes="table table-sm table-hover table-striped table-responsive-xl first-bold", escape=False, index=False)
                 
             except Exception as list_table_error:
                 pass

@@ -41,6 +41,14 @@
             margin-bottom: 40px;
             font-size: 0.9em;
         }
+
+        table th {
+            text-align: left;
+        }
+
+        .first-bold tr td:first-child{
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
