@@ -153,7 +153,7 @@ def process_tables_to_html(_tables, _allUniqueDays, _allUniqueReg):
         for _reg in _allUniqueReg:
             try:
                 temp_aggr = _tables[k][_reg].groupby(['Meal','smer']).sum()
-                temp_aggr_dict[_reg] = temp_aggr.to_html(classes="table table-sm table-hover table-borderless table-striped table-responsive", escape=False)
+                temp_aggr_dict[_reg] = temp_aggr.to_html(classes="table table-sm table-hover table-striped table-responsive", escape=False)
             except Exception as aggr_exists_error:
                 pass
                 # print('No such REG key: {}'.format(aggr_exists_error))
@@ -162,7 +162,7 @@ def process_tables_to_html(_tables, _allUniqueDays, _allUniqueReg):
                 # Remove column
                 remove_column = _tables[k][_reg].drop('Departure', axis=1)
                 # Remove empty row 
-                temp_list_table_dict[_reg] = remove_column.to_html(classes="table table-sm table-hover table-borderless table-striped table-responsive-xl", escape=False)
+                temp_list_table_dict[_reg] = remove_column.to_html(classes="table table-sm table-hover table-striped table-responsive-xl", escape=False)
                 
             except Exception as list_table_error:
                 pass
