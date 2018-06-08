@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <title>{{particular_day_title}}</title>
     <!-- Latest compiled and minified JavaScript -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
     <style>
 
         .hoverable {
@@ -40,7 +40,6 @@
             padding: 10px;
             margin-bottom: 40px;
             font-size: 0.9em;
-            overflow: hidden;
         }
     </style>
 </head>
@@ -48,17 +47,28 @@
 
 <div class="sticky-top">
 
-    {% for key in particular_day_content_aggr.keys() %}
-        <div class="card card border-success mt-3">
-            <h3 class="card-header bg-success text-white">
-                <small>Aircraft ID:</small> {{ key }}
-            </h3>
-            <div class="card-body">
-                {{ particular_day_content_aggr[key] }}
-                {{ particular_day_content_list[key] }}
+    <div class="container-fluid">
+
+        {% for key in particular_day_content_aggr.keys() %}
+            <div class="card mb-3 shadow">
+                <div class="card-body border-bottom text-white bg-success">
+                    <h4 class="card-title mb-0">
+                        <span class="font-weight-light">Aircraft ID: </span>
+                        <span>{{ key }}</span>
+                    </h4>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        {{ particular_day_content_aggr[key] }}
+                    </li>
+                    <li class="list-group-item">
+                        {{ particular_day_content_list[key] }}
+                    </li>
+                </ul>
             </div>
-        </div>
-    {% endfor %}
+        {% endfor %}
+
+    </div>
 
 </div>
 </body>
