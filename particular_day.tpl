@@ -35,24 +35,31 @@
         }
         table {
             border: none;
-            border-bottom: 1px solid #C8C8C8;
-            border-collapse: collapse;
-            text-align:left;
-            padding: 10px;
-            margin-bottom: 40px;
-            font-size: 0.9em;
-            overflow: hidden;
+            {#border-collapse: collapse;#}
+            {#text-align:left;#}
+            {#padding: 10px;#}
+            {#margin-bottom: 40px;#}
+            {#font-size: 0.9em;#}
+            {#overflow: hidden;#}
         }
-
     </style>
 </head>
 <body>
 
 <div class="sticky-top">
-    <p>   </p>
-    {{particular_day_content_aggr}}
-    <p>   </p>
-    {{particular_day_content_list}}
+
+    {% for key in particular_day_content_aggr.keys() %}
+        <div class="card mt-3">
+            <h3 class="card-header bg-dark text-white">
+                <small>Aircraft ID:</small> {{ key }}
+            </h3>
+            <div class="card-body">
+                {{ particular_day_content_aggr[key] }}
+                {{ particular_day_content_list[key] }}
+            </div>
+        </div>
+    {% endfor %}
+
 </div>
 </body>
 </html>
