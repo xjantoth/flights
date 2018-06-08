@@ -12,6 +12,10 @@
             min-height: .01%;
             overflow-x: auto;
         }
+
+        .embed-responsive {
+            height: calc(100vh - 64px)!important;
+        }
     </style>
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Montserrat|Russo+One" rel="stylesheet">
@@ -25,7 +29,7 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-md-12" style="padding: 0">
             <nav class="navbar navbar-expand-lg navbar-light bg-light">
 
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
