@@ -130,7 +130,7 @@ def render_tables(_data):
                 # data.loc[data['first_name'] == 'Antonio', 'city':'email']
                 
             except Exception as missing_reg:
-                print('This {} for date: {} is missing.'.format(_reg, i))
+                # print('This {} for date: {} is missing.'.format(_reg, i))
                 temp_storage[_reg] = "<empty>"
             
         tables[i] = temp_storage
@@ -155,7 +155,9 @@ def process_tables_to_html(_tables, _allUniqueDays, _allUniqueReg):
                 temp_aggr = _tables[k][_reg].groupby(['Meal','smer']).sum()
                 temp_aggr_dict[_reg] = temp_aggr.to_html(classes="table table-striped table-responsive table-sm", escape=False)
             except Exception as aggr_exists_error:
-                print('No such REG key: {}'.format(aggr_exists_error))
+                pass
+                # print('No such REG key: {}'.format(aggr_exists_error))
+                
             try:
                 # Remove column
                 remove_column = _tables[k][_reg].drop('Departure', axis=1)
@@ -163,7 +165,8 @@ def process_tables_to_html(_tables, _allUniqueDays, _allUniqueReg):
                 temp_list_table_dict[_reg] = remove_column.to_html(classes="table table-striped table-responsive table-sm", escape=False)
                 
             except Exception as list_table_error:
-                print('No such REG key for list view: {}'.format(list_table_error))
+                pass
+                # print('No such REG key for list view: {}'.format(list_table_error))
         
         tables_html_aggr[k] = temp_aggr_dict
         tables_html_list[k] = temp_list_table_dict
