@@ -47,7 +47,7 @@ def determine_production(x):
         return str("KSC")
     else:
         return str("---")
-    
+
 def extra_catering(x):
     try:
         _count = x[0]['count']
@@ -60,19 +60,19 @@ def extra_catering_code(x):
         _code = x[0]['code']
         return _code
     except:
-        return 0    
-    
-        
+        return 0
+
+
 def render_tables(_data):
     _df = json_normalize(_data['data']['flight']['data'])
     _compare = pd.DataFrame()
-    
+
     _compare['Departure'] = pd.to_datetime(_df['local_std_date'] + ' ' + _df['local_std_time'])
     _compare['Depart'] = _compare['Departure']
-    _compare['Arrival'] = pd.to_datetime(_df['local_sta_date'] + ' ' + _df['local_sta_time']) 
+    _compare['Arrival'] = pd.to_datetime(_df['local_sta_date'] + ' ' + _df['local_sta_time'])
     _compare['Flight'] = _df['flight_number']
     _compare['Aircraft'] = _df['aircraft_config']
-    _compare['Reg'] = _df['aircraft_reg']   
+    _compare['Reg'] = _df['aircraft_reg']
     _compare["Meal"] = _df["catering_order.flight_meal_type"]
     _compare['Direction'] = _df['departure_iata'].map(determine_direction)
     _compare['Production'] = _df['departure_iata'].map(determine_production)
@@ -82,7 +82,8 @@ def render_tables(_data):
     _compare['Crew'] = _df['catering_order.quantity_crew']
     _compare['Extra Count'] = _df['extra_catering'].map(extra_catering)
     _compare['Extra Code'] = _df['extra_catering'].map(extra_catering_code)
-    
+    _compare['Extra Plain'] = _df['extra_catering']
+
     div_start = """<div class="hoverable">"""
     div_end = "</div>"
     _compare['Note'] = _df['catering_order.general_note'].map(lambda x: "{0}{1}{2}".format(div_start, str(x), div_end))
@@ -91,13 +92,13 @@ def render_tables(_data):
     # _compare = _compare.sort_values(['Departure', 'Meal'],ascending=[True, True])
     _compare['Quantity'] = _compare['Quantity'].fillna(0)
     _compare['Crew'] = _compare['Crew'].fillna(0)
-    
+
     _compare.index = _compare['Departure']
-    
+
     _allUniqueDays = _df['local_std_date'].unique()
     _allUniqueDays = np.sort(_allUniqueDays)
     _allUniqueReg = _df['aircraft_reg'].unique()
-    
+
     tables = {}
     _list_view_by_dates = {}
     for i in _allUniqueDays:
@@ -108,21 +109,21 @@ def render_tables(_data):
         # splitting particular day into unique 'aircraft_reg' - something like car plates :)
         temp_storage = {}
         for _reg in _allUniqueReg:
-            
+
             sorting_particular_day_df = temp_table_day_chunck.sort_values(["Reg","Depart"], ascending=True)
             try:
                 is_dataframe = sorting_particular_day_df.loc[sorting_particular_day_df['Reg'] == _reg]
                 if not is_dataframe.empty:
                     temp_storage[_reg] = sorting_particular_day_df.loc[sorting_particular_day_df['Reg'] == _reg]
                 # data.loc[data['first_name'] == 'Antonio', 'city':'email']
-                
+
             except Exception as missing_reg:
                 # print('This {} for date: {} is missing.'.format(_reg, i))
                 temp_storage[_reg] = "<empty>"
-            
+
         tables[i] = temp_storage
-        
-        
+
+
     # ****************************************************************
     # _list_view_by_dates = {"2018-06-03": "...", "2018-06-04": "....", ...}
     # ****************************************************************
@@ -134,14 +135,14 @@ def process_tables_to_html(_tables, _allUniqueDays, _allUniqueReg, _list_view_by
     tables_html_list = {}
     _detail_aggr = {}
     _detail_list = {}
-    
-    for k in _allUniqueDays:    
-        # aggregation table - little 
-        
+
+    for k in _allUniqueDays:
+        # aggregation table - little
+
         _detail_aggr[k] = _list_view_by_dates[k].groupby(['Meal','Direction']).sum().to_html(classes="table table-sm table-hover table-striped table-responsive", escape=False)
         # _compare = _compare.sort_values(['Departure', 'Meal'],ascending=[True, True])
-        _detail_list[k] = _list_view_by_dates[k].sort_values(['Departure', 'Meal'],ascending=[True, True]).drop('Departure', axis=1).to_html(classes="table table-sm table-hover table-striped table-responsive-xl first-bold", escape=False, index=False)
-             
+        # _detail_list[k] = _list_view_by_dates[k].sort_values(['Departure', 'Meal'],ascending=[True, True]).drop('Departure', axis=1).to_html(classes="table table-sm table-hover table-striped table-responsive-xl first-bold", escape=False, index=False)
+        _detail_list[k] = _list_view_by_dates[k].sort_values(['Reg', 'Depart'],ascending=[True, True]).drop('Departure', axis=1).to_html(classes="table table-sm table-hover table-striped table-responsive-xl first-bold", escape=False, index=False)
         temp_aggr_dict = {}
         temp_list_table_dict = {}
         for _reg in _allUniqueReg:
@@ -151,28 +152,28 @@ def process_tables_to_html(_tables, _allUniqueDays, _allUniqueReg, _list_view_by
             except Exception as aggr_exists_error:
                 pass
                 # print('No such REG key: {}'.format(aggr_exists_error))
-                
+
             try:
                 # Remove column
                 removed_column = _tables[k][_reg].drop('Departure', axis=1)
-                # Remove empty row 
+                # Remove empty row
                 temp_list_table_dict[_reg] = removed_column.to_html(classes="table table-sm table-hover table-striped table-responsive-xl first-bold", escape=False, index=False)
-                
+
             except Exception as list_table_error:
                 pass
                 # print('No such REG key for list view: {}'.format(list_table_error))
         # ******************************************
-        
-        
-        
+
+
+
         tables_html_aggr[k] = temp_aggr_dict
         tables_html_list[k] = temp_list_table_dict
-        
+
     return tables_html_list, tables_html_aggr, allUniqueDays, _detail_aggr, _detail_list
-        
-        
-def create_files_main_dates(_tables_html_list, 
-                _tables_html_aggr, 
+
+
+def create_files_main_dates(_tables_html_list,
+                _tables_html_aggr,
                 _allUniqueDays,
                 _path_template,
                 _day_tamplate,
@@ -187,7 +188,7 @@ def create_files_main_dates(_tables_html_list,
                                                           unique_reg=_ureg,
                                                           xday=_day,
                                                           timeStamp=ts)
-        
+
         _filename = str(_day + ".html")
         if socket.gethostname() != "nb-toth":
             _serve = 'twowings'
@@ -196,27 +197,27 @@ def create_files_main_dates(_tables_html_list,
             _oname = os.path.join(_path_template, _filename)
         with open(_oname, 'w') as f:
             f.write(_data)
-            
-def create_files_reg(_tables_html_list, 
-                     _tables_html_aggr, 
+
+def create_files_reg(_tables_html_list,
+                     _tables_html_aggr,
                      _allUniqueDays,
                      _path_template,
                      _reg_tamplate,
                      _allUniqueReg,
-                     _detail_aggr, 
+                     _detail_aggr,
                      _detail_list,
                      _detail_list_view):
     ts = "Last update on: {} time: {}".format(datetime.date.today().strftime("%d/%B/%Y"), time.strftime("%H:%M:%S"))
     for _day in np.sort(allUniqueDays):
         j2_env = Environment(loader=FileSystemLoader(_path_template))
-        
+
         # ************************************************************
         _detail_filename = str("detail" + "-"+ _day + ".html")
         _detail_data = j2_env.get_template(_detail_list_view).render(detail_day_content_aggr=_detail_aggr[_day],
                                                                      detail_day_content_list=_detail_list[_day],
                                                                      detail_day=_day
                                                                      )
-        
+
         if socket.gethostname() != "nb-toth":
             _serve = 'twowings'
             _oname = os.path.join(_path_template, _serve, _detail_filename)
@@ -225,7 +226,7 @@ def create_files_reg(_tables_html_list,
         with open(_oname, 'w') as f:
             f.write(_detail_data)
         # ************************************************************
-        
+
         for _r in _allUniqueReg:
             try:
                 _filename = str(_r + "-"+ _day + ".html")
@@ -235,7 +236,7 @@ def create_files_reg(_tables_html_list,
                                                                   xday=_day,
                                                                   timeStamp=ts,
                                                                   reg_key=_r)
-                
+
                 # {{ _reg }}-{{ xday }}
                 if socket.gethostname() != "nb-toth":
                     _serve = 'twowings'
@@ -244,19 +245,19 @@ def create_files_reg(_tables_html_list,
                     _oname = os.path.join(_path_template, _filename)
                 with open(_oname, 'w') as f:
                     f.write(_data)
-            
+
             except Exception as missing_key:
                 #print('Missing key: {}, I am not going to create this file: {}'.format(missing_key, _filename))
                 pass
-            
-            
+
+
 def create_main(_path_template,
                 _main_tamplate,
                 _unique_days):
-    
+
     ts = "Last update on: {} time: {}".format(datetime.date.today().strftime("%d/%B/%Y"), time.strftime("%H:%M:%S"))
     j2_env = Environment(loader=FileSystemLoader(_path_template))
-    _data = j2_env.get_template(_main_tamplate).render(unique_days=_unique_days, timeStamp=ts) 
+    _data = j2_env.get_template(_main_tamplate).render(unique_days=_unique_days, timeStamp=ts)
     _filename = str("index.html")
     if socket.gethostname() != "nb-toth":
         _serve = 'twowings'
@@ -266,9 +267,9 @@ def create_main(_path_template,
         # print('saving to {}'.format(_omain))
     with open(_omain, 'w') as f:
         f.write(_data)
-        
 
-def get_cred():    
+
+def get_cred():
     password = auth.login['password']
     username = auth.login['username']
     url_token = auth.login['url_token']
@@ -309,8 +310,8 @@ if socket.gethostname() != "nb-toth":
                 f.write('{}: {}\n'.format(tstr, e))
             time.sleep(sleep_period)
 
-        
-if socket.gethostname() == "nb-toth":  
+
+if socket.gethostname() == "nb-toth":
     auth_data, url_token, url_list = get_cred()
     token = get_token(auth_data, url_token)
     render = get_data(token, url_list)
@@ -320,4 +321,5 @@ if socket.gethostname() == "nb-toth":
     create_files_reg(listx, aggrx, udays, path_template, reg_template, allUniqueReg, detail_aggr, detail_list, detail_list_view)
     create_main(path_template, main_template, udays)
     print("Done!")
+    
 

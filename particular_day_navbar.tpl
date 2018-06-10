@@ -46,6 +46,10 @@
         .first-bold tr td:first-child{
             font-weight: bold;
         }
+        .embed-responsive {
+            height: calc(100vh - 64px)!important;
+        }
+
     </style>
 </head>
 <body>
