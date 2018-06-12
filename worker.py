@@ -218,7 +218,7 @@ def create_files_reg(_tables_html_list,
         
         _special_quantity = pd.DataFrame(list_view_by_dates[_day].groupby(['Meal','Direction']).count().iloc[:,1])  
         _special_quantity = {k[0]:[v, int(v)*189] for k,v in _special_quantity.to_dict()['Depart'].items() if k[1] == "TAM"}
-        print('_special_quantity:{} -> {}'.format(_day, _special_quantity))
+#         print('_special_quantity:{} -> {}'.format(_day, _special_quantity))
         
         
         # Example output:
