@@ -82,7 +82,7 @@ def render_tables(_data):
     _compare['Crew'] = _df['catering_order.quantity_crew']
     _compare['Extra Count'] = _df['extra_catering'].map(extra_catering)
     _compare['Extra Code'] = _df['extra_catering'].map(extra_catering_code)
-    _compare['Extra Plain'] = _df['extra_catering']
+    #_compare['Extra Plain'] = _df['extra_catering']
 
     div_start = """<div class="hoverable">"""
     div_end = "</div>"
@@ -138,11 +138,12 @@ def process_tables_to_html(_tables, _allUniqueDays, _allUniqueReg, _list_view_by
 
     for k in _allUniqueDays:
         # aggregation table - little
-
+        # This is Detail page for each day in the second NAVBAR
         _detail_aggr[k] = _list_view_by_dates[k].groupby(['Meal','Direction']).sum().to_html(classes="table table-sm table-hover table-striped table-responsive", escape=False)
         # _compare = _compare.sort_values(['Departure', 'Meal'],ascending=[True, True])
         # _detail_list[k] = _list_view_by_dates[k].sort_values(['Departure', 'Meal'],ascending=[True, True]).drop('Departure', axis=1).to_html(classes="table table-sm table-hover table-striped table-responsive-xl first-bold", escape=False, index=False)
         _detail_list[k] = _list_view_by_dates[k].sort_values(['Reg', 'Depart'],ascending=[True, True]).drop('Departure', axis=1).to_html(classes="table table-sm table-hover table-striped table-responsive-xl first-bold", escape=False, index=False)
+        
         temp_aggr_dict = {}
         temp_list_table_dict = {}
         for _reg in _allUniqueReg:
@@ -206,16 +207,27 @@ def create_files_reg(_tables_html_list,
                      _allUniqueReg,
                      _detail_aggr,
                      _detail_list,
-                     _detail_list_view):
+                     _detail_list_view,
+                     _list_view_by_dates):
     ts = "Last update on: {} time: {}".format(datetime.date.today().strftime("%d/%B/%Y"), time.strftime("%H:%M:%S"))
     for _day in np.sort(allUniqueDays):
         j2_env = Environment(loader=FileSystemLoader(_path_template))
 
         # ************************************************************
         _detail_filename = str("detail" + "-"+ _day + ".html")
+        
+        _special_quantity = pd.DataFrame(list_view_by_dates[_day].groupby(['Meal','Direction']).count().iloc[:,1])  
+        _special_quantity = {k[0]:[v, int(v)*189] for k,v in _special_quantity.to_dict()['Depart'].items() if k[1] == "TAM"}
+        print('_special_quantity:{} -> {}'.format(_day, _special_quantity))
+        
+        
+        # Example output:
+        # _special_quantity ----> {'Count': {'L2': 8, 'L6': 7, 'RRR': 2},'Quantity189': {'L2': 1512, 'L6': 1323, 'RRR': 378}}
+        
         _detail_data = j2_env.get_template(_detail_list_view).render(detail_day_content_aggr=_detail_aggr[_day],
                                                                      detail_day_content_list=_detail_list[_day],
-                                                                     detail_day=_day
+                                                                     detail_day=_day,
+                                                                     special_quantity = _special_quantity
                                                                      )
 
         if socket.gethostname() != "nb-toth":
@@ -301,7 +313,7 @@ if socket.gethostname() != "nb-toth":
             tables, allUniqueDays, dataframe, plain, allUniqueReg, list_view_by_dates = render_tables(render)
             listx, aggrx, udays, detail_aggr, detail_list = process_tables_to_html(tables, allUniqueDays, allUniqueReg, list_view_by_dates)
             create_files_main_dates(listx, aggrx, udays, linux_template, day_tamplate, allUniqueReg)
-            create_files_reg(listx, aggrx, udays, linux_template, reg_template, allUniqueReg, detail_aggr, detail_list, detail_list_view)
+            create_files_reg(listx, aggrx, udays, linux_template, reg_template, allUniqueReg, detail_aggr, detail_list, detail_list_view, list_view_by_dates)
             create_main(linux_template, main_template, udays)
             time.sleep(sleep_period)
         except Exception as e:
@@ -318,7 +330,7 @@ if socket.gethostname() == "nb-toth":
     tables, allUniqueDays, dataframe, plain, allUniqueReg, list_view_by_dates = render_tables(render)
     listx, aggrx, udays, detail_aggr, detail_list = process_tables_to_html(tables, allUniqueDays, allUniqueReg, list_view_by_dates)
     create_files_main_dates(listx, aggrx, udays, path_template, day_tamplate, allUniqueReg)
-    create_files_reg(listx, aggrx, udays, path_template, reg_template, allUniqueReg, detail_aggr, detail_list, detail_list_view)
+    create_files_reg(listx, aggrx, udays, path_template, reg_template, allUniqueReg, detail_aggr, detail_list, detail_list_view, list_view_by_dates)
     create_main(path_template, main_template, udays)
     print("Done!")
     

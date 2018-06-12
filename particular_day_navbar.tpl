@@ -50,6 +50,7 @@
             height: calc(100vh - 64px)!important;
         }
 
+
     </style>
 </head>
 <body>
@@ -63,9 +64,9 @@
                     <span class="navbar-toggler-icon"></span>
                 </button> <a class="navbar-brand" href="#" id="detail-{{ xday }}" onclick="detail_view(this.id)">Detail</a>
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="navbar-nav">
+                    <ul class="navbar-nav pagination">
                         {% for _reg in unique_reg %}
-                            <li class="nav-item">
+                            <li class="nav-item page-item">
                                 <a class="nav-link" href="#" id="{{ _reg }}-{{ xday }}" onclick="reg_click(this.id)">{{_reg}}</a>
                             </li>
                         {% endfor %}

@@ -49,6 +49,9 @@
         .first-bold tr td:first-child{
             font-weight: bold;
         }
+        .active {
+            color: #83c9ff;
+        }
     </style>
 </head>
 <body>
@@ -67,7 +70,27 @@
                 </div>
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item">
-                        {{ detail_day_content_aggr }}
+                        <div class="row justify-content-start">
+                            <div class="text-center col col-auto">{{ detail_day_content_aggr }}</div>
+                            <div class="text-center col col-auto">
+
+                                <table class="table table-sm table-hover table-striped table-responsive first-bold" border="1">
+                                    <thead>
+                                    <td>Meal</td>
+                                    <td>Quantity</td>
+                                    <td>Quantity189</td>
+                                    </thead>
+                                    {% for _meal in special_quantity.keys() %}
+                                    <tr>
+                                        <td>{{ _meal }}</td>
+                                        <td>{{ special_quantity[_meal][0] }}</td>
+                                        <td>{{ special_quantity[_meal][1] }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </table>
+
+                            </div>
+                        </div>
                     </li>
                     <li class="list-group-item">
                         {{ detail_day_content_list }}

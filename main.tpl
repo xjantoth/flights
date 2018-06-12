@@ -16,6 +16,9 @@
         .embed-responsive {
             height: calc(100vh - 64px)!important;
         }
+        .navbar-nav li.active a {
+            background: rgba(0, 0, 0, .1);
+        }
     </style>
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Montserrat|Russo+One" rel="stylesheet">
@@ -48,7 +51,7 @@
 
                     </ul>
                     <ul class="navbar-nav ml-md-auto">
-                        <li class="nav-item active">
+                        <li class="nav-item">
                             <a class="nav-link" href="#">Link <span class="sr-only">(current)</span></a>
                         </li>
                         <li class="nav-item dropdown">
