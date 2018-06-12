@@ -217,13 +217,11 @@ def create_files_reg(_tables_html_list,
         _detail_filename = str("detail" + "-"+ _day + ".html")
         
         zerox = ['0.0']
-        directionx = ['SPAT']
-        tmpx = pd.DataFrame(list_view_by_dates[_day]) 
+        tmpx = pd.DataFrame(_list_view_by_dates[_day]) 
         tmpx = tmpx[~tmpx.Quantity.isin(zerox)]
-        tmpx = tmpx[~tmpx.Direction.isin(directionx)]
-
         tmpx = pd.DataFrame(tmpx.groupby(['Meal','Direction']).count().iloc[:,1])
-        _special_quantity = {k[0]:[v, int(v)*189] for k,v in tmpx.to_dict()['Depart'].items()}
+        _special_quantity = {'{:<5}{}'.format(k[0], k[1]):[v, int(v)*189] for k,v in tmpx.to_dict()['Depart'].items()}
+      
         
         # _special_quantity = pd.DataFrame(_list_view_by_dates[_day].groupby(['Meal','Direction']).count().iloc[:,1])  
         # _special_quantity = {k[0]:[v, int(v)*189] for k,v in _special_quantity.to_dict()['Depart'].items() if k[1] == "TAM"}
