@@ -42,7 +42,7 @@
                     <ul class="navbar-nav">
                         {% for _day in unique_days %}
                             <li class="nav-item">
-                                <a class="nav-link" href="#" id="{{ _day }}" onclick="reply_click(this.id)">{{_day}}</a>
+                                <a class="nav-link" href="#" id="{{ _day[0] }}" onclick="reply_click(this.id)">{{_day[1]}}</a>
                             </li>
                         {% endfor %}
                         <li class="nav-item">
@@ -58,7 +58,7 @@
                             <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown">Detailed daily view</a>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
                                 {% for _day in unique_days %}
-                                    <a class="dropdown-item" href="#" id="{{ _day }}_drop" onclick="set_drop_menu(this.id)">{{_day}}</a>
+                                    <a class="dropdown-item" href="#" id="{{ _day[0] }}_drop" onclick="set_drop_menu(this.id)">{{_day[1]}}</a>
                                 {% endfor %}
                             </div>
                         </li>

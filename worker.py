@@ -48,20 +48,19 @@ def determine_production(x):
     else:
         return str("---")
 
+
 def extra_catering(x):
     try:
-        _count = x[0]['count']
-        return _count
+        return ['{0}: {1}'.format(i['code'],i['count']) for i in x]
     except:
         return 0
 
-def extra_catering_code(x):
-    try:
-        _code = x[0]['code']
-        return _code
-    except:
-        return 0
-
+# This is an example how input list should look like
+# i = ['2018-06-14 09:00:00:::2018-06-15 09:00:00', '2018-06-15 09:00:00:::2018-06-16 09:00:00', '2018-06-16 09:00:00:::2018-06-17 09:00:00']
+def split_weird_timeframes(_i, _dataframe):
+    _s = _i.split('___')[0]
+    _e = _i.split('___')[1]
+    return _dataframe.loc[_s:_e]
 
 def render_tables(_data):
     _df = json_normalize(_data['data']['flight']['data'])
@@ -80,13 +79,9 @@ def render_tables(_data):
     _compare['To'] = _df['destination_iata']
     _compare['Quantity'] = _df['catering_order.quantity_y']
     _compare['Crew'] = _df['catering_order.quantity_crew']
-    _compare['Extra Count'] = _df['extra_catering'].map(extra_catering)
-    _compare['Extra Code'] = _df['extra_catering'].map(extra_catering_code)
-    #_compare['Extra Plain'] = _df['extra_catering']
-
-    div_start = """<div class="hoverable">"""
-    div_end = "</div>"
-    _compare['Note'] = _df['catering_order.general_note'].map(lambda x: "{0}{1}{2}".format(div_start, str(x), div_end))
+    _compare['Extra Catering'] = _df['extra_catering'].map(extra_catering)
+    
+    _compare['Note'] = _df['catering_order.general_note'].map(lambda x: "{0}{1}{2}".format("""<div class="hoverable">""", str(x), "</div>"))
     _compare['Note'] = _compare['Note'].map(lambda x: str(x).replace('\n', "<br>"))
     _compare['Note'] = _compare['Note'].map(lambda x: str(x).replace('\r', ''))
     # _compare = _compare.sort_values(['Departure', 'Meal'],ascending=[True, True])
@@ -97,13 +92,28 @@ def render_tables(_data):
 
     _allUniqueDays = _df['local_std_date'].unique()
     _allUniqueDays = np.sort(_allUniqueDays)
+    
+    # This is new .......
+    _allUniqueDays = ['{0} {1}___{2}-{3}-{4} {1}'.format(str(i), '09:00:00', str(i).split('-')[0], str(i).split('-')[1], int(str(i).split('-')[2]) + 1)  for i in _allUniqueDays]
+    # .....................
+    
     _allUniqueReg = _df['aircraft_reg'].unique()
 
     tables = {}
     _list_view_by_dates = {}
     for i in _allUniqueDays:
         # split _comapre dataframe by days first
-        temp_table_day_chunck = _compare.loc[i]
+        
+        # ..........................................
+        # def split_weird_timeframes(_i, _dataframe):
+        #     _s = _i.split('___')[0]
+        #     _e = _i.split('___')[1]
+        #     return _dataframe.loc[_s:_e]
+        # ..........................................
+        
+        # temp_table_day_chunck = _compare.loc[i]
+        temp_table_day_chunck = split_weird_timeframes(i, _compare)
+        
         _list_view_by_dates[i] = temp_table_day_chunck
         # taking partuicular day and sorting it by 'aircraft_reg' and then by 'departure date'
         # splitting particular day into unique 'aircraft_reg' - something like car plates :)
@@ -115,18 +125,12 @@ def render_tables(_data):
                 is_dataframe = sorting_particular_day_df.loc[sorting_particular_day_df['Reg'] == _reg]
                 if not is_dataframe.empty:
                     temp_storage[_reg] = sorting_particular_day_df.loc[sorting_particular_day_df['Reg'] == _reg]
-                # data.loc[data['first_name'] == 'Antonio', 'city':'email']
 
             except Exception as missing_reg:
-                # print('This {} for date: {} is missing.'.format(_reg, i))
                 temp_storage[_reg] = "<empty>"
 
         tables[i] = temp_storage
 
-
-    # ****************************************************************
-    # _list_view_by_dates = {"2018-06-03": "...", "2018-06-04": "....", ...}
-    # ****************************************************************
     return tables, _allUniqueDays, _compare, _df, _allUniqueReg, _list_view_by_dates
 
 
@@ -139,9 +143,7 @@ def process_tables_to_html(_tables, _allUniqueDays, _allUniqueReg, _list_view_by
     for k in _allUniqueDays:
         # aggregation table - little
         # This is Detail page for each day in the second NAVBAR
-        _detail_aggr[k] = _list_view_by_dates[k].groupby(['Meal','Direction']).sum().to_html(classes="table table-sm table-hover table-striped table-responsive", escape=False)
-        # _compare = _compare.sort_values(['Departure', 'Meal'],ascending=[True, True])
-        # _detail_list[k] = _list_view_by_dates[k].sort_values(['Departure', 'Meal'],ascending=[True, True]).drop('Departure', axis=1).to_html(classes="table table-sm table-hover table-striped table-responsive-xl first-bold", escape=False, index=False)
+        _detail_aggr[k] = _list_view_by_dates[k].groupby(['Meal','Direction']).sum().to_html(classes="table table-sm table-hover table-striped table-responsive", escape=False)        
         _detail_list[k] = _list_view_by_dates[k].sort_values(['Reg', 'Depart'],ascending=[True, True]).drop('Departure', axis=1).to_html(classes="table table-sm table-hover table-striped table-responsive-xl first-bold", escape=False, index=False)
         
         temp_aggr_dict = {}
@@ -152,7 +154,6 @@ def process_tables_to_html(_tables, _allUniqueDays, _allUniqueReg, _list_view_by
                 temp_aggr_dict[_reg] = temp_aggr.to_html(classes="table table-sm table-hover table-striped table-responsive", escape=False)
             except Exception as aggr_exists_error:
                 pass
-                # print('No such REG key: {}'.format(aggr_exists_error))
 
             try:
                 # Remove column
@@ -162,16 +163,11 @@ def process_tables_to_html(_tables, _allUniqueDays, _allUniqueReg, _list_view_by
 
             except Exception as list_table_error:
                 pass
-                # print('No such REG key for list view: {}'.format(list_table_error))
-        # ******************************************
-
-
-
+            
         tables_html_aggr[k] = temp_aggr_dict
         tables_html_list[k] = temp_list_table_dict
 
-    return tables_html_list, tables_html_aggr, allUniqueDays, _detail_aggr, _detail_list
-
+    return tables_html_list, tables_html_aggr, _allUniqueDays, _detail_aggr, _detail_list
 
 def create_files_main_dates(_tables_html_list,
                 _tables_html_aggr,
@@ -180,17 +176,22 @@ def create_files_main_dates(_tables_html_list,
                 _day_tamplate,
                 _allUniqueReg):
     ts = "Last update on: {} time: {}".format(datetime.date.today().strftime("%d/%B/%Y"), time.strftime("%H:%M:%S"))
-    for _day in np.sort(allUniqueDays):
+    # for _day in np.sort(allUniqueDays):
+    for _day in _allUniqueDays:
         j2_env = Environment(loader=FileSystemLoader(_path_template))
         # unique set of REGs
         _ureg = list(listx[_day].keys())
+        # _dayx ---> is a specially adjusted _day key because spaces and colons cannot be 
+        # present in filenames, etc.
+        _dayx=str(_day).replace(' ','_').replace(':', '_')
         _data = j2_env.get_template(_day_tamplate).render(particular_day_content_list=_tables_html_list[_day],
                                                           particular_day_content_aggr=_tables_html_aggr[_day],
                                                           unique_reg=_ureg,
-                                                          xday=_day,
+                                                          xday=_dayx,
                                                           timeStamp=ts)
 
-        _filename = str(_day + ".html")
+        
+        _filename = str(_dayx + ".html")
         if socket.gethostname() != "nb-toth":
             _serve = 'twowings'
             _oname = os.path.join(_path_template, _serve, _filename)
@@ -210,30 +211,24 @@ def create_files_reg(_tables_html_list,
                      _detail_list_view,
                      _list_view_by_dates):
     ts = "Last update on: {} time: {}".format(datetime.date.today().strftime("%d/%B/%Y"), time.strftime("%H:%M:%S"))
-    for _day in np.sort(allUniqueDays):
+    for _day in _allUniqueDays:
         j2_env = Environment(loader=FileSystemLoader(_path_template))
 
         # ************************************************************
-        _detail_filename = str("detail" + "-"+ _day + ".html")
+        _dayx=str(_day).replace(' ','_').replace(':', '_')     
+        _dayx_display = '{0} ++'.format(remove_time(_dayx, 0))
+        _detail_filename = str("detail" + "-"+ _dayx + ".html")
         
-        zerox = ['0.0']
+        # zerox = ['0.0']
         tmpx = pd.DataFrame(_list_view_by_dates[_day]) 
-        tmpx = tmpx[~tmpx.Quantity.isin(zerox)]
+        # tmpx = tmpx[~tmpx.Quantity.isin(zerox)]
         tmpx = pd.DataFrame(tmpx.groupby(['Meal','Direction']).count().iloc[:,1])
-        _special_quantity = {'{:<5}{}'.format(k[0], k[1]):[v, int(v)*189] for k,v in tmpx.to_dict()['Depart'].items()}
-      
-        
-        # _special_quantity = pd.DataFrame(_list_view_by_dates[_day].groupby(['Meal','Direction']).count().iloc[:,1])  
-        # _special_quantity = {k[0]:[v, int(v)*189] for k,v in _special_quantity.to_dict()['Depart'].items() if k[1] == "TAM"}
-        # print('_special_quantity:{} -> {}'.format(_day, _special_quantity))
-        
-        
-        # Example output:
-        # _special_quantity ----> {'Count': {'L2': 8, 'L6': 7, 'RRR': 2},'Quantity189': {'L2': 1512, 'L6': 1323, 'RRR': 378}}
+        _special_quantity = {k:[v, int(v)*189] for k,v in tmpx.to_dict()['Depart'].items()}
+        # print(_special_quantity)
         
         _detail_data = j2_env.get_template(_detail_list_view).render(detail_day_content_aggr=_detail_aggr[_day],
                                                                      detail_day_content_list=_detail_list[_day],
-                                                                     detail_day=_day,
+                                                                     detail_day=_dayx_display,
                                                                      special_quantity = _special_quantity
                                                                      )
 
@@ -248,11 +243,11 @@ def create_files_reg(_tables_html_list,
 
         for _r in _allUniqueReg:
             try:
-                _filename = str(_r + "-"+ _day + ".html")
+                _filename = str(_r + "-"+ _dayx + ".html")
                 _data = j2_env.get_template(_reg_tamplate).render(particular_day_content_list=_tables_html_list[_day][_r],
                                                                   particular_day_content_aggr=_tables_html_aggr[_day][_r],
                                                                   unique_reg=_allUniqueReg,
-                                                                  xday=_day,
+                                                                  xday=_dayx,
                                                                   timeStamp=ts,
                                                                   reg_key=_r)
 
@@ -266,26 +261,36 @@ def create_files_reg(_tables_html_list,
                     f.write(_data)
 
             except Exception as missing_key:
-                #print('Missing key: {}, I am not going to create this file: {}'.format(missing_key, _filename))
                 pass
 
 
+def remove_time(_x, _ind):
+    _t = _x.split('___')[_ind].strip('09_00_00')
+    return _t
+
+            
 def create_main(_path_template,
                 _main_tamplate,
                 _unique_days):
 
     ts = "Last update on: {} time: {}".format(datetime.date.today().strftime("%d/%B/%Y"), time.strftime("%H:%M:%S"))
     j2_env = Environment(loader=FileSystemLoader(_path_template))
+    _unique_days_temp = [i.replace(' ','_').replace(':', '_') for i in _unique_days]
+    _unique_days = [[i, '{0} ++'.format(remove_time(i, 0))] for i in _unique_days_temp]
+    
     _data = j2_env.get_template(_main_tamplate).render(unique_days=_unique_days, timeStamp=ts)
     _filename = str("index.html")
     if socket.gethostname() != "nb-toth":
-        _serve = 'twowings'
+        _serve = 'twowings/development'
         _omain = os.path.join(_path_template, _serve, _filename)
     else:
         _omain = os.path.join(_path_template, _filename)
         # print('saving to {}'.format(_omain))
     with open(_omain, 'w') as f:
         f.write(_data)
+        
+    return _unique_days
+
 
 
 def get_cred():
@@ -324,7 +329,7 @@ if socket.gethostname() != "nb-toth":
             create_main(linux_template, main_template, udays)
             time.sleep(sleep_period)
         except Exception as e:
-            with open('error_log.txt', 'a') as f:
+            with open('error_log_devel.txt', 'a') as f:
                 tstr = time.strftime("%Y_%m_%d_%H_%M_%S")
                 f.write('{}: {}\n'.format(tstr, e))
             time.sleep(sleep_period)
