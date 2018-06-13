@@ -281,7 +281,7 @@ def create_main(_path_template,
     _data = j2_env.get_template(_main_tamplate).render(unique_days=_unique_days, timeStamp=ts)
     _filename = str("index.html")
     if socket.gethostname() != "nb-toth":
-        _serve = 'twowings/development'
+        _serve = 'twowings'
         _omain = os.path.join(_path_template, _serve, _filename)
     else:
         _omain = os.path.join(_path_template, _filename)
