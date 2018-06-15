@@ -14,7 +14,14 @@ pd.set_option('display.max_colwidth', -1)
 # from IPython.core.display import display, HTML
 # display(HTML("<style>.container { width:100% !important; }</style>"))
 
+
 def get_token(_auth_data, _url_token):
+    """
+
+    :param _auth_data:
+    :param _url_token:
+    :return:
+    """
     _auth_data = json.dumps(_auth_data)
     response = requests.post(
         _url_token,
@@ -25,6 +32,12 @@ def get_token(_auth_data, _url_token):
 
 
 def get_data(_token, _url_list):
+    """
+
+    :param _token:
+    :param _url_list:
+    :return:
+    """
     _headers = {'Authorization': 'token' + ' ' + _token}
     _r = requests.post(
         _url_list,
@@ -32,14 +45,26 @@ def get_data(_token, _url_list):
     )
     return _r.json()
 
+
 def determine_direction(x):
+    """
+
+    :param x:
+    :return:
+    """
     x = str(x)
     if x == "BTS" or x == "KSC" or x == "SLD" or x == "TAT":
         return str("TAM")
     else:
         return str("SPAT")
 
+
 def determine_production(x):
+    """
+
+    :param x:
+    :return:
+    """
     x = str(x)
     if x == "BTS":
         return str("BTS")
@@ -50,19 +75,40 @@ def determine_production(x):
 
 
 def extra_catering(x):
+    """
+
+    :param x:
+    :return:
+    """
     try:
         return ['{0}: {1}'.format(i['code'],i['count']) for i in x]
     except:
         return 0
 
 # This is an example how input list should look like
-# i = ['2018-06-14 09:00:00:::2018-06-15 09:00:00', '2018-06-15 09:00:00:::2018-06-16 09:00:00', '2018-06-16 09:00:00:::2018-06-17 09:00:00']
+# i = ['2018-06-14 09:00:00:::2018-06-15 09:00:00',
+#      '2018-06-15 09:00:00:::2018-06-16 09:00:00',
+#      '2018-06-16 09:00:00:::2018-06-17 09:00:00']
+
+
 def split_weird_timeframes(_i, _dataframe):
+    """
+
+    :param _i:
+    :param _dataframe:
+    :return:
+    """
     _s = _i.split('___')[0]
     _e = _i.split('___')[1]
     return _dataframe.loc[_s:_e]
 
+
 def render_tables(_data):
+    """
+
+    :param _data:
+    :return:
+    """
     _df = json_normalize(_data['data']['flight']['data'])
     _compare = pd.DataFrame()
 
@@ -98,7 +144,6 @@ def render_tables(_data):
     # .....................
     
     _allUniqueReg = _df['aircraft_reg'].unique()
-
     tables = {}
     _list_view_by_dates = {}
     for i in _allUniqueDays:
@@ -135,6 +180,14 @@ def render_tables(_data):
 
 
 def process_tables_to_html(_tables, _allUniqueDays, _allUniqueReg, _list_view_by_dates):
+    """
+
+    :param _tables:
+    :param _allUniqueDays:
+    :param _allUniqueReg:
+    :param _list_view_by_dates:
+    :return:
+    """
     tables_html_aggr = {}
     tables_html_list = {}
     _detail_aggr = {}
@@ -169,12 +222,23 @@ def process_tables_to_html(_tables, _allUniqueDays, _allUniqueReg, _list_view_by
 
     return tables_html_list, tables_html_aggr, _allUniqueDays, _detail_aggr, _detail_list
 
+
 def create_files_main_dates(_tables_html_list,
-                _tables_html_aggr,
-                _allUniqueDays,
-                _path_template,
-                _day_tamplate,
-                _allUniqueReg):
+                            _tables_html_aggr,
+                            _allUniqueDays,
+                            _path_template,
+                            _day_tamplate,
+                            _allUniqueReg):
+    """
+
+    :param _tables_html_list:
+    :param _tables_html_aggr:
+    :param _allUniqueDays:
+    :param _path_template:
+    :param _day_tamplate:
+    :param _allUniqueReg:
+    :return:
+    """
     ts = "Last update on: {} time: {}".format(datetime.date.today().strftime("%d/%B/%Y"), time.strftime("%H:%M:%S"))
     # for _day in np.sort(allUniqueDays):
     for _day in _allUniqueDays:
@@ -190,7 +254,6 @@ def create_files_main_dates(_tables_html_list,
                                                           xday=_dayx,
                                                           timeStamp=ts)
 
-        
         _filename = str(_dayx + ".html")
         if socket.gethostname() != "nb-toth":
             _serve = 'twowings'
@@ -199,6 +262,7 @@ def create_files_main_dates(_tables_html_list,
             _oname = os.path.join(_path_template, _filename)
         with open(_oname, 'w') as f:
             f.write(_data)
+
 
 def create_files_reg(_tables_html_list,
                      _tables_html_aggr,
@@ -210,6 +274,20 @@ def create_files_reg(_tables_html_list,
                      _detail_list,
                      _detail_list_view,
                      _list_view_by_dates):
+    """
+
+    :param _tables_html_list:
+    :param _tables_html_aggr:
+    :param _allUniqueDays:
+    :param _path_template:
+    :param _reg_tamplate:
+    :param _allUniqueReg:
+    :param _detail_aggr:
+    :param _detail_list:
+    :param _detail_list_view:
+    :param _list_view_by_dates:
+    :return:
+    """
     ts = "Last update on: {} time: {}".format(datetime.date.today().strftime("%d/%B/%Y"), time.strftime("%H:%M:%S"))
     for _day in _allUniqueDays:
         j2_env = Environment(loader=FileSystemLoader(_path_template))
@@ -265,6 +343,12 @@ def create_files_reg(_tables_html_list,
 
 
 def remove_time(_x, _ind):
+    """
+
+    :param _x:
+    :param _ind:
+    :return:
+    """
     _t = _x.split('___')[_ind].strip('09_00_00')
     return _t
 
@@ -292,13 +376,15 @@ def create_main(_path_template,
     return _unique_days
 
 
-
 def get_cred():
+    """
+
+    :return:
+    """
     password = auth.login['password']
     username = auth.login['username']
     url_token = auth.login['url_token']
     url_list = auth.login['url_list']
-
     auth_data = {
         'auth_company': 'TVS',
         'auth_username': username,
@@ -341,6 +427,8 @@ if socket.gethostname() == "nb-toth":
     render = get_data(token, url_list)
     tables, allUniqueDays, dataframe, plain, allUniqueReg, list_view_by_dates = render_tables(render)
     listx, aggrx, udays, detail_aggr, detail_list = process_tables_to_html(tables, allUniqueDays, allUniqueReg, list_view_by_dates)
+
+
     create_files_main_dates(listx, aggrx, udays, path_template, day_tamplate, allUniqueReg)
     create_files_reg(listx, aggrx, udays, path_template, reg_template, allUniqueReg, detail_aggr, detail_list, detail_list_view, list_view_by_dates)
     create_main(path_template, main_template, udays)

@@ -83,11 +83,11 @@
     function reply_click(_id)
     {
 
-        iframe.src = _id + '.html';
+        iframe.src = '/day/' + _id;
     }
     function set_drop_menu(_idx) {
         var p_idx = _idx.replace('_drop','');
-        iframe.src = p_idx + '.html';
+        iframe.src = '/day/' + p_idx;
     }
 
 </script>

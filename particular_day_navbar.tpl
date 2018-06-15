@@ -62,17 +62,14 @@
 
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                     <span class="navbar-toggler-icon"></span>
-                </button> <a class="navbar-brand" href="#" id="detail-{{ xday }}" onclick="detail_view(this.id)">Detail</a>
+                </button> <a class="navbar-brand" href="#" id="{{ xday }}" onclick="detail_view(this.id)">Detail</a>
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="navbar-nav pagination">
                         {% for _reg in unique_reg %}
                             <li class="nav-item page-item">
-                                <a class="nav-link" href="#" id="{{ _reg }}-{{ xday }}" onclick="reg_click(this.id)">{{_reg}}</a>
+                                <a class="nav-link" href="#" id="{{ xday }}/{{_reg}}" onclick="reg_click(this.id)">{{_reg}}</a>
                             </li>
                         {% endfor %}
-{#                        <li class="nav-item">#}
-{#                            <a class="nav-link" href="#" id="timeStamp">{{timeStamp}}</a>#}
-{#                        </li>#}
 
                     </ul>
 
@@ -80,7 +77,7 @@
             </nav>
 
             <div class="embed-responsive embed-responsive-16by9">
-                <iframe class="embed-responsive-item" id="particular_day_nav" src="detail-{{ xday }}.html" frameborder="0" allowfullscreen></iframe>
+                <iframe class="embed-responsive-item" id="particular_day_nav" src="/detail/{{ xday }}" frameborder="0" allowfullscreen></iframe>
             </div>
         </div>
     </div>
@@ -90,12 +87,11 @@
     const iframe = document.querySelector('iframe');
     function reg_click(_regg)
     {
-        iframe.src = _regg + '.html';
+        iframe.src = '/reg/' + _regg;
     }
 
     function detail_view(id_file_name) {
-        const detailed_file = id_file_name + '.html';
-        iframe.src = detailed_file;
+        iframe.src = '/detail/' + id_file_name;
     }
 </script>
 
