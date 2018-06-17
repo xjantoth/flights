@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 import json
 import time
@@ -8,12 +9,24 @@ import requests
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
 from pandas.io.json import json_normalize
+from flask_sqlalchemy import SQLAlchemy
 pd.set_option('display.max_colwidth', -1)
 
-app = Flask(__name__)
 
-# from IPython.core.display import display, HTML
-# display(HTML("<style>.container { width:100% !important; }</style>"))
+project_dir = os.path.dirname(os.path.abspath(__file__))
+database_file = "sqlite:///{}".format(os.path.join(project_dir, "2w.sqlite"))
+app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = database_file
+db = SQLAlchemy(app)
+
+
+class FlightData(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    created = db.Column(db.DateTime, server_default=db.func.now())
+    json_data = db.Column(db.String())
+
+    def __init__(self, json_data):
+        self.json_data = json_data
 
 
 def get_token(_auth_data, _url_token):
@@ -32,7 +45,7 @@ def get_token(_auth_data, _url_token):
     return _token
 
 
-def get_data(_token, _url_list):
+def get_data():
     """
 
     :param _token:
@@ -40,15 +53,15 @@ def get_data(_token, _url_list):
     :return:
     """
     try:
-        _headers = {'Authorization': 'token' + ' ' + _token}
-        _r = requests.post(
-            _url_list,
-            headers=_headers
-        )
-        return _r.json()
+        raw_data = FlightData.query.order_by(FlightData.created.desc()).get(1).json_data
+        print("data retrived from db")
+        raw_data = json.loads(raw_data)
+        print("Data conveted to json :)")
+        return raw_data
+
     except Exception as ee:
         print("{}".format(ee))
-        return "could not get data :)"
+        return None
 
 
 def determine_direction(x):
@@ -375,7 +388,7 @@ token = get_token(auth_data, url_token)
 
 @app.route('/')
 def get_main_page():
-    render = get_data(token, url_list)
+    render = get_data()
     tables, \
     allUniqueDays, \
     dataframe, \
@@ -398,7 +411,7 @@ def get_main_page():
 
 @app.route('/day/<_day>')
 def particular_main_date(_day):
-    render = get_data(token, url_list)
+    render = get_data()
     tables, \
     allUniqueDays, \
     dataframe, \
@@ -428,7 +441,7 @@ def particular_main_date(_day):
 
 @app.route('/detail/<_day>')
 def get_detail_list(_day):
-    render = get_data(token, url_list)
+    render = get_data()
     tables, \
     allUniqueDays, \
     dataframe, \
@@ -459,7 +472,7 @@ def get_detail_list(_day):
 
 @app.route('/reg/<_day>/<_r>')
 def get_registration(_day, _r):
-    render = get_data(token, url_list)
+    render = get_data()
     tables, allUniqueDays, dataframe, plain, allUniqueReg, list_view_by_dates = render_tables(render)
     listx, aggrx, udays, detail_aggr, detail_list = process_tables_to_html(tables,
                                                                            allUniqueDays,
