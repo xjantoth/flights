@@ -7,3 +7,4 @@ twowings/*-*-*.html
 *-*-*.html
 index.html
 *.pyc
+*.sqlite

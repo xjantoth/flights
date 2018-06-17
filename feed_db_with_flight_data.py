@@ -81,7 +81,7 @@ def get_data(_token, _url_list):
 
 def add_to_flight_data(_data):
     """
-    
+
     :param _data:
     :return:
     """
