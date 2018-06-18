@@ -3,6 +3,7 @@ from flask import Flask
 import json
 import time
 import auth
+import socket
 import numpy as np
 import datetime
 import requests
@@ -46,17 +47,9 @@ def get_token(_auth_data, _url_token):
 
 
 def get_data():
-    """
-
-    :param _token:
-    :param _url_list:
-    :return:
-    """
     try:
         raw_data = FlightData.query.order_by(FlightData.created.desc()).get(1).json_data
-        print("data retrived from db")
-        raw_data = json.loads(raw_data)
-        print("Data conveted to json :)")
+        raw_data = json.loads(raw_data.decode('utf-8'))
         return raw_data
 
     except Exception as ee:
@@ -122,7 +115,6 @@ def split_weird_timeframes(_i, _dataframe):
 
 
 def render_tables(_data):
-    print(_data)
     """
 
     :param _data:
@@ -247,17 +239,6 @@ def get_cred():
     return auth_data, url_token, url_list
 
 
-# def remove_time(_x, _ind):
-#     """
-#
-#     :param _x:
-#     :param _ind:
-#     :return:
-#     """
-#     _t = _x.split('___')[_ind].strip('09_00_00')
-#     return _t
-
-
 def create_main(_path_template,
                 _main_tamplate,
                 _unique_days):
@@ -374,8 +355,13 @@ def create_registration(_tables_html_list,
         pass
 
 
-path_template = "C:\\Users\\jan.toth\\Documents\\2w"
-linux_template = "/opt/twowings"
+win_template = "C:\\Users\\jan.toth\\Documents\\2w"
+linux_template = "/opt/flask"
+path_template = win_template
+if socket.gethostname() != "nb-toth":
+    path_template = linux_template
+
+
 day_tamplate = "particular_day_navbar.tpl"
 reg_template = "particular_day.tpl"
 detail_list_view = "detail_list_view.tpl"
@@ -405,7 +391,6 @@ def get_main_page():
                                          allUniqueReg,
                                          list_view_by_dates)
     data, udd = create_main(path_template, main_template, udays)
-    print(udd)
     return data
 
 
