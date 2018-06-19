@@ -38,15 +38,15 @@
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-{#                <a class="navbar-brand" href="#" onclick="main_jumbo()">#}
-{#                    Two Wings#}
-{#                </a>#}
+                <a class="navbar-brand" href="#" onclick="main_jumbo()">
+                    Two Wings
+                </a>
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="navbar-nav">
                         {% for _day in unique_days %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="#" id="jb" onclick="main_jumbo()">Two Wings</a>
-                            </li>
+{#                            <li class="nav-item">#}
+{#                                <a class="nav-link" href="#" id="jb" onclick="main_jumbo()">Two Wings</a>#}
+{#                            </li>#}
                             <li class="nav-item">
                                 <a class="nav-link" href="#" id="{{ _day[0] }}" onclick="reply_click(this.id)">{{_day[1]}}</a>
                             </li>
