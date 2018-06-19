@@ -1,5 +1,7 @@
 import os
+import pytz
 from flask import Flask
+import datetime
 from flask_sqlalchemy import SQLAlchemy
 
 project_dir = os.path.dirname(os.path.abspath(__file__))
@@ -11,7 +13,7 @@ db = SQLAlchemy(app)
 
 class FlightData(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    created = db.Column(db.DateTime, server_default=db.func.now())
+    created = db.Column(db.DateTime, default=datetime.datetime.now(pytz.timezone("Europe/Bratislava")))
     json_data = db.Column(db.String())
 
     def __init__(self, json_data):

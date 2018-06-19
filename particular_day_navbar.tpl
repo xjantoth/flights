@@ -64,14 +64,34 @@
                     <span class="navbar-toggler-icon"></span>
                 </button> <a class="navbar-brand" href="#" id="{{ xday }}" onclick="detail_view(this.id)">Detail</a>
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                    <ul class="navbar-nav pagination">
-                        {% for _reg in unique_reg %}
-                            <li class="nav-item page-item">
-                                <a class="nav-link" href="#" id="{{ xday }}/{{_reg}}" onclick="reg_click(this.id)">{{_reg}}</a>
-                            </li>
-                        {% endfor %}
 
+                    {#  HERE COMES DROPDOWN MENU -START #}
+
+                    <ul class="navbar-nav ml-md-auto">
+{#                        <li class="nav-item">#}
+{#                            <a class="nav-link" href="#">Link <span class="sr-only">(current)</span></a>#}
+{#                        </li>#}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown">
+                                ___ Detailed rotation menu ___
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-left" aria-labelledby="navbarDropdownMenuLink">
+                                {% for _reg in unique_reg %}
+                                    <a class="dropdown-item" href="#" id="{{ xday }}/{{_reg}}" onclick="reg_click(this.id)">{{_reg}}</a>
+                                {% endfor %}
+                            </div>
+                        </li>
                     </ul>
+
+                    {#  HERE COMES DROPDOWN MENU - END #}
+{#                    <ul class="navbar-nav pagination">#}
+{#                        {% for _reg in unique_reg %}#}
+{#                            <li class="nav-item page-item">#}
+{#                                <a class="nav-link" href="#" id="{{ xday }}/{{_reg}}" onclick="reg_click(this.id)">{{_reg}}</a>#}
+{#                            </li>#}
+{#                        {% endfor %}#}
+{##}
+{#                    </ul>#}
 
                 </div>
             </nav>

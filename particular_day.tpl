@@ -61,7 +61,7 @@
             <div class="card mb-3 shadow">
                 <div class="card-body border-bottom text-white bg-success">
                     <h4 class="card-title mb-0">
-                        <span class="font-weight-light">Aircraft ID: </span>
+                        <span class="font-weight-light">Rotation ID: </span>
                         <span>{{ reg_key }}</span>
                     </h4>
                 </div>

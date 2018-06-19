@@ -3,6 +3,7 @@ from flask import Flask
 import json
 import time
 import auth
+import pytz
 import socket
 import numpy as np
 import datetime
@@ -23,7 +24,7 @@ db = SQLAlchemy(app)
 
 class FlightData(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    created = db.Column(db.DateTime, server_default=db.func.now())
+    created = db.Column(db.DateTime, default=datetime.datetime.now(pytz.timezone("Europe/Bratislava")))
     json_data = db.Column(db.String())
 
     def __init__(self, json_data):
@@ -48,9 +49,10 @@ def get_token(_auth_data, _url_token):
 
 def get_data():
     try:
-        raw_data = FlightData.query.order_by(FlightData.created.desc()).get(1).json_data
+        raw_data = FlightData.query.order_by(FlightData.created.asc()).get(1).json_data
         raw_data = json.loads(raw_data.decode('utf-8'))
-        return raw_data
+        created_date = FlightData.query.order_by(FlightData.created.desc()).first_or_404().created
+        return raw_data, created_date
 
     except Exception as ee:
         print("{}".format(ee))
@@ -129,11 +131,14 @@ def render_tables(_data):
     _compare['Flight'] = _df['flight_number']
     _compare['Aircraft'] = _df['aircraft_config']
     _compare['Reg'] = _df['aircraft_reg']
+    _compare['Route'] = _df['route_id']
     _compare["Meal"] = _df["catering_order.flight_meal_type"]
     _compare['Direction'] = _df['departure_iata'].map(determine_direction)
     _compare['Production'] = _df['departure_iata'].map(determine_production)
     _compare['From'] = _df['departure_iata']
     _compare['To'] = _df['destination_iata']
+
+    # _compare['route_set_id'] = _df['route_set_id']
     _compare['Quantity'] = _df['catering_order.quantity_y']
     _compare['Crew'] = _df['catering_order.quantity_crew']
     _compare['Extra Catering'] = _df['extra_catering'].map(extra_catering)
@@ -150,7 +155,9 @@ def render_tables(_data):
                                                          int(str(i).split('-')[2]) + 1) for i in _all_unique_days]
     # .....................
 
-    _all_unique_reg = _df['aircraft_reg'].unique()
+    # _all_unique_reg = _df['aircraft_reg'].unique()
+    _all_unique_reg = _df['route_id'].unique()
+
     tables = {}
     _list_view_by_dates = {}
     for i in _all_unique_days:
@@ -158,11 +165,13 @@ def render_tables(_data):
         _list_view_by_dates[i] = temp_table_day_chunck
         temp_storage = {}
         for _reg in _all_unique_reg:
-            sorting_particular_day_df = temp_table_day_chunck.sort_values(["Reg", "Depart"], ascending=True)
+            # sorting_particular_day_df = temp_table_day_chunck.sort_values(["Reg", "Depart"], ascending=True)
+            sorting_particular_day_df = temp_table_day_chunck.sort_values(["Route", "Depart"], ascending=True)
+
             try:
-                is_dataframe = sorting_particular_day_df.loc[sorting_particular_day_df['Reg'] == _reg]
+                is_dataframe = sorting_particular_day_df.loc[sorting_particular_day_df['Route'] == _reg]
                 if not is_dataframe.empty:
-                    temp_storage[_reg] = sorting_particular_day_df.loc[sorting_particular_day_df['Reg'] == _reg]
+                    temp_storage[_reg] = sorting_particular_day_df.loc[sorting_particular_day_df['Route'] == _reg]
 
             except Exception as missing_reg:
                 temp_storage[_reg] = "<empty>"
@@ -191,7 +200,7 @@ def process_tables_to_html(_tables, _all_unique_days, _all_unique_reg, _list_vie
         # This is Detail page for each day in the second NAVBAR
         _detail_aggr[k] = _list_view_by_dates[k].groupby(['Meal', 'Direction']).sum().to_html(
             classes="table table-sm table-hover table-striped table-responsive", escape=False)
-        _detail_list[k] = _list_view_by_dates[k].sort_values(['Reg', 'Depart'], ascending=[True, True]).drop(
+        _detail_list[k] = _list_view_by_dates[k].sort_values(['Route', 'Depart'], ascending=[True, True]).drop(
             'Departure', axis=1).to_html(
             classes="table table-sm table-hover table-striped table-responsive-xl first-bold", escape=False,
             index=False)
@@ -241,15 +250,16 @@ def get_cred():
 
 def create_main(_path_template,
                 _main_tamplate,
-                _unique_days):
-    ts = "Last update on: {} time: {}".format(datetime.date.today().strftime("%d/%B/%Y"), time.strftime("%H:%M:%S"))
+                _unique_days,
+                _ts):
+    # ts = "Last update on: {} time: {}".format(datetime.date.today().strftime("%d/%B/%Y"), time.strftime("%H:%M:%S"))
     j2_env = Environment(loader=FileSystemLoader(_path_template))
     _unique_days_double = [[i.replace(' ', '_').replace(':', '_'), '{} ++'.format(i.split('__')[0].split(' ')[0])] for i in _unique_days]
     # Output: ['2018-06-14_09_00_00___2018-06-15_09_00_00', '2018-06-14 09:00: ++']
     # '2018-06-14 09:00:00___2018-06-15 09:00:00'
     _data = j2_env.get_template(_main_tamplate).render(
         unique_days=_unique_days_double,
-        timeStamp=ts)
+        timeStamp=_ts)
     return _data, _unique_days_double
 
 
@@ -374,7 +384,7 @@ token = get_token(auth_data, url_token)
 
 @app.route('/')
 def get_main_page():
-    render = get_data()
+    render, created_datetime = get_data()
     tables, \
     allUniqueDays, \
     dataframe, \
@@ -390,13 +400,13 @@ def get_main_page():
                                          allUniqueDays,
                                          allUniqueReg,
                                          list_view_by_dates)
-    data, udd = create_main(path_template, main_template, udays)
+    data, udd = create_main(path_template, main_template, udays, created_datetime)
     return data
 
 
 @app.route('/day/<_day>')
 def particular_main_date(_day):
-    render = get_data()
+    render, created_datetime = get_data()
     tables, \
     allUniqueDays, \
     dataframe, \
@@ -426,7 +436,7 @@ def particular_main_date(_day):
 
 @app.route('/detail/<_day>')
 def get_detail_list(_day):
-    render = get_data()
+    render, created_datetime = get_data()
     tables, \
     allUniqueDays, \
     dataframe, \
@@ -457,7 +467,7 @@ def get_detail_list(_day):
 
 @app.route('/reg/<_day>/<_r>')
 def get_registration(_day, _r):
-    render = get_data()
+    render, created_datetime = get_data()
     tables, allUniqueDays, dataframe, plain, allUniqueReg, list_view_by_dates = render_tables(render)
     listx, aggrx, udays, detail_aggr, detail_list = process_tables_to_html(tables,
                                                                            allUniqueDays,

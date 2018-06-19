@@ -1,8 +1,10 @@
 import os
 import time
 import auth
+import pytz
 import json
 import requests
+import datetime
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
@@ -15,7 +17,7 @@ db = SQLAlchemy(app)
 
 class FlightData(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    created = db.Column(db.DateTime, server_default=db.func.now())
+    created = db.Column(db.DateTime, default=datetime.datetime.now(pytz.timezone("Europe/Bratislava")))
     json_data = db.Column(db.String())
 
     def __init__(self, json_data):
