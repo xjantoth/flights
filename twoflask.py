@@ -49,7 +49,7 @@ def get_token(_auth_data, _url_token):
 
 def get_data():
     try:
-        raw_data = FlightData.query.order_by(FlightData.created.asc()).get(1).json_data
+        raw_data = FlightData.query.order_by(FlightData.created.desc()).first_or_404().json_data
         raw_data = json.loads(raw_data.decode('utf-8'))
         created_date = FlightData.query.order_by(FlightData.created.desc()).first_or_404().created
         return raw_data, created_date
