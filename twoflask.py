@@ -157,6 +157,8 @@ def render_tables(_data):
 
     # _all_unique_reg = _df['aircraft_reg'].unique()
     _all_unique_reg = _df['route_id'].unique()
+    print('length: {}'.format(len(_all_unique_reg)))
+    for _u in _all_unique_reg: print(_u)
 
     tables = {}
     _list_view_by_dates = {}
@@ -365,8 +367,8 @@ def create_registration(_tables_html_list,
         pass
 
 
-win_template = "C:\\Users\\jan.toth\\Documents\\2w"
-linux_template = "/opt/flask"
+win_template = "C:\\Users\\jan.toth\\Documents\\2w\\templates"
+linux_template = "/opt/flask/templates"
 path_template = win_template
 if socket.gethostname() != "nb-toth":
     path_template = linux_template
@@ -375,11 +377,19 @@ if socket.gethostname() != "nb-toth":
 day_tamplate = "particular_day_navbar.tpl"
 reg_template = "particular_day.tpl"
 detail_list_view = "detail_list_view.tpl"
+jumbo_tpl = "jumbo.tpl"
 
 main_template = "main.tpl"
 sleep_period = 300
 auth_data, url_token, url_list = get_cred()
 token = get_token(auth_data, url_token)
+
+
+@app.route('/jumbo')
+def get_jumbo():
+    j2_env = Environment(loader=FileSystemLoader(path_template))
+    _data = j2_env.get_template(jumbo_tpl).render()
+    return _data
 
 
 @app.route('/')

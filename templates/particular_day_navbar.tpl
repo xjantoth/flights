@@ -67,15 +67,15 @@
 
                     {#  HERE COMES DROPDOWN MENU -START #}
 
-                    <ul class="navbar-nav ml-md-auto">
+                    <ul class="navbar-nav ml-md-left">
 {#                        <li class="nav-item">#}
 {#                            <a class="nav-link" href="#">Link <span class="sr-only">(current)</span></a>#}
 {#                        </li>#}
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown">
-                                ___ Detailed rotation menu ___
+                                Detailed rotation menu
                             </a>
-                            <div class="dropdown-menu dropdown-menu-left" aria-labelledby="navbarDropdownMenuLink">
+                            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
                                 {% for _reg in unique_reg %}
                                     <a class="dropdown-item" href="#" id="{{ xday }}/{{_reg}}" onclick="reg_click(this.id)">{{_reg}}</a>
                                 {% endfor %}

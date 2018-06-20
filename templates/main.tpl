@@ -52,7 +52,7 @@
                             </li>
                         {% endfor %}
                         <li class="nav-item">
-                            <a class="nav-link" href="#" id="timeStamp">{{timeStamp}}</a>
+                            <a class="nav-link" href="#" id="timeStamp"><b>Updated:</b> {{timeStamp}}</a>
                         </li>
 
                     </ul>
@@ -72,11 +72,11 @@
                 </div>
             </nav>
 {#            <div class="resp-container">#}
-{#                <iframe class="resp-iframe" src="jumbo.html" frameborder="0" allowfullscreen></iframe>#}
+{#                <iframe class="resp-iframe" src="jumbo.tpl" frameborder="0" allowfullscreen></iframe>#}
 {#            </div>#}
             <!-- 16:9 aspect ratio -->
             <div class="embed-responsive embed-responsive-16by9">
-                <iframe class="embed-responsive-item" src="jumbo.html" frameborder="0" allowfullscreen></iframe>
+                <iframe class="embed-responsive-item" src="/jumbo" frameborder="0" allowfullscreen></iframe>
             </div>
         </div>
     </div>
@@ -84,7 +84,7 @@
 <script>
     const iframe = document.querySelector('iframe');
     function main_jumbo() {
-        iframe.src = 'jumbo.html';
+        iframe.src = '/jumbo';
     }
     function reply_click(_id)
     {
