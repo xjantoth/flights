@@ -157,8 +157,8 @@ def render_tables(_data):
 
     # _all_unique_reg = _df['aircraft_reg'].unique()
     _all_unique_reg = _df['route_id'].unique()
-    print('length: {}'.format(len(_all_unique_reg)))
-    for _u in _all_unique_reg: print(_u)
+    # print('length: {}'.format(len(_all_unique_reg)))
+    # for _u in _all_unique_reg: print(_u)
 
     tables = {}
     _list_view_by_dates = {}
