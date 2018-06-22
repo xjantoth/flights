@@ -369,20 +369,15 @@ def create_registration(_tables_html_list,
 
 win_template = "C:\\Users\\jan.toth\\Documents\\2w\\templates"
 linux_template = "/opt/flask/templates"
-path_template = win_template
-if socket.gethostname() != "nb-toth":
-    path_template = linux_template
-
-
 day_tamplate = "particular_day_navbar.tpl"
 reg_template = "particular_day.tpl"
 detail_list_view = "detail_list_view.tpl"
 jumbo_tpl = "jumbo.tpl"
-
 main_template = "main.tpl"
-sleep_period = 300
-auth_data, url_token, url_list = get_cred()
-token = get_token(auth_data, url_token)
+
+path_template = win_template
+if socket.gethostname() != "nb-toth":
+    path_template = linux_template
 
 
 @app.route('/jumbo')
@@ -497,4 +492,4 @@ def get_registration(_day, _r):
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0')
