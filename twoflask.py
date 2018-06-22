@@ -367,13 +367,14 @@ def create_registration(_tables_html_list,
         pass
 
 
-win_template = "C:\\Users\\jan.toth\\Documents\\2w\\templates"
-linux_template = "/opt/flask/templates"
-day_tamplate = "particular_day_navbar.tpl"
-reg_template = "particular_day.tpl"
-detail_list_view = "detail_list_view.tpl"
-jumbo_tpl = "jumbo.tpl"
-main_template = "main.tpl"
+win_template = auth.login["win_template"]
+linux_template = auth.login["linux_template"]
+day_tamplate = auth.login["day_tamplate"]
+reg_template = auth.login["reg_template"]
+detail_list_view = auth.login["detail_list_view"]
+jumbo_tpl = auth.login["jumbo_tpl"]
+main_template = auth.login["main_template"]
+
 
 path_template = win_template
 if socket.gethostname() != "nb-toth":
