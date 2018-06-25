@@ -289,15 +289,20 @@ def create_files_main_dates(_tables_html_list,
     _day_dict_lookup = {i.replace(' ', '_').replace(':', '_'): i for i in _all_unique_days}
     ts = "Last update on: {} time: {}".format(datetime.date.today().strftime("%d/%B/%Y"), time.strftime("%H:%M:%S"))
     j2_env = Environment(loader=FileSystemLoader(_path_template))
-    _ureg = list(_tables_html_list[_day_dict_lookup[_day]].keys())
-    # _dayx =str(_day).replace(' ', '_').replace(':', '_')
-    _data = j2_env.\
-        get_template(_day_template).render(particular_day_content_list=_tables_html_list[_day_dict_lookup[_day]],
-                                                      particular_day_content_aggr=_tables_html_aggr[_day_dict_lookup[_day]],
-                                                      unique_reg=_ureg,
-                                                      xday=_day,
-                                                      timeStamp=ts)
-    return _data
+
+    try:
+        _ureg = list(_tables_html_list[_day_dict_lookup[_day]].keys())
+        # _dayx =str(_day).replace(' ', '_').replace(':', '_')
+        _data = j2_env.\
+            get_template(_day_template).render(particular_day_content_list=_tables_html_list[_day_dict_lookup[_day]],
+                                               particular_day_content_aggr=_tables_html_aggr[_day_dict_lookup[_day]],
+                                               unique_reg=_ureg,
+                                               xday=_day,
+                                               timeStamp=ts)
+        return _data
+    except Exception as cfmd:
+        print('create_files_main_dates: {}'.format(cfmd))
+        return "no_data"
 
 
 def create_detail_list(_all_unique_days,
