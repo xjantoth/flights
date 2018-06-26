@@ -116,6 +116,11 @@ def split_weird_timeframes(_i, _dataframe):
     return _dataframe.loc[_s:_e]
 
 
+def add_one_day(_ii):
+    _plus_day = datetime.datetime.strptime(_ii, '%Y-%m-%d %H:%M:%S') + datetime.timedelta(1)
+    return _plus_day
+
+
 def render_tables(_data):
     """
 
@@ -151,14 +156,8 @@ def render_tables(_data):
     _compare.index = _compare['Departure']
     _all_unique_days = _df['local_std_date'].unique()
     _all_unique_days = np.sort(_all_unique_days)
-    _all_unique_days = ['{0} {1}___{2}-{3}-{4} {1}'.format(str(i), '09:00:00', str(i).split('-')[0], str(i).split('-')[1],
-                                                         int(str(i).split('-')[2]) + 1) for i in _all_unique_days]
-    # .....................
-
-    # _all_unique_reg = _df['aircraft_reg'].unique()
+    _all_unique_days = ['{}___{}'.format(_i + ' 09:00:00', add_one_day(_i + ' 09:00:00')) for _i in _all_unique_days]
     _all_unique_reg = _df['route_id'].unique()
-    # print('length: {}'.format(len(_all_unique_reg)))
-    # for _u in _all_unique_reg: print(_u)
 
     tables = {}
     _list_view_by_dates = {}
@@ -167,19 +166,15 @@ def render_tables(_data):
         _list_view_by_dates[i] = temp_table_day_chunck
         temp_storage = {}
         for _reg in _all_unique_reg:
-            # sorting_particular_day_df = temp_table_day_chunck.sort_values(["Reg", "Depart"], ascending=True)
             sorting_particular_day_df = temp_table_day_chunck.sort_values(["Route", "Depart"], ascending=True)
-
             try:
                 is_dataframe = sorting_particular_day_df.loc[sorting_particular_day_df['Route'] == _reg]
                 if not is_dataframe.empty:
                     temp_storage[_reg] = sorting_particular_day_df.loc[sorting_particular_day_df['Route'] == _reg]
-
             except Exception as missing_reg:
                 temp_storage[_reg] = "<empty>"
 
         tables[i] = temp_storage
-
     return tables, _all_unique_days, _compare, _df, _all_unique_reg, _list_view_by_dates
 
 
