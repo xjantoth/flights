@@ -154,7 +154,7 @@ def render_tables(_data):
     _all_unique_days = np.sort(_all_unique_days)
     _all_unique_days = ['{}___{}'.format(_i + ' 09:00:00', add_one_day(_i + ' 09:00:00')) for _i in _all_unique_days]
     _all_unique_reg = _df['route_id'].unique()
-
+    _ts = time.time()
     tables = {}
     _list_view_by_dates = {}
     for i in _all_unique_days:
@@ -171,6 +171,8 @@ def render_tables(_data):
                 temp_storage[_reg] = "<empty>"
 
         tables[i] = temp_storage
+    _te = time.time()
+    print('render_tables for_loop_duration: {}'.format(_te - _ts))
     return tables, _all_unique_days, _compare, _df, _all_unique_reg, _list_view_by_dates
 
 
