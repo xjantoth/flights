@@ -74,4 +74,12 @@ This is one time action when we do the deployment for the first time.
 
 
 
-####
+#### Create index in Sqlite3
+
+```sh
+# gunicorn --bind 0.0.0.0:5000 --workers=3  wsgi:app -p flas_app.pid -D
+
+(venv3) jantoth@ubuntu-ansible:/opt/venv3/tflask$ sqlite3 2w.sqlite
+CREATE INDEX created_index_micka ON flight_data (created);
+
+```
