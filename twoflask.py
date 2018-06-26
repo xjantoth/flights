@@ -7,7 +7,6 @@ import pytz
 import socket
 import numpy as np
 import datetime
-import requests
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
 from pandas.io.json import json_normalize
@@ -23,6 +22,7 @@ db = SQLAlchemy(app)
 
 
 class FlightData(db.Model):
+
     id = db.Column(db.Integer, primary_key=True)
     created = db.Column(db.DateTime, default=datetime.datetime.now(pytz.timezone("Europe/Bratislava")))
     json_data = db.Column(db.String())
@@ -31,22 +31,22 @@ class FlightData(db.Model):
         self.json_data = json_data
 
 
-def get_token(_auth_data, _url_token):
-    """
+def timeit(method):
+    def timed(*args, **kw):
+        ts = time.time()
+        result = method(*args, **kw)
+        te = time.time()
+        if 'log_time' in kw:
+            name = kw.get('log_name', method.__name__.upper())
+            kw['log_time'][name] = int((te - ts) * 1000)
+        else:
+            print('%r  %2.2f ms' % \
+                  (method.__name__, (te - ts) * 1000))
+        return result
+    return timed
 
-    :param _auth_data:
-    :param _url_token:
-    :return:
-    """
-    _auth_data = json.dumps(_auth_data)
-    response = requests.post(
-        _url_token,
-        data=_auth_data
-    )
-    _token = response.json()['data']['user']['data']['auth_token']
-    return _token
 
-
+@timeit
 def get_data():
     try:
         raw_data = FlightData.query.order_by(FlightData.created.desc()).first_or_404().json_data
@@ -98,11 +98,6 @@ def extra_catering(x):
     except:
         return 0
 
-# This is an example how input list should look like
-# i = ['2018-06-14 09:00:00:::2018-06-15 09:00:00',
-#      '2018-06-15 09:00:00:::2018-06-16 09:00:00',
-#      '2018-06-16 09:00:00:::2018-06-17 09:00:00']
-
 
 def split_weird_timeframes(_i, _dataframe):
     """
@@ -121,6 +116,7 @@ def add_one_day(_ii):
     return _plus_day
 
 
+@timeit
 def render_tables(_data):
     """
 
@@ -178,6 +174,7 @@ def render_tables(_data):
     return tables, _all_unique_days, _compare, _df, _all_unique_reg, _list_view_by_dates
 
 
+@timeit
 def process_tables_to_html(_tables, _all_unique_days, _all_unique_reg, _list_view_by_dates):
     """
 
@@ -228,6 +225,7 @@ def process_tables_to_html(_tables, _all_unique_days, _all_unique_reg, _list_vie
     return tables_html_list, tables_html_aggr, _all_unique_days, _detail_aggr, _detail_list
 
 
+@timeit
 def get_cred():
     """
 
@@ -245,6 +243,7 @@ def get_cred():
     return auth_data, url_token, url_list
 
 
+@timeit
 def create_main(_path_template,
                 _main_tamplate,
                 _unique_days,
@@ -260,6 +259,7 @@ def create_main(_path_template,
     return _data, _unique_days_double
 
 
+@timeit
 def create_files_main_dates(_tables_html_list,
                             _tables_html_aggr,
                             _all_unique_days,
@@ -300,6 +300,7 @@ def create_files_main_dates(_tables_html_list,
         return "no_data"
 
 
+@timeit
 def create_detail_list(_all_unique_days,
                        _path_template,
                        _detail_aggr,
@@ -332,6 +333,7 @@ def create_detail_list(_all_unique_days,
     return _detail_data
 
 
+@timeit
 def create_registration(_tables_html_list,
                         _tables_html_aggr,
                         _all_unique_days,
