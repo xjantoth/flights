@@ -188,21 +188,19 @@ def get_cred():
 @timeit
 def create_main(_path_template,
                 _main_tamplate,
-                _unique_days,
-                _ts):
+                _unique_days):
     """
 
     :param _path_template:
     :param _main_tamplate:
     :param _unique_days:
-    :param _ts:
     :return:
     """
     j2_env = Environment(loader=FileSystemLoader(_path_template))
     _unique_days_double = [[i.replace(' ', '_').replace(':', '_'), '{} ++'.format(i.split('__')[0].split(' ')[0])] for i in _unique_days]
     _data = j2_env.get_template(_main_tamplate).render(
         unique_days=_unique_days_double,
-        timeStamp=_ts)
+        timeStamp="")
     return _data, _unique_days_double
 
 
@@ -211,7 +209,8 @@ def create_files_main_dates(_compare,
                             _all_unique_days,
                             _path_template,
                             _day_template,
-                            _day):
+                            _day,
+                            _ts):
     """
 
     :param _compare:
@@ -219,34 +218,26 @@ def create_files_main_dates(_compare,
     :param _path_template:
     :param _day_template:
     :param _day:
+    :param _ts:
     :return:
     """
     _day_dict_lookup = {i.replace(' ', '_').replace(':', '_'): i for i in _all_unique_days}
-    temp_table_day_chunck = split_weird_timeframes(_day_dict_lookup[_day], _compare)
+    temp_table_day_chunk = split_weird_timeframes(_day_dict_lookup[_day], _compare)
 
-    _agg_table = temp_table_day_chunck.groupby(['Meal', 'Direction']).sum().to_html(
+    _agg_table = temp_table_day_chunk.groupby(['Meal', 'Direction']).sum().to_html(
             classes="table table-sm table-hover table-striped table-responsive", escape=False)
-    _detail_table = temp_table_day_chunck.sort_values(['Route', 'Depart'], ascending=[True, True]).drop(
+    _detail_table = temp_table_day_chunk.sort_values(['Route', 'Depart'], ascending=[True, True]).drop(
             'Departure', axis=1).to_html(
             classes="table table-sm table-hover table-striped table-responsive-xl first-bold", escape=False,
             index=False)
-
-    _u_route = temp_table_day_chunck['Route'].unique()
-
-    ts = "Last update on: {} time: {}".format(datetime.date.today().strftime("%d/%B/%Y"), time.strftime("%H:%M:%S"))
+    _u_route = temp_table_day_chunk['Route'].unique()
     j2_env = Environment(loader=FileSystemLoader(_path_template))
-
-    try:
-        _data = j2_env.\
-            get_template(_day_template).render(particular_day_content_list=_detail_table,
-                                               particular_day_content_aggr=_agg_table,
-                                               unique_reg=_u_route,
-                                               xday=_day,
-                                               timeStamp=ts)
-        return _data
-    except Exception as cfmd:
-        print('create_files_main_dates: {}'.format(cfmd))
-        return "no_data"
+    _data = j2_env.get_template(_day_template).render(particular_day_content_list=_detail_table,
+                                                      particular_day_content_aggr=_agg_table,
+                                                      unique_reg=_u_route,
+                                                      xday=_day,
+                                                      timeStamp=_ts)
+    return _data
 
 
 @timeit
@@ -267,21 +258,21 @@ def create_detail_list(_compare,
 
     j2_env = Environment(loader=FileSystemLoader(_path_template))
     _day_dict_lookup = {i.replace(' ', '_').replace(':', '_'): i for i in _all_unique_days}
-
     list_view = split_weird_timeframes(_day_dict_lookup[_day], _compare)
-
     tmpx = list_view
     tmpx = tmpx.groupby(['Meal', 'Direction']).count().iloc[:, 1]
-    print(tmpx)
-
-    # _special_quantity = {k: [v, int(v) * 189] for k, v in tmpx.to_dict()['Depart'].items()}
-    _detail_data = j2_env.get_template(_detail_list_view_tpl).render(detail_day_content_aggr=list_view.groupby(['Meal', 'Direction']).sum().to_html(
-            classes="table table-sm table-hover table-striped table-responsive", escape=False),
-                                                                 detail_day_content_list=list_view.sort_values(['Route', 'Depart'], ascending=[True, True]).drop('Departure', axis=1).to_html(
+    _special_quantity = {k: [v, int(v) * 189] for k, v in pd.DataFrame(tmpx).to_dict()['Depart'].items()}
+    a_view = list_view.groupby(['Meal', 'Direction']).sum().to_html(
+        classes="table table-sm table-hover table-striped table-responsive",
+        escape=False)
+    l_view = list_view.sort_values(['Route', 'Depart'], ascending=[True, True]).drop('Departure', axis=1).to_html(
             classes="table table-sm table-hover table-striped table-responsive-xl first-bold", escape=False,
-            index=False),
-                                                                 detail_day=_day_dict_lookup[_day],
-                                                                 special_quantity="_")
+            index=False)
+    _detail_data = j2_env.get_template(_detail_list_view_tpl).render(
+        detail_day_content_aggr=a_view,
+        detail_day_content_list=l_view,
+        detail_day=_day_dict_lookup[_day],
+        special_quantity=_special_quantity)
 
     return _detail_data
 
@@ -308,22 +299,20 @@ def create_registration(_compare,
     route_view = split_weird_timeframes(_day_dict_lookup[_day], _compare)
     _u_route = _compare['Route'].unique()
     route_view = route_view.loc[route_view['Route'] == _r]
-
     route_view_agg = route_view.groupby(['Meal', 'Direction']).sum().to_html(
-        classes="table table-sm table-hover table-striped table-responsive", escape=False)
+        classes="table table-sm table-hover table-striped table-responsive",
+        escape=False)
     route_view_list = route_view.sort_values(['Route', 'Depart'], ascending=[True, True]).drop(
         'Departure', axis=1).to_html(
         classes="table table-sm table-hover table-striped table-responsive-xl first-bold", escape=False,
         index=False)
-
-    ts = "Last update on: {} time: {}".format(datetime.date.today().strftime("%d/%B/%Y"), time.strftime("%H:%M:%S"))
     j2_env = Environment(loader=FileSystemLoader(_path_template))
     try:
         _data = j2_env.get_template(_reg_template).render(
             particular_day_content_list=route_view_list,
             particular_day_content_aggr=route_view_agg,
             unique_reg=_u_route,
-            timeStamp=ts,
+            timeStamp="",
             reg_key=_r)
         return _data
     except Exception as e:
@@ -355,7 +344,7 @@ def get_jumbo():
 def get_main_page():
     render, created_datetime = get_data()
     udays, df_normalized = get_unique_days(render)
-    data, udd = create_main(path_template, main_template, udays, created_datetime)
+    data, udd = create_main(path_template, main_template, udays)
     return data
 
 
@@ -368,7 +357,8 @@ def particular_main_date(_day):
                                         udays,
                                         path_template,
                                         day_tamplate,
-                                        _day)
+                                        _day,
+                                        created_datetime)
     return part_data
 
 
@@ -377,8 +367,6 @@ def get_detail_list(_day):
     render, created_datetime = get_data()
     udays, df_normalized = get_unique_days(render)
     compare = render_tables(df_normalized)
-    # GOAL: '2018-06-14 09:00:00___2018-06-15 09:00:00'
-    # CURR: '2018-06-14_09_00_00___2018-06-15_09_00_00'
     detail_data = create_detail_list(compare,
                                      udays,
                                      path_template,
@@ -392,8 +380,6 @@ def get_registration(_day, _r):
     render, created_datetime = get_data()
     udays, df_normalized = get_unique_days(render)
     compare = render_tables(df_normalized)
-    # GOAL: '2018-06-14 09:00:00___2018-06-15 09:00:00'
-    # CURR: '2018-06-14_09_00_00___2018-06-15_09_00_00'
     registration_data = create_registration(
         compare,
         udays,

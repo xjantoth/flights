@@ -62,7 +62,11 @@
 
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
                     <span class="navbar-toggler-icon"></span>
-                </button> <a class="navbar-brand" href="#" id="{{ xday }}" onclick="detail_view(this.id)">Detail</a>
+                </button>
+
+                <a class="navbar-brand" href="#" id="{{ xday }}" onclick="detail_view(this.id)">
+                    Detail
+                </a>
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 
                     {#  HERE COMES DROPDOWN MENU -START #}
@@ -71,6 +75,7 @@
 {#                        <li class="nav-item">#}
 {#                            <a class="nav-link" href="#">Link <span class="sr-only">(current)</span></a>#}
 {#                        </li>#}
+
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown">
                                 Detailed rotation menu
@@ -81,8 +86,12 @@
                                 {% endfor %}
                             </div>
                         </li>
+
                     </ul>
                 </div>
+
+
+                <a class="nav-item" id="timeStamp"><b>Updated:</b> {{timeStamp}}</a>
             </nav>
 
             <div class="embed-responsive embed-responsive-16by9">

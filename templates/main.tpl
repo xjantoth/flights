@@ -52,7 +52,7 @@
                             </li>
                         {% endfor %}
                         <li class="nav-item">
-                            <a class="nav-link" href="#" id="timeStamp"><b>Updated:</b> {{timeStamp}}</a>
+                            <a class="nav-link" href="#" id="timeStamp">{{timeStamp}}</a>
                         </li>
 
                     </ul>
