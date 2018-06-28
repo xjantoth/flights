@@ -82,17 +82,6 @@
                             </div>
                         </li>
                     </ul>
-
-                    {#  HERE COMES DROPDOWN MENU - END #}
-{#                    <ul class="navbar-nav pagination">#}
-{#                        {% for _reg in unique_reg %}#}
-{#                            <li class="nav-item page-item">#}
-{#                                <a class="nav-link" href="#" id="{{ xday }}/{{_reg}}" onclick="reg_click(this.id)">{{_reg}}</a>#}
-{#                            </li>#}
-{#                        {% endfor %}#}
-{##}
-{#                    </ul>#}
-
                 </div>
             </nav>
 
