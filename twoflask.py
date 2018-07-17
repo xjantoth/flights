@@ -128,6 +128,9 @@ def get_unique_days(_data):
     _all_unique_days = _df['local_std_date'].unique()
     _all_unique_days = np.sort(_all_unique_days)
     _all_unique_days = ['{}___{}'.format(_i + ' 09:00:00', add_one_day(_i + ' 09:00:00')) for _i in _all_unique_days]
+    _all_unique_days[0] = str(datetime.datetime.strptime(_all_unique_days[0].split('___')[0], '%Y-%m-%d %H:%M:%S') \
+                          - datetime.timedelta(hours=9)) + "___" + str(_all_unique_days[0].split('___')[1])
+    print(_all_unique_days)
     return _all_unique_days, _df_normalized
 
 
@@ -329,7 +332,7 @@ main_template = auth.login["main_template"]
 
 
 path_template = win_template
-if socket.gethostname() != "nb-toth":
+if socket.gethostname() != "nb-jantoth":
     path_template = linux_template
 
 
