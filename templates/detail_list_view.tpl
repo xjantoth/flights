@@ -65,7 +65,7 @@
                 <div class="card-body border-bottom text-white bg-success">
                     <h4 class="card-title mb-0">
                         <span class="font-weight-light">Detail list view:</span>
-                        <span>{{ detail_day | replace("___", " --> ") }}</span>
+                        <span>{{ detail_day | replace("___", " to ") }}</span>
                     </h4>
                 </div>
                 <ul class="list-group list-group-flush">

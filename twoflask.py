@@ -379,6 +379,21 @@ def get_cred():
     return auth_data, url_token, url_list
 
 
+def do(_compare, _all_unique_days, _day):
+    _day_dict_lookup = {i.replace(' ', '_').replace(':', '_'): i for i in _all_unique_days}
+    DAY = _day_dict_lookup[_day]
+    FT, ST = DAY.split('___')
+    valid, invalid, dm1 = split_data_at_time(_compare, FT)
+    extra, main, dm2 = split_data_at_time(valid, ST)
+    valid_rids = get_unique_routes(valid)
+    invalid_rids = get_unique_routes(invalid)
+    intersection = invalid_rids & valid_rids
+    main_rids = get_unique_routes(main)
+    main_rids = main_rids - intersection
+    final = valid[valid['Route'].isin(list(main_rids))]
+    return final
+
+
 @timeit
 def create_main(_path_template,
                 _main_tamplate,
@@ -391,7 +406,7 @@ def create_main(_path_template,
     :return:
     """
     j2_env = Environment(loader=FileSystemLoader(_path_template))
-    _unique_days_double = [[i.replace(' ', '_').replace(':', '_'), '{} ++'.format(i.split('__')[0].split(' ')[0])] for i in _unique_days]
+    _unique_days_double = [[i.replace(' ', '_').replace(':', '_'), '{} +'.format(i.split('__')[0].split(' ')[0])] for i in _unique_days]
     _data = j2_env.get_template(_main_tamplate).render(
         unique_days=_unique_days_double,
         timeStamp="")
@@ -416,8 +431,8 @@ def create_files_main_dates(_compare,
     :return:
     """
     _day_dict_lookup = {i.replace(' ', '_').replace(':', '_'): i for i in _all_unique_days}
-    temp_table_day_chunk = split_weird_timeframes(_day_dict_lookup[_day], _compare)
-
+    # temp_table_day_chunk = split_weird_timeframes(_day_dict_lookup[_day], _compare)
+    temp_table_day_chunk = do(_compare, _all_unique_days, _day)
     _agg_table = temp_table_day_chunk.groupby(['Meal', 'Direction']).sum().to_html(
             classes="table table-sm table-hover table-striped table-responsive", escape=False)
     _detail_table = temp_table_day_chunk.sort_values(['Route', 'Depart'], ascending=[True, True]).drop(
@@ -432,21 +447,6 @@ def create_files_main_dates(_compare,
                                                       xday=_day,
                                                       timeStamp=_ts)
     return _data
-
-
-def do(_compare, _all_unique_days, _day):
-    _day_dict_lookup = {i.replace(' ', '_').replace(':', '_'): i for i in _all_unique_days}
-    DAY = _day_dict_lookup[_day]
-    FT, ST = DAY.split('___')
-    valid, invalid, dm1 = split_data_at_time(_compare, FT)
-    extra, main, dm2 = split_data_at_time(valid, ST)
-    valid_rids = get_unique_routes(valid)
-    invalid_rids = get_unique_routes(invalid)
-    intersection = invalid_rids & valid_rids
-    main_rids = get_unique_routes(main)
-    main_rids = main_rids - intersection
-    final = valid[valid['Route'].isin(list(main_rids))]
-    return final
 
 
 @timeit
@@ -505,7 +505,7 @@ def create_registration(_compare,
     :return:
     """
 
-    # _day_dict_lookup = {i.replace(' ', '_').replace(':', '_'): i for i in _all_unique_days}
+    _day_dict_lookup = {i.replace(' ', '_').replace(':', '_'): i for i in _all_unique_days}
     # route_view = split_weird_timeframes(_day_dict_lookup[_day], _compare)
     route_view = do(_compare, _all_unique_days, _day)
     _u_route = _compare['Route'].unique()
