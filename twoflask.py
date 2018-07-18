@@ -116,22 +116,209 @@ def add_one_day(_ii):
     return _plus_day
 
 
+def split_data_at_time(_df, _time):
+    a = _df.loc[_time:, :]
+    delimiter = a.iloc[:1].index.values[0]
+    b = _df.loc[:delimiter, :]
+    b = b.drop(delimiter)
+    return a, b, delimiter
+
+
+def get_unique_routes(_df):
+    return set(_df['Route'].unique().tolist())
+
+
+# @timeit
+# def get_unique_days(_data):
+#     """
+#
+#     :param _data:
+#     :return:
+#     """
+#     _df = json_normalize(_data['data']['flight']['data'])
+#     _df_normalized = _df
+#     _all_unique_days = _df['local_std_date'].unique()
+#     _all_unique_days = np.sort(_all_unique_days)
+#     _all_unique_days = ['{}___{}'.format(_i + ' 09:00:00', add_one_day(_i + ' 09:00:00')) for _i in _all_unique_days]
+#     _all_unique_days[0] = str(datetime.datetime.strptime(_all_unique_days[0].split('___')[0], '%Y-%m-%d %H:%M:%S') \
+#                           - datetime.timedelta(hours=9)) + "___" + str(_all_unique_days[0].split('___')[1])
+#     print(_all_unique_days)
+#     return _all_unique_days, _df_normalized
+
 @timeit
 def get_unique_days(_data):
     """
-
     :param _data:
     :return:
     """
+    # _raw_data = json.loads((_data[0][0]).decode("utf-8"))
+    # _raw_data = json_normalize(_data['data']['flight']['data'])
     _df = json_normalize(_data['data']['flight']['data'])
-    _df_normalized = _df
-    _all_unique_days = _df['local_std_date'].unique()
-    _all_unique_days = np.sort(_all_unique_days)
-    _all_unique_days = ['{}___{}'.format(_i + ' 09:00:00', add_one_day(_i + ' 09:00:00')) for _i in _all_unique_days]
-    _all_unique_days[0] = str(datetime.datetime.strptime(_all_unique_days[0].split('___')[0], '%Y-%m-%d %H:%M:%S') \
-                          - datetime.timedelta(hours=9)) + "___" + str(_all_unique_days[0].split('___')[1])
-    print(_all_unique_days)
-    return _all_unique_days, _df_normalized
+    grouped = _df.groupby(['local_std_date'])
+    _all_unique_days = []
+    for day, group in grouped:
+        minimum = group['local_std_time'].min()
+        maximum = group['local_std_time'].max()
+        _all_unique_days.append((day, minimum, maximum))
+
+    start, end = _all_unique_days[::len(_all_unique_days) - 1]
+    start = list(start[:2])
+    end = list(end[::len(end) - 1])
+    start = datetime.datetime.strptime(start[0] + ' ' + start[1], '%Y-%m-%d %H:%M:%S')
+    end = datetime.datetime.strptime(end[0] + ' ' + end[1], '%Y-%m-%d %H:%M:%S')
+    final = []
+    a = start
+    while True:
+        b = (a + datetime.timedelta(1)).replace(hour=9, minute=0)
+        if b > end:
+            b = end
+            final.append('{}___{}'.format(str(a), str(b)))
+            break
+        final.append('{}___{}'.format(str(a), str(b)))
+        a = b
+    return final, _df
+
+
+colors = [
+    'red',
+    'black',
+    'blue',
+    'yellow',
+    'cyan',
+    'pink',
+    'orange',
+    'green',
+    'brown',
+    'grey',
+    'red',
+    'black',
+    'blue',
+    'yellow',
+    'cyan',
+    'pink',
+    'orange',
+    'green',
+    'brown',
+    'grey',
+    'red',
+    'black',
+    'blue',
+    'yellow',
+    'cyan',
+    'pink',
+    'orange',
+    'green',
+    'brown',
+    'grey',
+    'blue',
+    'yellow',
+    'cyan',
+    'pink',
+    'orange',
+    'green',
+    'brown',
+    'grey',
+    'red',
+    'black',
+    'blue',
+    'yellow',
+    'cyan',
+    'pink',
+    'orange',
+    'green',
+    'brown',
+    'grey',
+    'blue',
+    'yellow',
+    'cyan',
+    'pink',
+    'orange',
+    'green',
+    'brown',
+    'grey',
+    'red',
+    'black',
+    'blue',
+    'yellow',
+    'cyan',
+    'pink',
+    'orange',
+    'green',
+    'brown',
+    'grey',
+    'blue',
+    'yellow',
+    'cyan',
+    'pink',
+    'orange',
+    'green',
+    'brown',
+    'grey',
+    'red',
+    'black',
+    'blue',
+    'yellow',
+    'cyan',
+    'pink',
+    'orange',
+    'green',
+    'brown',
+    'grey',
+    'blue',
+    'yellow',
+    'cyan',
+    'pink',
+    'orange',
+    'green',
+    'brown',
+    'grey',
+    'red',
+    'black',
+    'blue',
+    'yellow',
+    'cyan',
+    'pink',
+    'orange',
+    'green',
+    'brown',
+    'grey',
+    'blue',
+    'yellow',
+    'cyan',
+    'pink',
+    'orange',
+    'green',
+    'brown',
+    'grey',
+    'red',
+    'black',
+    'blue',
+    'yellow',
+    'cyan',
+    'pink',
+    'orange',
+    'green',
+    'brown',
+    'grey',
+    'blue',
+    'yellow',
+    'cyan',
+    'pink',
+    'orange',
+    'green',
+    'brown',
+    'grey',
+    'red',
+    'black',
+    'blue',
+    'yellow',
+    'cyan',
+    'pink',
+    'orange',
+    'green',
+    'brown',
+    'grey',
+]
 
 
 @timeit
@@ -143,9 +330,13 @@ def render_tables(_df_normalized):
     """
     _df = _df_normalized
     _compare = pd.DataFrame()
+    unique = _df['route_id'].unique().tolist()
+    color_map = {str(u): c for u, c in zip(unique, colors)}
 
     _compare['Departure'] = pd.to_datetime(_df['local_std_date'] + ' ' + _df['local_std_time'])
     _compare['Depart'] = _compare['Departure']
+    _compare[''] = _df['route_id'].map(
+        lambda x: '<span style="border-left: 12px solid {0};"></span>'.format(color_map[str(x)]))
     _compare['Arrival'] = pd.to_datetime(_df['local_sta_date'] + ' ' + _df['local_sta_time'])
     _compare['Flight'] = _df['flight_number']
     _compare['Aircraft'] = _df['aircraft_config']
@@ -243,6 +434,21 @@ def create_files_main_dates(_compare,
     return _data
 
 
+def do(_compare, _all_unique_days, _day):
+    _day_dict_lookup = {i.replace(' ', '_').replace(':', '_'): i for i in _all_unique_days}
+    DAY = _day_dict_lookup[_day]
+    FT, ST = DAY.split('___')
+    valid, invalid, dm1 = split_data_at_time(_compare, FT)
+    extra, main, dm2 = split_data_at_time(valid, ST)
+    valid_rids = get_unique_routes(valid)
+    invalid_rids = get_unique_routes(invalid)
+    intersection = invalid_rids & valid_rids
+    main_rids = get_unique_routes(main)
+    main_rids = main_rids - intersection
+    final = valid[valid['Route'].isin(list(main_rids))]
+    return final
+
+
 @timeit
 def create_detail_list(_compare,
                        _all_unique_days,
@@ -261,7 +467,8 @@ def create_detail_list(_compare,
 
     j2_env = Environment(loader=FileSystemLoader(_path_template))
     _day_dict_lookup = {i.replace(' ', '_').replace(':', '_'): i for i in _all_unique_days}
-    list_view = split_weird_timeframes(_day_dict_lookup[_day], _compare)
+    # list_view = split_weird_timeframes(_day_dict_lookup[_day], _compare)
+    list_view = do(_compare, _all_unique_days, _day)
     tmpx = list_view
     tmpx = tmpx.groupby(['Meal', 'Direction']).count().iloc[:, 1]
     _special_quantity = {k: [v, int(v) * 189] for k, v in pd.DataFrame(tmpx).to_dict()['Depart'].items()}
@@ -298,8 +505,9 @@ def create_registration(_compare,
     :return:
     """
 
-    _day_dict_lookup = {i.replace(' ', '_').replace(':', '_'): i for i in _all_unique_days}
-    route_view = split_weird_timeframes(_day_dict_lookup[_day], _compare)
+    # _day_dict_lookup = {i.replace(' ', '_').replace(':', '_'): i for i in _all_unique_days}
+    # route_view = split_weird_timeframes(_day_dict_lookup[_day], _compare)
+    route_view = do(_compare, _all_unique_days, _day)
     _u_route = _compare['Route'].unique()
     route_view = route_view.loc[route_view['Route'] == _r]
     route_view_agg = route_view.groupby(['Meal', 'Direction']).sum().to_html(
