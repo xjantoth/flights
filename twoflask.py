@@ -99,23 +99,6 @@ def extra_catering(x):
         return 0
 
 
-def split_weird_timeframes(_i, _dataframe):
-    """
-
-    :param _i:
-    :param _dataframe:
-    :return:
-    """
-    _s = _i.split('___')[0]
-    _e = _i.split('___')[1]
-    return _dataframe.loc[_s:_e]
-
-
-def add_one_day(_ii):
-    _plus_day = datetime.datetime.strptime(_ii, '%Y-%m-%d %H:%M:%S') + datetime.timedelta(1)
-    return _plus_day
-
-
 def split_data_at_time(_df, _time):
     a = _df.loc[_time:, :]
     delimiter = a.iloc[:1].index.values[0]
@@ -127,23 +110,6 @@ def split_data_at_time(_df, _time):
 def get_unique_routes(_df):
     return set(_df['Route'].unique().tolist())
 
-
-# @timeit
-# def get_unique_days(_data):
-#     """
-#
-#     :param _data:
-#     :return:
-#     """
-#     _df = json_normalize(_data['data']['flight']['data'])
-#     _df_normalized = _df
-#     _all_unique_days = _df['local_std_date'].unique()
-#     _all_unique_days = np.sort(_all_unique_days)
-#     _all_unique_days = ['{}___{}'.format(_i + ' 09:00:00', add_one_day(_i + ' 09:00:00')) for _i in _all_unique_days]
-#     _all_unique_days[0] = str(datetime.datetime.strptime(_all_unique_days[0].split('___')[0], '%Y-%m-%d %H:%M:%S') \
-#                           - datetime.timedelta(hours=9)) + "___" + str(_all_unique_days[0].split('___')[1])
-#     print(_all_unique_days)
-#     return _all_unique_days, _df_normalized
 
 @timeit
 def get_unique_days(_data):
@@ -379,7 +345,7 @@ def get_cred():
     return auth_data, url_token, url_list
 
 
-def do(_compare, _all_unique_days, _day):
+def select_scoped_timeframe(_compare, _all_unique_days, _day):
     _day_dict_lookup = {i.replace(' ', '_').replace(':', '_'): i for i in _all_unique_days}
     DAY = _day_dict_lookup[_day]
     FT, ST = DAY.split('___')
@@ -430,9 +396,8 @@ def create_files_main_dates(_compare,
     :param _ts:
     :return:
     """
-    _day_dict_lookup = {i.replace(' ', '_').replace(':', '_'): i for i in _all_unique_days}
-    # temp_table_day_chunk = split_weird_timeframes(_day_dict_lookup[_day], _compare)
-    temp_table_day_chunk = do(_compare, _all_unique_days, _day)
+
+    temp_table_day_chunk = select_scoped_timeframe(_compare, _all_unique_days, _day)
     _agg_table = temp_table_day_chunk.groupby(['Meal', 'Direction']).sum().to_html(
             classes="table table-sm table-hover table-striped table-responsive", escape=False)
     _detail_table = temp_table_day_chunk.sort_values(['Route', 'Depart'], ascending=[True, True]).drop(
@@ -467,8 +432,7 @@ def create_detail_list(_compare,
 
     j2_env = Environment(loader=FileSystemLoader(_path_template))
     _day_dict_lookup = {i.replace(' ', '_').replace(':', '_'): i for i in _all_unique_days}
-    # list_view = split_weird_timeframes(_day_dict_lookup[_day], _compare)
-    list_view = do(_compare, _all_unique_days, _day)
+    list_view = select_scoped_timeframe(_compare, _all_unique_days, _day)
     tmpx = list_view
     tmpx = tmpx.groupby(['Meal', 'Direction']).count().iloc[:, 1]
     _special_quantity = {k: [v, int(v) * 189] for k, v in pd.DataFrame(tmpx).to_dict()['Depart'].items()}
@@ -505,9 +469,7 @@ def create_registration(_compare,
     :return:
     """
 
-    _day_dict_lookup = {i.replace(' ', '_').replace(':', '_'): i for i in _all_unique_days}
-    # route_view = split_weird_timeframes(_day_dict_lookup[_day], _compare)
-    route_view = do(_compare, _all_unique_days, _day)
+    route_view = select_scoped_timeframe(_compare, _all_unique_days, _day)
     _u_route = _compare['Route'].unique()
     route_view = route_view.loc[route_view['Route'] == _r]
     route_view_agg = route_view.groupby(['Meal', 'Direction']).sum().to_html(
