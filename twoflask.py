@@ -217,6 +217,7 @@ def render_tables(_df_normalized):
     _compare['Quantity'] = _compare['Quantity'].fillna(0)
     _compare['Crew'] = _compare['Crew'].fillna(0)
     _compare.index = _compare['Departure']
+    _compare = _compare.sort_values(['Depart'], ascending=[True])
     return _compare
 
 
@@ -326,6 +327,7 @@ def create_detail_list(_compare,
     j2_env = Environment(loader=FileSystemLoader(_path_template))
     _day_dict_lookup = {i.replace(' ', '_').replace(':', '_'): i for i in _all_unique_days}
     list_view = select_scoped_timeframe(_compare, _all_unique_days, _day)
+    print('list_view: {}'.format(list_view.shape[0]))
     tmpx = list_view
     tmpx = tmpx.groupby(['Meal', 'Direction']).count().iloc[:, 1]
     _special_quantity = {'   '.join(k): [v, int(v) * 189] for k, v in pd.DataFrame(tmpx).to_dict()['Depart'].items()}
@@ -335,7 +337,6 @@ def create_detail_list(_compare,
     l_view = list_view.sort_values(['Route', 'Depart'], ascending=[True, True]).drop('Departure', axis=1).to_html(
             classes="table table-sm table-hover table-striped table-responsive-xl first-bold", escape=False,
             index=False)
-    print('list_view: {}'.format(list_view.shape[0]))
     print('_compare: {}'.format(_compare.shape[0]))
 
     _detail_data = j2_env.get_template(_detail_list_view_tpl).render(
