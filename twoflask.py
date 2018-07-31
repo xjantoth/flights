@@ -177,8 +177,6 @@ colors = ["#000000","#FFFF00","#1CE6FF","#FF34FF","#FF4A46","#008941","#006FA6",
           "#00B57F","#545C46","#866097","#365D25","#252F99","#00CCFF","#674E60","#FC009C","#92896B"]
 
 
-
-
 @timeit
 def render_tables(_df_normalized):
     """
@@ -191,11 +189,12 @@ def render_tables(_df_normalized):
     unique = _df['route_id'].unique().tolist()
     color_map = {str(u): c for u, c in zip(unique, colors)}
 
-    _compare['Departure'] = pd.to_datetime(_df['local_std_date'] + ' ' + _df['local_std_time'])
+    _compare['Departure'] = pd.to_datetime(_df['std_date'] + ' ' + _df['std_time'])
+    # _compare['Departure'] = pd.to_datetime(_df['local_std_date'] + ' ' + _df['local_std_time'])
     _compare['Depart'] = _compare['Departure']
     _compare[''] = _df['route_id'].map(
         lambda x: '<span style="border-left: 12px solid {0};"></span>'.format(color_map[str(x)]))
-    _compare['Arrival'] = pd.to_datetime(_df['local_sta_date'] + ' ' + _df['local_sta_time'])
+    _compare['Arrival'] = pd.to_datetime(_df['sta_date'] + ' ' + _df['sta_time'])
     _compare['Flight'] = _df['flight_number']
     _compare['Aircraft'] = _df['aircraft_config']
     _compare['Reg'] = _df['aircraft_reg']
@@ -205,8 +204,8 @@ def render_tables(_df_normalized):
     _compare['Production'] = _df['departure_iata'].map(determine_production)
     _compare['From'] = _df['departure_iata']
     _compare['To'] = _df['destination_iata']
-    _compare['Depart UTC'] = pd.to_datetime(_df['std_date'] + ' ' + _df['std_time'])
-    _compare['Arr UTC'] = pd.to_datetime(_df['sta_date'] + ' ' + _df['sta_time'])
+    # _compare['Depart UTC'] = pd.to_datetime(_df['std_date'] + ' ' + _df['std_time'])
+    # _compare['Arr UTC'] = pd.to_datetime(_df['sta_date'] + ' ' + _df['sta_time'])
     _compare['Quantity'] = _df['catering_order.quantity_y']
     _compare['Crew'] = _df['catering_order.quantity_crew']
     _compare['Extra Catering'] = _df['extra_catering'].map(extra_catering)
