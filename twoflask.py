@@ -102,10 +102,43 @@ def extra_catering(x):
 def split_data_at_time(_df, _time, is_last_day):
     if 'xUID' not in _df:                                # temporarily create unique index, if does not exists
         _df['xUID'] = range(_df.shape[0])
+
+    """
+    _df(data frame) we want to split 
+     --------
+    |        |
+    |        |
+    |    b   |
+    |        |       
+    |        | 
+     --------    <-- delimiter       _time: 2018-08-04 09:00:00 (for example)
+    |    a   |
+     --------
+    """
     a = _df.loc[_time:, :]
     delimiter = a.iloc[:1].index.values[0]
     delimiter = _df[_df.index == delimiter].ix[0].xUID   # get unique index of first occurrence of delimiter
     if is_last_day:
+        """
+        This function is called 2x because we always 
+        have START and END (from: 2018-08-04 09:00:00 to: 2018-08-04 22:20:00)
+        in this interval!
+        
+        if case we are processing the last interval
+        let's say we have these intervals:      2018-08-01 +
+                                                2018-08-02 +
+                                                2018-08-03 +
+                                                2018-08-04 +
+        
+        the last one would be:                  2018-08-04 +
+         
+        that means it would be this interval:   2018-08-04 09:00:00 to 2018-08-04 22:20:00
+        when we call this function 2nd time we want to make "delimiter" a part of 
+        "b-slice" from the image above.
+        
+        that's why we use "if-else statement" and b = _df[_df['xUID'] <= delimiter]
+        """
+
         b = _df[_df['xUID'] <= delimiter]
     else:
         b = _df[_df['xUID'] < delimiter]
