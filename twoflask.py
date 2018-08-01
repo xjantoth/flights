@@ -99,13 +99,16 @@ def extra_catering(x):
         return 0
 
 
-def split_data_at_time(_df, _time):
+def split_data_at_time(_df, _time, is_last_day):
     if 'xUID' not in _df:                                # temporarily create unique index, if does not exists
         _df['xUID'] = range(_df.shape[0])
     a = _df.loc[_time:, :]
     delimiter = a.iloc[:1].index.values[0]
     delimiter = _df[_df.index == delimiter].ix[0].xUID   # get unique index of first occurrence of delimiter
-    b = _df[_df['xUID'] < delimiter]                     # split data-frame based on new index
+    if is_last_day:
+        b = _df[_df['xUID'] <= delimiter]
+    else:
+        b = _df[_df['xUID'] < delimiter]
     del _df['xUID']                                      # drop index since it's not needed anymore
     return a, b, delimiter
 
@@ -242,8 +245,13 @@ def select_scoped_timeframe(_compare, _all_unique_days, _day):
     _day_dict_lookup = {i.replace(' ', '_').replace(':', '_'): i for i in _all_unique_days}
     DAY = _day_dict_lookup[_day]
     FT, ST = DAY.split('___')
-    valid, invalid, dm1 = split_data_at_time(_compare, FT)
-    extra, main, dm2 = split_data_at_time(valid, ST)
+
+    is_last_day = False
+    valid, invalid, dm1 = split_data_at_time(_compare, FT, is_last_day)
+
+    is_last_day = DAY == _all_unique_days[-1]
+
+    extra, main, dm2 = split_data_at_time(valid, ST, is_last_day)
     valid_rids = get_unique_routes(valid)
     invalid_rids = get_unique_routes(invalid)
     intersection = invalid_rids & valid_rids
