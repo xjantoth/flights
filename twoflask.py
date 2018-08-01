@@ -123,11 +123,11 @@ def get_unique_days(_data):
     # _raw_data = json.loads((_data[0][0]).decode("utf-8"))
     # _raw_data = json_normalize(_data['data']['flight']['data'])
     _df = json_normalize(_data['data']['flight']['data'])
-    grouped = _df.groupby(['local_std_date'])
+    grouped = _df.groupby(['std_date'])
     _all_unique_days = []
     for day, group in grouped:
-        minimum = group['local_std_time'].min()
-        maximum = group['local_std_time'].max()
+        minimum = group['std_time'].min()
+        maximum = group['std_time'].max()
         _all_unique_days.append((day, minimum, maximum))
 
     start, end = _all_unique_days[::len(_all_unique_days) - 1]
