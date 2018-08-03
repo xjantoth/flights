@@ -403,8 +403,8 @@ def create_detail_list_json(_compare,
     tmpx = list_view
     tmpx = tmpx.groupby(['Meal', 'Direction']).count().iloc[:, 1]
     _special_quantity = {'   '.join(k): [v, int(v) * 189] for k, v in pd.DataFrame(tmpx).to_dict()['Depart'].items()}
-    a_view = list_view.groupby(['Meal', 'Direction']).sum().to_json()
-    l_view = list_view.sort_values(['Route', 'Depart'], ascending=[True, True]).drop('Departure', axis=1).to_json()
+    a_view = list_view.groupby(['Meal', 'Direction']).sum().to_json(orient="records")
+    l_view = list_view.sort_values(['Route', 'Depart'], ascending=[True, True]).drop('Departure', axis=1).to_json(orient="records")
     print('_compare: {}'.format(_compare.shape[0]))
     return {"special_quantity": _special_quantity, "aggregated": a_view, "list_view": l_view}
 
@@ -467,9 +467,9 @@ def create_registration_json(_compare,
     route_view = select_scoped_timeframe(_compare, _all_unique_days, _day)
     _u_route = list(_compare['Route'].unique())
     route_view = route_view.loc[route_view['Route'] == _r]
-    route_view_agg = route_view.groupby(['Meal', 'Direction']).sum().to_json()
+    route_view_agg = route_view.groupby(['Meal', 'Direction']).sum().to_json(orient="records")
     route_view_list = route_view.sort_values(['Route', 'Depart'], ascending=[True, True]).drop(
-        'Departure', axis=1).to_json()
+        'Departure', axis=1).to_json(orient="records")
     print({"unique_routes": _u_route,
             "route_view_agg": route_view_agg,
             "route_view_list": route_view_list})
