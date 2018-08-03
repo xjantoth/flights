@@ -399,12 +399,13 @@ def create_detail_list_json(_compare,
     """
 
     list_view = select_scoped_timeframe(_compare, _all_unique_days, _day)
+    list_view['Note'] = list_view['Note'].map(lambda x: str(x).replace('<div class="hoverable">', '').replace('</div>', ''))
     print('list_view: {}'.format(list_view.shape[0]))
     tmpx = list_view
     tmpx = tmpx.groupby(['Meal', 'Direction']).count().iloc[:, 1]
     _special_quantity = {'   '.join(k): [v, int(v) * 189] for k, v in pd.DataFrame(tmpx).to_dict()['Depart'].items()}
-    a_view = list_view.groupby(['Meal', 'Direction']).sum().to_json(orient="records")
-    l_view = list_view.sort_values(['Route', 'Depart'], ascending=[True, True]).drop('Departure', axis=1).to_json(orient="records")
+    a_view = list_view.groupby(['Meal', 'Direction']).sum().to_dict(orient="records")
+    l_view = list_view.sort_values(['Route', 'Depart'], ascending=[True, True]).drop(['Departure', ''], axis=1).to_dict(orient="records")
     print('_compare: {}'.format(_compare.shape[0]))
     return {"special_quantity": _special_quantity, "aggregated": a_view, "list_view": l_view}
 
@@ -428,6 +429,7 @@ def create_registration(_compare,
     """
 
     route_view = select_scoped_timeframe(_compare, _all_unique_days, _day)
+    route_view['Note'] = route_view['Note'].map(lambda x: str(x).replace('<div class="hoverable">', '').replace('</div>', ''))
     _u_route = _compare['Route'].unique()
     route_view = route_view.loc[route_view['Route'] == _r]
     route_view_agg = route_view.groupby(['Meal', 'Direction']).sum().to_html(
@@ -467,9 +469,9 @@ def create_registration_json(_compare,
     route_view = select_scoped_timeframe(_compare, _all_unique_days, _day)
     _u_route = list(_compare['Route'].unique())
     route_view = route_view.loc[route_view['Route'] == _r]
-    route_view_agg = route_view.groupby(['Meal', 'Direction']).sum().to_json(orient="records")
+    route_view_agg = route_view.groupby(['Meal', 'Direction']).sum().to_dict(orient="records")
     route_view_list = route_view.sort_values(['Route', 'Depart'], ascending=[True, True]).drop(
-        'Departure', axis=1).to_json(orient="records")
+        ['Departure', ''], axis=1).to_dict(orient="records")
     print({"unique_routes": _u_route,
             "route_view_agg": route_view_agg,
             "route_view_list": route_view_list})
