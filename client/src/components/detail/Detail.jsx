@@ -3,7 +3,7 @@ import Table from "./DetailTable";
 import Stats from "./DetailStats";
 import Grid from "@material-ui/core/Grid";
 
-const baseUrl = "http://scaleway.linuxinuse.com:5000/api";
+const baseUrl = "/api";
 
 export default class Detail extends Component {
   state = {
