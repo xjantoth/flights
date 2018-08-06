@@ -9,7 +9,8 @@ const statsStyles = {
   margin: 16,
   marginRight: 0,
   zIndex: 1,
-  boxShadow: "0 0 4px #777"
+  boxShadow: "0 0 4px #777",
+  backgroundColor: '#eee'
 };
 
 const DetailStats = ({ item }) => (

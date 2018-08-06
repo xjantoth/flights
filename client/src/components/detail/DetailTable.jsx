@@ -8,6 +8,8 @@ import TableRow from "@material-ui/core/TableRow";
 import EnhancedTableHead from "./DetailTableHeader";
 import ArrowForward from "@material-ui/icons/ArrowForward";
 import ArrowBack from "@material-ui/icons/ArrowBack";
+import moment from 'moment';
+
 
 function getSorting(order, orderBy) {
   return order === "desc"
@@ -18,18 +20,20 @@ function getSorting(order, orderBy) {
 const styles = theme => ({
   root: {
     width: "100%",
-    marginTop: theme.spacing.unit * 3
+    marginTop: theme.spacing.unit * 3,
+    backgroundColor: '#eee'
   },
   table: {
     minWidth: 1020
   },
   head: {
-    backgroundColor: "#ddd",
+    backgroundColor: "#ccc",
     position: "sticky",
     zIndex: 9,
     top: 0
   },
   tableWrapper: {
+    backgroundColor: '#eee',
     height: "calc(100vh - 132px)",
     overflowY: "auto",
     margin: 16,
@@ -72,7 +76,8 @@ class EnhancedTable extends PureComponent {
     });
   };
 
-  timeFormatter = item => new Date(item).toLocaleString();
+  timeFormatter = item => moment(item).format('MMM Do, H:mm');
+
   render() {
     const { classes, data, header } = this.props;
     const { order, orderBy, hovered } = this.state;
@@ -89,11 +94,14 @@ class EnhancedTable extends PureComponent {
           />
           <TableBody>
             {data.map((item, index) => {
-              const cls = hovered
+              let cls = hovered
                 ? item.Route === hovered.Route
                   ? "highlighted"
                   : "faded"
                 : "";
+              if (item == hovered) {
+                cls = "focused";
+              }
               return (
                 <TableRow
                   className={cls}
@@ -115,7 +123,7 @@ class EnhancedTable extends PureComponent {
                         ) : (
                           <ArrowBack />
                         )
-                      ) : h === "Arrival" ? (
+                      ) : h === "Arrival"  || h === "Depart" ? (
                         this.timeFormatter(item[h])
                       ) : (
                         item[h]

@@ -13,27 +13,37 @@ export default class Detail extends Component {
     hovered: null
   };
 
-  /**
-   * Header order
-   *
-   * Flight, From, To, Direction, Quantity, Crew
-   *
-   */
   excludedHeaders = [
     "Aircraft",
     "Route",
     "Extra Catering",
     "Note",
-    // "Arrival",
-    // "Depart",
+    "Meal",
+    "Production",
     "Reg"
   ];
 
+  headerOrder = [
+    'Crew',
+    'Quantity',
+    'Direction',
+    'To',
+    'From',
+    'Flight',
+    'Arrival',
+    'Depart',
+  ]
+
   timeFormatter = time => time.replace(/[ |:]/g, "_");
 
-  buildHeader = items => items.filter(i => !this.excludedHeaders.includes(i));
-
   handleOnHover = hovered => this.setState({ hovered });
+
+  headerProcessor = items => {
+    return items
+      .slice()
+      .filter(i => !this.excludedHeaders.includes(i))
+      .sort((a, b) => this.headerOrder.indexOf(b) - this.headerOrder.indexOf(a));
+  }
 
   componentDidMount() {
     fetch(`${baseUrl}/allud`)
@@ -49,7 +59,7 @@ export default class Detail extends Component {
       .then(data =>
         this.setState({
           data: data.list_view,
-          header: this.buildHeader(Object.keys(data.list_view[0]))
+          header: this.headerProcessor(Object.keys(data.list_view[0]))
         })
       );
   }
@@ -58,10 +68,15 @@ export default class Detail extends Component {
     const { hovered } = this.state;
     return (
       <Grid container>
-        <Grid item xs={2}>
-          <Stats item={hovered} />
+        <Grid container direction="column" xs={4}>
+          {/* <Grid item xs={6}>
+            <Stats item={hovered} />
+          </Grid> */}
+          <Grid item>
+            <Stats item={hovered} />
+          </Grid>
         </Grid>
-        <Grid item xs={10}>
+        <Grid item xs={8}>
           <Table
             data={this.state.data}
             header={this.state.header}
