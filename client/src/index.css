@@ -14,6 +14,10 @@ tbody tr > td {
   cursor: pointer;
 }
 
+td,
+th {
+  text-align: center !important;
+}
 
 tr {
   display: flex;

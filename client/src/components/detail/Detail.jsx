@@ -13,7 +13,25 @@ export default class Detail extends Component {
     hovered: null
   };
 
+  /**
+   * Header order
+   *
+   * Flight, From, To, Direction, Quantity, Crew
+   *
+   */
+  excludedHeaders = [
+    "Aircraft",
+    "Route",
+    "Extra Catering",
+    "Note",
+    // "Arrival",
+    // "Depart",
+    "Reg"
+  ];
+
   timeFormatter = time => time.replace(/[ |:]/g, "_");
+
+  buildHeader = items => items.filter(i => !this.excludedHeaders.includes(i));
 
   handleOnHover = hovered => this.setState({ hovered });
 
@@ -31,7 +49,7 @@ export default class Detail extends Component {
       .then(data =>
         this.setState({
           data: data.list_view,
-          header: Object.keys(data.list_view[0])
+          header: this.buildHeader(Object.keys(data.list_view[0]))
         })
       );
   }

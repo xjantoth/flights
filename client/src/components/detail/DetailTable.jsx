@@ -6,6 +6,8 @@ import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
 import EnhancedTableHead from "./DetailTableHeader";
+import ArrowForward from "@material-ui/icons/ArrowForward";
+import ArrowBack from "@material-ui/icons/ArrowBack";
 
 function getSorting(order, orderBy) {
   return order === "desc"
@@ -70,6 +72,7 @@ class EnhancedTable extends PureComponent {
     });
   };
 
+  timeFormatter = item => new Date(item).toLocaleString();
   render() {
     const { classes, data, header } = this.props;
     const { order, orderBy, hovered } = this.state;
@@ -104,9 +107,19 @@ class EnhancedTable extends PureComponent {
                   tabIndex={-1}
                   key={index}
                 >
-                  {Object.keys(item).map(h => (
+                  {header.map(h => (
                     <TableCell padding={"dense"} key={h}>
-                      {item[h]}
+                      {h === "Direction" ? (
+                        item[h] === "TAM" ? (
+                          <ArrowForward />
+                        ) : (
+                          <ArrowBack />
+                        )
+                      ) : h === "Arrival" ? (
+                        this.timeFormatter(item[h])
+                      ) : (
+                        item[h]
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
