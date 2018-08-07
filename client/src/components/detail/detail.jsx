@@ -1,12 +1,12 @@
 import React, { Component } from "react";
-import Table from "./Table";
-import Stats from "./Stats";
+import Table from "./table.detail";
+import Stats from "./stats.detail";
 import Grid from "@material-ui/core/Grid";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import moment from "moment";
 import classNames from "classnames";
-import Specials from "./Specials";
+import Specials from "./specials.detail";
 
 const baseUrl = "http://scaleway.linuxinuse.com:5000/api";
 //: "/api";
