@@ -28,7 +28,6 @@ class SimpleAppBar extends PureComponent {
   };
 
   render() {
-    const { data } = this.state;
     const { classes } = this.props;
 
     return (
@@ -60,19 +59,7 @@ class SimpleAppBar extends PureComponent {
             />
           </Toolbar>
         </AppBar>
-        <AppBar
-          position="static"
-          color="default"
-          style={{ backgroundColor: "#da1", height: 36 }}
-        >
-          <Toolbar style={{ minHeight: 36 }}>
-            {data.map(item => (
-              <span key={item} style={{ marginRight: 16, fontWeight: "bold" }}>
-                {item}
-              </span>
-            ))}
-          </Toolbar>
-        </AppBar>
+        
       </div>
     );
   }

@@ -99,7 +99,7 @@ class EnhancedTable extends PureComponent {
                   ? "highlighted"
                   : "faded"
                 : "";
-              if (item == hovered) {
+              if (item === hovered) {
                 cls = "focused";
               }
               return (

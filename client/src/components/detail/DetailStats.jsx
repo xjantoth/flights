@@ -4,26 +4,39 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 
 const statsStyles = {
-  height: "calc(100vh - 132px)",
+  height: "auto",
   overflowY: "auto",
   margin: 16,
   marginRight: 0,
   zIndex: 1,
   boxShadow: "0 0 4px #777",
-  backgroundColor: '#eee'
+  backgroundColor: '#eee',
 };
 
+const headers = [
+  "Aircraft",
+  "Reg",
+  "Route",
+  "Meal",
+  "Production",
+  "Extra Catering",
+  "Note",
+];
+
 const DetailStats = ({ item }) => (
+  item &&
   <div style={statsStyles}>
+    {/* <b>Route</b> {item['Route']} */}
     {item && (
       <List dense={true}>
-        {Object.keys(item).map(k => (
+        {headers.map(k => (
           <ListItem key={k}>
-            <ListItemText primary={k} secondary={item[k]} />
+            <ListItemText primary={<b>{k}</b>} secondary={item[k] || '---'} />
           </ListItem>
         ))}
       </List>
     )}
+
   </div>
 );
 
