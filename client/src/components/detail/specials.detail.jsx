@@ -27,7 +27,6 @@ const Specials = ({ data }) => (
       </TableHead>
       <TableBody>
         {Object.keys(data).map(h => {
-          console.log(h);
           return (
             <TableRow key={h}>
               <TableCell>{h}</TableCell>

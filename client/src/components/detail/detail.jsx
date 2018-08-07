@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 import Table from "./table.detail";
 import Stats from "./stats.detail";
 import Grid from "@material-ui/core/Grid";
@@ -7,11 +9,13 @@ import Toolbar from "@material-ui/core/Toolbar";
 import moment from "moment";
 import classNames from "classnames";
 import Specials from "./specials.detail";
+import { fetchDayDetail } from './actions.detail';
 
 const baseUrl = "http://scaleway.linuxinuse.com:5000/api";
 //: "/api";
 
-export default class Detail extends Component {
+
+class Detail extends Component {
   state = {
     data: [],
     header: [],
@@ -70,6 +74,7 @@ export default class Detail extends Component {
 
   componentDidMount() {
     this.loadAllData();
+    this.props.fetchDay();
   }
 
   loadAllData = day =>
@@ -106,6 +111,7 @@ export default class Detail extends Component {
 
   render() {
     const { hovered } = this.state;
+    
     return (
       <div>
         <AppBar
@@ -151,3 +157,19 @@ export default class Detail extends Component {
     );
   }
 }
+
+const mapStateToProps = (state, ownProps) => ({
+  active: false
+});
+
+const mapDispatchToProps = dispatch => {
+  return bindActionCreators({
+    fetchDay: fetchDayDetail
+  },
+  dispatch);
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Detail)

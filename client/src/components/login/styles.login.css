@@ -1,0 +1,7 @@
+.login {
+  box-shadow: 0 0 4px #777;
+}
+
+.login:hover {
+  box-shadow: 0 0 16px #777;
+}

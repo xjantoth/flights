@@ -71,3 +71,11 @@ tbody tr.highlighted > td:first-child {
 .nav-item:hover {
   font-size: 1.2em;
 }
+
+.login {
+  box-shadow: 0 0 4px #777;
+}
+
+.login:hover {
+  box-shadow: 0 0 16px #777;
+}
