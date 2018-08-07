@@ -59,7 +59,6 @@ class SimpleAppBar extends PureComponent {
             />
           </Toolbar>
         </AppBar>
-        
       </div>
     );
   }

@@ -10,7 +10,7 @@ const statsStyles = {
   marginRight: 0,
   zIndex: 1,
   boxShadow: "0 0 4px #777",
-  backgroundColor: '#eee',
+  backgroundColor: "#eee"
 };
 
 const headers = [
@@ -20,24 +20,22 @@ const headers = [
   "Meal",
   "Production",
   "Extra Catering",
-  "Note",
+  "Note"
 ];
 
-const DetailStats = ({ item }) => (
-  item &&
-  <div style={statsStyles}>
-    {/* <b>Route</b> {item['Route']} */}
-    {item && (
-      <List dense={true}>
-        {headers.map(k => (
-          <ListItem key={k}>
-            <ListItemText primary={<b>{k}</b>} secondary={item[k] || '---'} />
-          </ListItem>
-        ))}
-      </List>
-    )}
-
-  </div>
-);
+const DetailStats = ({ item }) =>
+  item && (
+    <div style={statsStyles}>
+      {item && (
+        <List dense={true}>
+          {headers.map(k => (
+            <ListItem key={k}>
+              <ListItemText primary={<b>{k}</b>} secondary={item[k] || "---"} />
+            </ListItem>
+          ))}
+        </List>
+      )}
+    </div>
+  );
 
 export default DetailStats;
