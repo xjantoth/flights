@@ -1,77 +1,43 @@
 import React, { PureComponent } from "react";
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import "./styles.login.sass";
+import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
-import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
-import "./styles.login.css";
+import * as actions from "./actions.login";
 
-const styles = {
-  grid: {
-    backgroundColor: "#eee",
-    height: "calc(100vh)"
-  },
-  backdrop: {
-    width: "calc(100vw)",
-    height: "calc(30% + 64px)",
-    position: "absolute",
-    backgroundColor: "#fc1",
-    boxShadow: "inset 0 0 4px #333",
-    zIndex: 1
-  },
-  modal: {
-    paddingBottom: 0,
-    zIndex: 2,
-    position: "absolute",
-    top: "30%",
-    backgroundColor: "#fff",
-    boxShadow: "0 0 4px #555",
-    border: "1px solid #aaa"
-  },
-  subheader: {
-    width: 350,
-    height: 72,
-    backgroundColor: "#ddd",
-    padding: 24,
-    borderBottom: "0px solid #aaa"
-  },
-  form: {
-    width: 350,
-    padding: "24px 32px",
-    paddingTop: 8
-  },
-  help: {
-    marginTop: 16,
-    width: "100%",
-    textAlign: "center",
-    cursor: "pointer"
-  }
-};
+class Login extends PureComponent {
+  state = {
+    username: null,
+    password: null
+  };
 
-export default class Login extends PureComponent {
-  handleSubmit = event => console.log(event);
+  handleSubmit = event => this.props.loginRequest(this.state);
+
+  handlePasswordRecovery = event => this.props.recoveryRequest(this.state);
 
   render() {
     return (
-      <Grid
-        style={styles.grid}
-        container
-        direction="column"
-        alignItems="center"
-      >
-        <div style={styles.backdrop} />
-        <div style={styles.modal}>
-          <div style={styles.subheader}>
+      <Grid className={"Grid"} container direction="column" alignItems="center">
+        <div className={"Backdrop"} />
+        <div className={"Modal"}>
+          <div className={"Subheader"}>
             <Typography variant="title" gutterBottom>
               Sign In
             </Typography>
           </div>
 
-          <form style={styles.form} onSubmit={this.handleSubmit}>
+          <form className={"Form"} onSubmit={this.handleSubmit}>
             <TextField
               id="username"
               label="Username"
               type="text"
               margin="normal"
+              onChange={event =>
+                this.setState({ username: event.target.value })
+              }
               autoFocus
               fullWidth
             />
@@ -80,18 +46,27 @@ export default class Login extends PureComponent {
               label="Password"
               type="password"
               margin="normal"
+              onChange={event =>
+                this.setState({ password: event.target.value })
+              }
               fullWidth
             />
             <br />
             <Button
               color="primary"
               variant="contained"
-              style={{ marginTop: 24 }}
-              fullWidth={true}
+              onClick={this.handleSubmit}
+              className={"Submit"}
+              fullWidth
             >
               Submit
             </Button>
-            <Typography variant="caption" gutterBottom style={styles.help}>
+            <Typography
+              variant="caption"
+              gutterBottom
+              onClick={this.handlePasswordRecovery}
+              className={"Recovery"}
+            >
               Forgot your password?
             </Typography>
           </form>
@@ -100,3 +75,12 @@ export default class Login extends PureComponent {
     );
   }
 }
+
+const mapStateToProps = (state, ownProps) => ({
+  active: false
+});
+
+export default connect(
+  mapStateToProps,
+  dispatch => bindActionCreators({ ...actions }, dispatch)
+)(Login);
