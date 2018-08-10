@@ -21,12 +21,17 @@ export const getSorting = (order, orderBy) => {
 };
 
 export const objectToForm = payload => {
-  const formData = new FormData();
-  for (let key in payload) {
-    formData.append(key, payload[key]);
-  }
+  // const formData = new FormData();
+  // for (let key in payload) {
+  //   formData.append(key, payload[key]);
+  // }
+  // const formData
   return {
     method: "POST",
-    body: formData
+    headers: {
+      Accept: "application/json, text/plain, */*",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
   };
 };
