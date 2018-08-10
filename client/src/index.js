@@ -5,11 +5,14 @@ import "typeface-roboto";
 import App from "./App";
 import registerServiceWorker from "./registerServiceWorker";
 import { Provider } from "react-redux";
-import store from "./store";
+import store, { history } from "./store";
+import { ConnectedRouter } from "connected-react-router";
 
 ReactDOM.render(
   <Provider store={store}>
-    <App />
+    <ConnectedRouter history={history}>
+      <App />
+    </ConnectedRouter>
   </Provider>,
   document.getElementById("root")
 );

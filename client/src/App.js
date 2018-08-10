@@ -1,16 +1,31 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
+import { Route, Redirect, Link, Switch } from "react-router-dom";
 import AppBar from "./components/appbar/appbar";
 import Detail from "./components/detail/detail";
 import Login from "./components/login/login";
+import store from "./store";
+
+export const isAuthenticated = () => store.getState().login.isAuthenticated;
 
 class App extends Component {
   render() {
     return (
-      <Login />
-      // <div>
-      //   <AppBar />
-      //   <Detail />
-      // </div>
+      <Fragment>
+        <Route component={AppBar} />
+        <Switch>
+          <Route exact path="/login" component={Login} />
+          <Route exact path="/detail" component={Detail} />
+          <Route
+            render={() => {
+              return isAuthenticated() ? (
+                <Redirect to="/detail" />
+              ) : (
+                <Redirect to="/login" />
+              );
+            }}
+          />
+        </Switch>
+      </Fragment>
     );
   }
 }

@@ -1,5 +1,7 @@
 const base =
-  process.env.NODE_ENV === "development" ? "http://localhost:3001" : "";
+  process.env.NODE_ENV === "development"
+    ? "http://scaleway.linuxinuse.com/api"
+    : "";
 
 export default {
   LOGIN: `${base}/login`,
