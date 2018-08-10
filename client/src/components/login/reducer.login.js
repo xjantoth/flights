@@ -1,4 +1,5 @@
 import * as actions from "./actions.login";
+import { createReducer } from "utils";
 
 const initState = {
   isAuthenticated: false,
@@ -7,36 +8,23 @@ const initState = {
   error: null
 };
 
-function reducer(state = initState, action) {
-  console.log(action);
-  switch (action.type) {
-    case actions.LOGIN_REQUEST:
-      return {
-        ...state,
-        isLoading: true,
-        isError: false,
-        error: null
-      };
-
-    case actions.LOGIN_REQUEST_SUCCESS:
-      return {
-        ...state,
-        isLoading: false,
-        isError: false,
-        error: null
-      };
-
-    case actions.LOGIN_REQUEST_ERROR:
-      return {
-        ...state,
-        isLoading: false,
-        isError: true,
-        error: action.payload
-      };
-
-    default:
-      return state;
-  }
-}
-
-export default reducer;
+export default createReducer(initState, {
+  [actions.LOGIN_REQUEST]: (state, payload) => ({
+    ...state,
+    isLoading: false,
+    isError: false,
+    error: null
+  }),
+  [actions.LOGIN_SUCCESS]: (state, payload) => ({
+    ...state,
+    isLoading: false,
+    isError: false,
+    error: null
+  }),
+  [actions.LOGIN_ERROR]: (state, payload) => ({
+    ...state,
+    isLoading: false,
+    isError: true,
+    error: payload
+  })
+});

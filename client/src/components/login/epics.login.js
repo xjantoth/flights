@@ -1,35 +1,23 @@
 import { combineEpics } from "redux-observable";
+import { objectToForm } from "utils";
 import * as actions from "./actions.login";
 import "rxjs/add/operator/switchMap";
-import "rxjs/add/operator/mergeMap";
-import "rxjs/add/operator/map";
-import "rxjs/add/operator/do";
-import api from "../../api";
-
-const buildRequestBody = payload => {
-  const formData = new FormData();
-  formData.append("username", payload.username);
-  formData.append("password", payload.password);
-  return {
-    method: "POST",
-    body: formData
-  };
-};
+import api from "api";
 
 export const loginRequest = action$ =>
-  action$
-    .ofType(actions.LOGIN_REQUEST)
-    .switchMap(action =>
-      fetch(api.LOGIN, buildRequestBody(action.payload)).then(
-        actions.loginRequestSuccess
-      )
-    );
+  action$.ofType(actions.LOGIN_REQUEST).switchMap(action =>
+    fetch(api.LOGIN, objectToForm(action.payload))
+      .then(response => response.json())
+      .then(actions.loginSuccess)
+      .catch(actions.loginError)
+  );
 
 export const recoveryRequest = (action$, store) =>
-  action$.ofType(actions.RECOVERY_REQUEST).mergeMap(action =>
-    fetch(api.RECOVERY)
-      .then(actions.recoveryRequestSuccess)
-      .catch(console.warn)
+  action$.ofType(actions.RECOVERY_REQUEST).switchMap(action =>
+    fetch(api.RECOVERY, objectToForm(action.payload))
+      .then(response => response.json())
+      .then(actions.recoverySuccess)
+      .catch(actions.recoveryError)
   );
 
 export default combineEpics(loginRequest, recoveryRequest);

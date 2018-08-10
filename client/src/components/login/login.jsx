@@ -1,6 +1,7 @@
 import React, { PureComponent } from "react";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
+import PropTypes from "prop-types";
 import "./styles.login.sass";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
@@ -14,9 +15,15 @@ class Login extends PureComponent {
     password: null
   };
 
+  static propTypes = {
+    loginRequest: PropTypes.func.isRequired,
+    recoveryRequest: PropTypes.func.isRequired
+  };
+
   handleSubmit = event => this.props.loginRequest(this.state);
 
-  handlePasswordRecovery = event => this.props.recoveryRequest(this.state);
+  handlePasswordRecovery = event =>
+    this.props.recoveryRequest({ username: this.state.username });
 
   render() {
     return (
@@ -76,11 +83,9 @@ class Login extends PureComponent {
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
-  active: false
-});
-
 export default connect(
-  mapStateToProps,
+  (state, ownProps) => ({
+    active: false
+  }),
   dispatch => bindActionCreators({ ...actions }, dispatch)
 )(Login);
