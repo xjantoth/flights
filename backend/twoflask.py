@@ -15,7 +15,7 @@ pd.set_option('display.max_colwidth', -1)
 
 
 project_dir = os.path.dirname(os.path.abspath(__file__))
-database_file = "sqlite:///{}".format(os.path.join(project_dir, "2w.sqlite"))
+database_file = "sqlite:///{}".format(os.path.join(project_dir, "../2w.sqlite"))
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = database_file
 db = SQLAlchemy(app)
@@ -403,11 +403,21 @@ def create_detail_list_json(_compare,
     print('list_view: {}'.format(list_view.shape[0]))
     tmpx = list_view
     tmpx = tmpx.groupby(['Meal', 'Direction']).count().iloc[:, 1]
+
+    u = []
+    for i in list(set(tmpx.to_dict().keys())):
+        print(i[0], i[1], tmpx.to_dict()[i])
+        u.append(i[0])
+    u = list(set(u))
+    default_quantity = {i: {'TAM': '', 'SPAT': ''} for i in u}
+    for i in list(set(tmpx.to_dict().keys())):
+        default_quantity[i[0]][i[1]] = '{}/{}'.format(tmpx.to_dict()[i], int(tmpx.to_dict()[i]) * 189)
+    print(default_quantity)
     _special_quantity = {'   '.join(k): [v, int(v) * 189] for k, v in pd.DataFrame(tmpx).to_dict()['Depart'].items()}
     a_view = list_view.groupby(['Meal', 'Direction']).sum().to_dict(orient="records")
     l_view = list_view.sort_values(['Route', 'Depart'], ascending=[True, True]).drop(['Departure', ''], axis=1).to_dict(orient="records")
     print('_compare: {}'.format(_compare.shape[0]))
-    return {"special_quantity": _special_quantity, "aggregated": a_view, "list_view": l_view}
+    return {"special_quantity": _special_quantity, "aggregated": a_view, "list_view": l_view, "default_quantity": default_quantity}
 
 
 @timeit

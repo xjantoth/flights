@@ -1,3 +1,17 @@
+#### How to create virtual environment Windows
+
+Run this simple command:
+
+```bash
+conda create -p ./venv python=3.5
+conda activate ./venv
+pip install -r requirement.txt
+python create_db.py
+python feed_db_with_flight_data.py
+```
+
+
+
 #### Create database
 
 ```sh
