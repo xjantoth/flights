@@ -1,9 +1,20 @@
-import { createAction } from "../../utils";
+import { createAction } from "utils";
 
 // define actions
-export const FETCH_DAY_DETAIL = "FETCH_DAY_DETAIL";
-// export const FETCH_DAY_DETAIL_SUCCESS = successSuffix(FETCH_DAY_DETAIL);
-// export const FETCH_DAY_DETAIL_ERROR = errorSuffix(FETCH_DAY_DETAIL);
+export const DETAIL_REQUEST = "DETAIL_REQUEST";
+export const detailRequest = createAction(DETAIL_REQUEST);
 
-// create action createAction from action
-export const fetchDayDetail = createAction(FETCH_DAY_DETAIL);
+export const DETAIL_SUCCESS = "DETAIL_SUCCESS";
+export const detailSuccess = createAction(DETAIL_SUCCESS);
+
+export const DETAIL_ERROR = "DETAIL_ERROR";
+export const detailError = createAction(DETAIL_ERROR);
+
+export const ALL_DAYS_REQUEST = "ALL_DAYS_REQUEST";
+export const allDaysRequest = createAction(ALL_DAYS_REQUEST);
+
+export const ALL_DAYS_SUCCESS = "ALL_DAYS_SUCCESS";
+export const allDaysSuccess = createAction(ALL_DAYS_SUCCESS);
+
+export const ALL_DAYS_ERROR = "ALL_DAYS_ERROR";
+export const allDaysError = createAction(ALL_DAYS_ERROR);

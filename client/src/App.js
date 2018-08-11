@@ -3,6 +3,7 @@ import { Route, Redirect, Link, Switch } from "react-router-dom";
 import AppBar from "./components/appbar/appbar";
 import Detail from "./components/detail/detail";
 import Login from "./components/login/login";
+import Main from "./components/main/main";
 import store from "./store";
 
 export const isAuthenticated = () => store.getState().login.isAuthenticated;
@@ -14,6 +15,7 @@ class App extends Component {
         <Route component={AppBar} />
         <Switch>
           <Route exact path="/login" component={Login} />
+          <Route exact path="/main" component={Main} />
           <Route exact path="/detail" component={Detail} />
           <Route
             render={() => {

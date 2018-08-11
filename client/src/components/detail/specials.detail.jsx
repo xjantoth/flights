@@ -1,4 +1,5 @@
 import React from "react";
+import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -6,17 +7,17 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 
 const statsStyles = {
-  height: "auto",
-  overflowY: "auto",
-  margin: 16,
-  marginRight: 0,
-  zIndex: 1,
-  boxShadow: "0 0 4px #777",
-  backgroundColor: "#eee"
+  // height: "auto",
+  // overflowY: "auto",
+  // margin: 16,
+  // marginRight: 0,
+  // zIndex: 1
+  // boxShadow: "0 0 4px #777",
+  // backgroundColor: "#eee"
 };
 
 const Specials = ({ data }) => (
-  <div style={statsStyles}>
+  <Paper style={statsStyles}>
     <Table>
       <TableHead>
         <TableRow>
@@ -37,7 +38,7 @@ const Specials = ({ data }) => (
         })}
       </TableBody>
     </Table>
-  </div>
+  </Paper>
 );
 
 export default Specials;
