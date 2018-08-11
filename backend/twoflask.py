@@ -404,15 +404,12 @@ def create_detail_list_json(_compare,
     tmpx = list_view
     tmpx = tmpx.groupby(['Meal', 'Direction']).count().iloc[:, 1]
 
-    u = []
-    for i in list(set(tmpx.to_dict().keys())):
-        print(i[0], i[1], tmpx.to_dict()[i])
-        u.append(i[0])
-    u = list(set(u))
+    u = list(set([i[0] for i in list(set(tmpx.to_dict().keys()))]))
     default_quantity = {i: {'TAM': '', 'SPAT': ''} for i in u}
     for i in list(set(tmpx.to_dict().keys())):
         default_quantity[i[0]][i[1]] = '{}/{}'.format(tmpx.to_dict()[i], int(tmpx.to_dict()[i]) * 189)
-    print(default_quantity)
+    # print(default_quantity)
+
     _special_quantity = {'   '.join(k): [v, int(v) * 189] for k, v in pd.DataFrame(tmpx).to_dict()['Depart'].items()}
     a_view = list_view.groupby(['Meal', 'Direction']).sum().to_dict(orient="records")
     l_view = list_view.sort_values(['Route', 'Depart'], ascending=[True, True]).drop(['Departure', ''], axis=1).to_dict(orient="records")
