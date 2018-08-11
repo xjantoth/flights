@@ -12,9 +12,7 @@ import Specials from "./specials.detail";
 import * as actions from "./actions.detail";
 import Selector from "./selector.detail";
 import Quick from "./quick.detail";
-
-const baseUrl = "/api";
-//: "/api";
+import api from "api";
 
 class Detail extends Component {
   state = {
@@ -80,7 +78,7 @@ class Detail extends Component {
   }
 
   loadAllData = day =>
-    fetch(`${baseUrl}/allud`)
+    fetch(api.DAYS_LIST)
       .then(data => data.json())
       .then(data => {
         this.setState({
@@ -98,7 +96,7 @@ class Detail extends Component {
       .then(days => this.loadData(this.timeFormatter(days[0])));
 
   loadData = day =>
-    fetch(`${baseUrl}/detail/${day}`)
+    fetch(`${api.DAY}${day}`)
       .then(data => data.text())
       .then(data => data.replace(/NaN/g, "null"))
       .then(data => JSON.parse(data))

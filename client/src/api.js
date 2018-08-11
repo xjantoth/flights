@@ -1,9 +1,7 @@
-// const base = () =>
-//   process.env.NODE_ENV === "development"
-//     ? "http://scaleway.linuxinuse.com"
-//     : "";
-
-const base = () => "";
+const base = () =>
+  process.env.NODE_ENV === "development"
+    ? "http://scaleway.linuxinuse.com"
+    : "";
 
 export default {
   LOGIN: `${base()}/login`,
