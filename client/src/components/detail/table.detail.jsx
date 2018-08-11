@@ -15,7 +15,6 @@ const styles = theme => ({
   root: {
     width: "100%",
     marginTop: theme.spacing.unit * 3
-    // backgroundColor: "#eee"
   },
   table: {
     minWidth: 1020
@@ -27,12 +26,9 @@ const styles = theme => ({
     top: 0
   },
   tableWrapper: {
-    // backgroundColor: "#eee",
     height: "calc(100vh - 200px)",
     overflowY: "auto",
-    // margin: 16,
     zIndex: 1
-    // boxShadow: "0 0 4px #777"
   }
 });
 

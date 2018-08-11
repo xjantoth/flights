@@ -4,15 +4,15 @@ import { withStyles } from "@material-ui/core/styles";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
-import MenuItem from "@material-ui/core/MenuItem";
-import Menu from "@material-ui/core/Menu";
 import Paper from "@material-ui/core/Paper";
+import Chip from "@material-ui/core/Chip";
+import Avatar from "@material-ui/core/Avatar";
 
 const styles = theme => ({
   root: {
-    width: "calc((100vw /4) * 2.6)",
-    backgroundColor: "#eee", //theme.palette.background.paper,
-    marginBottom: 16
+    backgroundColor: "#eee",
+    marginBottom: 16,
+    flexGrow: 1
   }
 });
 
@@ -43,6 +43,42 @@ class SimpleListMenu extends React.Component {
     this.setState({ anchorEl: null });
   };
 
+  get summary() {
+    const data = {
+      crew: 0,
+      quantity: 0,
+      flights: 0
+    };
+    this.props.rotation.map(r => {
+      data.crew += r.Crew;
+      data.quantity += r.Quantity;
+      data.flights += 1;
+    });
+    return (
+      <span>
+        <Chip
+          avatar={
+            <Avatar style={{ fontSize: 13 }}>{data.flights || "0"}</Avatar>
+          }
+          label="Flights"
+          style={{ marginRight: 16 }}
+        />
+        <Chip
+          avatar={<Avatar style={{ fontSize: 13 }}>{data.crew || "0"}</Avatar>}
+          label="Crew"
+          style={{ marginRight: 16 }}
+        />
+        <Chip
+          avatar={
+            <Avatar style={{ fontSize: 13 }}>{data.quantity || "0"}</Avatar>
+          }
+          label="Quantity"
+          style={{ marginRight: 16 }}
+        />
+      </span>
+    );
+  }
+
   render() {
     const { classes } = this.props;
     const { anchorEl } = this.state;
@@ -57,29 +93,10 @@ class SimpleListMenu extends React.Component {
             aria-label="When device is locked"
             onClick={this.handleClickListItem}
           >
-            <ListItemText
-              primary="Rotation summary"
-              secondary="Crew: 6 | Quantity: 254 | Special: 37 | Stops: 4"
-            />
+            <ListItemText primary="Rotation summary" />
+            {this.summary}
           </ListItem>
         </List>
-        <Menu
-          id="lock-menu"
-          anchorEl={anchorEl}
-          open={Boolean(anchorEl)}
-          onClose={this.handleClose}
-        >
-          {options.map((option, index) => (
-            <MenuItem
-              key={option}
-              disabled={index === 0}
-              selected={index === this.state.selectedIndex}
-              onClick={event => this.handleMenuItemClick(event, index)}
-            >
-              {option}
-            </MenuItem>
-          ))}
-        </Menu>
       </Paper>
     );
   }

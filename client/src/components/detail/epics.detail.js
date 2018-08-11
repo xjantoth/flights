@@ -1,10 +1,10 @@
 import { combineEpics } from "redux-observable";
-import { objectToForm } from "utils";
 import * as actions from "./actions.detail";
 import "rxjs/add/operator/switchMap";
 import api from "api";
 
-export const allDaysRequest = action$ =>
+// fetch list of all available days
+const allDaysRequest = action$ =>
   action$.ofType(actions.ALL_DAYS_REQUEST).switchMap(action =>
     fetch(api.DAYS_LIST)
       .then(response => response.json())
@@ -12,14 +12,19 @@ export const allDaysRequest = action$ =>
       .catch(actions.allDaysError)
   );
 
-// export const detailRequest = (action$, store) =>
-//   action$.ofType(actions.ALL_DAYS_SUCCESS).switchMap(action =>
-//     fetch(`${api.DAY}, objectToForm(action.payload))
-//       .then(response => response.json())
-//       .then(actions.recoverySuccess)
-//       .catch(actions.recoveryError)
-//   );
+// fetch detail for selected day or first day in store
+const detailRequest = (action$, store) =>
+  action$
+    .ofType(actions.ALL_DAYS_SUCCESS, actions.DETAIL_REQUEST)
+    .switchMap(action => {
+      const selectedDay = action.payload && action.payload.url;
+      const day = selectedDay || store.getState().detail.days[0].url;
+      return fetch(`${api.DAY}${day}`)
+        .then(data => data.text())
+        .then(data => data.replace(/NaN/g, "null"))
+        .then(data => JSON.parse(data))
+        .then(actions.detailSuccess)
+        .catch(actions.detailError);
+    });
 
-// export const
-
-export default combineEpics(allDaysRequest);
+export default combineEpics(allDaysRequest, detailRequest);

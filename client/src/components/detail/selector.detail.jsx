@@ -11,18 +11,12 @@ import Paper from "@material-ui/core/Paper";
 const styles = theme => ({
   root: {
     width: "calc(100vw / 4)",
-    backgroundColor: "#eee", //theme.palette.background.paper,
+    backgroundColor: "#eee",
+    minWidth: 250,
     marginBottom: 16,
     marginRight: 16
   }
 });
-
-// const options = [
-//   "Monday - Tuesday",
-//   "Tuesday - Wednesday",
-//   "Wednesday - Thursday",
-//   "Thursday - Friday"
-// ];
 
 class SimpleListMenu extends React.Component {
   button = null;
@@ -78,7 +72,6 @@ class SimpleListMenu extends React.Component {
           {options.map((option, index) => (
             <MenuItem
               key={option.url}
-              disabled={index === 0}
               selected={index === this.state.selectedIndex}
               onClick={event => this.handleMenuItemClick(event, index)}
             >
