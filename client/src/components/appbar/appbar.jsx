@@ -8,6 +8,7 @@ import React, { PureComponent } from "react";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core/styles";
+import { isAuthenticated } from "App";
 
 const styles = {
   root: {
@@ -28,10 +29,9 @@ class SimpleAppBar extends PureComponent {
   };
 
   render() {
-    const { data } = this.state;
     const { classes } = this.props;
 
-    return (
+    const element = (
       <div className={classes.root}>
         <AppBar
           position="static"
@@ -60,21 +60,9 @@ class SimpleAppBar extends PureComponent {
             />
           </Toolbar>
         </AppBar>
-        <AppBar
-          position="static"
-          color="default"
-          style={{ backgroundColor: "#da1", height: 36 }}
-        >
-          <Toolbar style={{ minHeight: 36 }}>
-            {data.map(item => (
-              <span key={item} style={{ marginRight: 16, fontWeight: "bold" }}>
-                {item}
-              </span>
-            ))}
-          </Toolbar>
-        </AppBar>
       </div>
     );
+    return isAuthenticated() ? element : null;
   }
 }
 

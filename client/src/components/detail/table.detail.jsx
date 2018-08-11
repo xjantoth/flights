@@ -5,23 +5,16 @@ import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableRow from "@material-ui/core/TableRow";
-import EnhancedTableHead from "./DetailTableHeader";
+import EnhancedTableHead from "./header.detail";
 import ArrowForward from "@material-ui/icons/ArrowForward";
 import ArrowBack from "@material-ui/icons/ArrowBack";
-import moment from 'moment';
-
-
-function getSorting(order, orderBy) {
-  return order === "desc"
-    ? (a, b) => (b[orderBy] < a[orderBy] ? -1 : 1)
-    : (a, b) => (a[orderBy] < b[orderBy] ? -1 : 1);
-}
+import { timeFormatter, getSorting } from "../../utils";
 
 const styles = theme => ({
   root: {
     width: "100%",
     marginTop: theme.spacing.unit * 3,
-    backgroundColor: '#eee'
+    backgroundColor: "#eee"
   },
   table: {
     minWidth: 1020
@@ -33,7 +26,7 @@ const styles = theme => ({
     top: 0
   },
   tableWrapper: {
-    backgroundColor: '#eee',
+    backgroundColor: "#eee",
     height: "calc(100vh - 132px)",
     overflowY: "auto",
     margin: 16,
@@ -57,12 +50,10 @@ class EnhancedTable extends PureComponent {
     if (this.state.orderBy === property && this.state.order === "desc") {
       order = "asc";
     }
-    this.setState(prev => {
-      return {
-        order,
-        orderBy,
-        data: this.props.data.sort(getSorting(order, orderBy))
-      };
+    this.setState({
+      order,
+      orderBy,
+      data: this.props.data.sort(getSorting(order, orderBy))
     });
   };
 
@@ -76,8 +67,22 @@ class EnhancedTable extends PureComponent {
     });
   };
 
-  timeFormatter = item => moment(item).format('MMM Do, H:mm');
+  handleOnClick = () =>
+    this.setState(prev => {
+      return { ...prev, hoverActive: !prev.hoverActive };
+    });
 
+  cellRender = (header, cell) => {
+    switch (header) {
+      case "Direction":
+        return cell[header] === "TAM" ? <ArrowForward /> : <ArrowBack />;
+      case "Arrival":
+      case "Depart":
+        return timeFormatter(cell[header]);
+      default:
+        return cell[header];
+    }
+  };
   render() {
     const { classes, data, header } = this.props;
     const { order, orderBy, hovered } = this.state;
@@ -94,40 +99,25 @@ class EnhancedTable extends PureComponent {
           />
           <TableBody>
             {data.map((item, index) => {
-              let cls = hovered
-                ? item.Route === hovered.Route
+              let cls =
+                hovered && item.Route === hovered.Route
                   ? "highlighted"
-                  : "faded"
-                : "";
-              if (item == hovered) {
+                  : "faded";
+              if (item === hovered) {
                 cls = "focused";
               }
               return (
                 <TableRow
                   className={cls}
                   onMouseEnter={() => this.handleMouseHover(item)}
-                  onClick={() =>
-                    this.setState(prev => {
-                      return { ...prev, hoverActive: !prev.hoverActive };
-                    })
-                  }
-                  hover
+                  onClick={this.handleOnClick}
                   tabIndex={-1}
                   key={index}
+                  hover
                 >
                   {header.map(h => (
                     <TableCell padding={"dense"} key={h}>
-                      {h === "Direction" ? (
-                        item[h] === "TAM" ? (
-                          <ArrowForward />
-                        ) : (
-                          <ArrowBack />
-                        )
-                      ) : h === "Arrival"  || h === "Depart" ? (
-                        this.timeFormatter(item[h])
-                      ) : (
-                        item[h]
-                      )}
+                      {this.cellRender(h, item)}
                     </TableCell>
                   ))}
                 </TableRow>
