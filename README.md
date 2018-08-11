@@ -82,8 +82,13 @@ This is one time action when we do the deployment for the first time.
 #      - saves data to sqlite database
 #
 # ******************************************************************
+# old version
+@reboot  cd /opt/venv3/tflask && /opt/venv3/bin/python3.5 /opt/venv3/bin/gunicorn --bind 0.0.0.0:5000 --workers=3 wsgi:app -p flask_app.pid -D --error-logfile g_error_lofile.log
 */2 * * * *  /opt/venv3/bin/python /opt/venv3/2w/feed_db_with_flight_data.py >> /opt/venv3/2w/error_log.log 2>&1
 
+# frontend - backend version 
+*/7 * * * *  /opt/serve/venv35/bin/python /opt/serve/backend/feed_db_with_flight_data.py >> /opt/serve/backend/db_error_log.log 2>&1
+@reboot cd /opt/serve/backend && /opt/serve/venv35/bin/python /opt/serve/venv35/bin/gunicorn --bind 127.0.0.1:4000 --workers=3 wsgi:app -p 2w_app.pid  -D --error-logfile gunicorn_error_lofile.log
 ```
 
 
@@ -95,5 +100,68 @@ This is one time action when we do the deployment for the first time.
 
 (venv3) jantoth@ubuntu-ansible:/opt/venv3/tflask$ sqlite3 2w.sqlite
 CREATE INDEX created_index_micka ON flight_data (created);
+CREATE INDEX fast_search_index ON flight_data (created);
+```
+
+
+#### Nginx
+```bash
+cat    /etc/nginx/sites-enabled/default
+##
+# You should look at the following URL's in order to grasp a solid understanding
+# of Nginx configuration files in order to fully unleash the power of Nginx.
+# http://wiki.nginx.org/Pitfalls
+# http://wiki.nginx.org/QuickStart
+# http://wiki.nginx.org/Configuration
+#
+# Generally, you will want to move this file somewhere, and start with a clean
+# file but keep this around for reference. Or just disable in sites-enabled.
+#
+# Please see /usr/share/doc/nginx-doc/examples/ for more detailed examples.
+##
+
+
+
+server {
+
+        root /opt/serve/client/build;
+        index index.html index.htm index.nginx-debian.html;
+
+        server_name scaleway.linuxinuse.com;
+
+        location / {
+                try_files $uri /index.html;
+        }
+        location /api {
+        proxy_pass http://127.0.0.1:4000;
+        }
+
+        listen 443 ssl; # managed by Certbot
+        ssl_certificate /etc/letsencrypt/live/scaleway.linuxinuse.com/fullchain.pem; # managed by Certbot
+        ssl_certificate_key /etc/letsencrypt/live/scaleway.linuxinuse.com/privkey.pem; # managed by Certbot
+        include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
+        ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
+
+}
+
+
+
+
+server {
+    if ($host = scaleway.linuxinuse.com) {
+        return 301 https://$host$request_uri;
+    } # managed by Certbot
+
+
+        listen 80;
+
+        server_name scaleway.linuxinuse.com;
+    return 404; # managed by Certbot
+
+
+}
+
 
 ```
+
+
