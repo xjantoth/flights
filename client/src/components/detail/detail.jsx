@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
+import { connect } from "react-redux";
+import { bindActionCreators } from "redux";
 import Table from "./table.detail";
 import Stats from "./stats.detail";
 import Grid from "@material-ui/core/Grid";
@@ -9,11 +9,12 @@ import Toolbar from "@material-ui/core/Toolbar";
 import moment from "moment";
 import classNames from "classnames";
 import Specials from "./specials.detail";
-import { fetchDayDetail } from './actions.detail';
+import * as actions from "./actions.detail";
+import Selector from "./selector.detail";
+import Quick from "./quick.detail";
 
-const baseUrl = "http://scaleway.linuxinuse.com:5000/api";
+const baseUrl = "/api";
 //: "/api";
-
 
 class Detail extends Component {
   state = {
@@ -73,8 +74,9 @@ class Detail extends Component {
   };
 
   componentDidMount() {
+    // this.props.allDaysRequest();
     this.loadAllData();
-    this.props.fetchDay();
+    // this.props.fetchDay();
   }
 
   loadAllData = day =>
@@ -111,14 +113,10 @@ class Detail extends Component {
 
   render() {
     const { hovered } = this.state;
-    
+
     return (
       <div>
-        <AppBar
-          position="static"
-          color="default"
-          style={{ backgroundColor: "#da1", height: 36 }}
-        >
+        {/* <AppBar position="static" color="default" style={{ height: 36 }}>
           <Toolbar
             style={{
               minHeight: 36,
@@ -139,37 +137,35 @@ class Detail extends Component {
               </span>
             ))}
           </Toolbar>
-        </AppBar>
-        <Grid container>
-          <Grid item xs={5}>
+        </AppBar> */}
+        {/* <Grid container> */}
+        {/* <Grid item xs={5}>
             {/* <Stats item={hovered} /> */}
-            <Specials data={this.state.specials} />
-          </Grid>
-          <Grid item xs={7}>
-            <Table
-              data={this.state.data}
-              header={this.state.header}
-              handleOnHover={this.handleOnHover}
-            />
-          </Grid>
-        </Grid>
+        {/* <Specials data={this.state.specials} /> */}
+        {/* </Grid> */}
+        {/* <Grid item xs={7}> */}
+        <span style={{ display: "flex" }}>
+          <Selector
+            options={this.state.days}
+            onItemSelected={this.handleDayChange}
+          />
+          <Quick />
+        </span>
+        <Table
+          data={this.state.data}
+          header={this.state.header}
+          handleOnHover={this.handleOnHover}
+        />
+        {/* </Grid> */}
+        {/* </Grid> */}
       </div>
     );
   }
 }
 
-const mapStateToProps = (state, ownProps) => ({
-  active: false
-});
-
-const mapDispatchToProps = dispatch => {
-  return bindActionCreators({
-    fetchDay: fetchDayDetail
-  },
-  dispatch);
-}
-
 export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Detail)
+  (state, ownProps) => ({
+    active: false
+  }),
+  dispatch => bindActionCreators({ ...actions }, dispatch)
+)(Detail);

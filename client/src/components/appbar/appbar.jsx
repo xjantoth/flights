@@ -16,7 +16,7 @@ const styles = {
   },
   chip: {
     margin: 4,
-    backgroundColor: "#da1",
+    // backgroundColor: "#da1",
     fontWeight: "bold",
     fontSize: 16
     // color: 'white'

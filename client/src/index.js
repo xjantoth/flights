@@ -7,11 +7,28 @@ import registerServiceWorker from "./registerServiceWorker";
 import { Provider } from "react-redux";
 import store, { history } from "./store";
 import { ConnectedRouter } from "connected-react-router";
+import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
+
+// https://material-ui.com/customization/default-theme/
+
+const theme = createMuiTheme({
+  palette: {
+    type: "light",
+    primary: {
+      main: "#fc1"
+    },
+    secondary: {
+      main: "#1cf"
+    }
+  }
+});
 
 ReactDOM.render(
   <Provider store={store}>
     <ConnectedRouter history={history}>
-      <App />
+      <MuiThemeProvider theme={theme}>
+        <App />
+      </MuiThemeProvider>
     </ConnectedRouter>
   </Provider>,
   document.getElementById("root")

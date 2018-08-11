@@ -1,6 +1,7 @@
 import React, { PureComponent } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
+import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
@@ -13,25 +14,25 @@ import { timeFormatter, getSorting } from "../../utils";
 const styles = theme => ({
   root: {
     width: "100%",
-    marginTop: theme.spacing.unit * 3,
-    backgroundColor: "#eee"
+    marginTop: theme.spacing.unit * 3
+    // backgroundColor: "#eee"
   },
   table: {
     minWidth: 1020
   },
   head: {
-    backgroundColor: "#ccc",
+    backgroundColor: "#eee",
     position: "sticky",
     zIndex: 9,
     top: 0
   },
   tableWrapper: {
-    backgroundColor: "#eee",
-    height: "calc(100vh - 132px)",
+    // backgroundColor: "#eee",
+    height: "calc(100vh - 200px)",
     overflowY: "auto",
-    margin: 16,
-    zIndex: 1,
-    boxShadow: "0 0 4px #777"
+    // margin: 16,
+    zIndex: 1
+    // boxShadow: "0 0 4px #777"
   }
 });
 
@@ -88,7 +89,7 @@ class EnhancedTable extends PureComponent {
     const { order, orderBy, hovered } = this.state;
 
     return (
-      <div className={classes.tableWrapper}>
+      <Paper className={classes.tableWrapper}>
         <Table className={classes.table} aria-labelledby="tableTitle">
           <EnhancedTableHead
             columnData={header}
@@ -125,7 +126,7 @@ class EnhancedTable extends PureComponent {
             })}
           </TableBody>
         </Table>
-      </div>
+      </Paper>
     );
   }
 }

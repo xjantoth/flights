@@ -31,11 +31,10 @@ class Login extends PureComponent {
         <div className={"Backdrop"} />
         <div className={"Modal"}>
           <div className={"Subheader"}>
-            <Typography variant="title" gutterBottom>
-              Sign In
+            <Typography variant="display3" gutterBottom>
+              Login
             </Typography>
           </div>
-
           <form className={"Form"} onSubmit={this.handleSubmit}>
             <TextField
               id="username"

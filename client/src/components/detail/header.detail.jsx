@@ -49,6 +49,7 @@ export default class EnhancedTableHead extends PureComponent {
 }
 
 EnhancedTableHead.propTypes = {
+  columnData: PropTypes.arrayOf(PropTypes.string).isRequired,
   onRequestSort: PropTypes.func.isRequired,
   order: PropTypes.string.isRequired,
   orderBy: PropTypes.string.isRequired

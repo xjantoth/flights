@@ -1,19 +1,25 @@
-import {
-  FETCH_DAY_DETAIL
-  // FETCH_DAY_DETAIL_SUCCESS,
-  // FETCH_DAY_DETAIL_ERROR
-} from "./actions.detail";
+import * as actions from "./actions.detail";
+import { createReducer } from "utils";
 
-export default function detailReducer(state = {}, action) {
-  switch (action.type) {
-    case FETCH_DAY_DETAIL:
-      console.log(state, action);
-      return state;
-    // case FETCH_DAY_DETAIL_SUCCESS:
-    //   return state;
-    // case FETCH_DAY_DETAIL_ERROR:
-    //   return state;
-    default:
-      return state;
-  }
-}
+const initState = {};
+
+export default createReducer(initState, {
+  [actions.ALL_DAYS_REQUEST]: (state, payload) => ({
+    ...state
+  }),
+  [actions.ALL_DAYS_SUCCESS]: (state, payload) => ({
+    ...state
+  }),
+  [actions.ALL_DAYS_ERROR]: (state, payload) => ({
+    ...state
+  }),
+  [actions.DETAIL_REQUEST]: (state, payload) => ({
+    ...state
+  }),
+  [actions.DETAIL_SUCCESS]: (state, payload) => ({
+    ...state
+  }),
+  [actions.DETAIL_ERROR]: (state, payload) => ({
+    ...state
+  })
+});

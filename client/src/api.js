@@ -1,9 +1,14 @@
-const base =
-  process.env.NODE_ENV === "development"
-    ? "http://scaleway.linuxinuse.com/api"
-    : "";
+// const base = () =>
+//   process.env.NODE_ENV === "development"
+//     ? "http://scaleway.linuxinuse.com"
+//     : "";
+
+const base = () => "";
 
 export default {
-  LOGIN: `${base}/login`,
-  RECOVERY: `${base}/recovery`
+  LOGIN: `${base()}/login`,
+  RECOVERY: `${base()}/recovery`,
+  DAYS_LIST: `${base()}/api/allud`,
+  DAY: `${base()}/api/detail/`,
+  ROTATION: `${base()}/api/route/`
 };
