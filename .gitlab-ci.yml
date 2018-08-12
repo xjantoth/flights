@@ -23,4 +23,4 @@ client:
     - echo "finished CI/CD for client"
   artifacts:
     paths:
-      - build
+      - client/build
