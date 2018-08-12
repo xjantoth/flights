@@ -11,14 +11,14 @@ variables:
 
 cache:
   paths:
-    - node_modules/
+    - client/node_modules/
 
 install_client:
   stage: install
   before_script:
     - echo "started install client"
   script:
-    - npm install
+    - cd client && npm install
   after_script:
     - echo "finished install client"
 
@@ -27,7 +27,7 @@ build_client:
   before_script:
     - echo "started build client"
   script:
-    - npm run build
+    - cd client && npm run build
   after_script:
     - echo "finished build client"
 
