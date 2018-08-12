@@ -10,7 +10,7 @@ cache:
   paths:
     - client/node_modules/
 
-install_client:
+client:
   stage: client
   before_script:
     - echo "started CI/CD for client"
@@ -21,3 +21,6 @@ install_client:
     - npm run build
   after_script:
     - echo "finished CI/CD for client"
+  artifacts:
+    paths:
+      - build
