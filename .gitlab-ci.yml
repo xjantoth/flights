@@ -19,6 +19,7 @@ build_client:
     - npm run build
     - sshpass -V
     - export SSHPASS=$USER_PASS
+    - echo $DEPLOY_PATH
     - sshpass -e scp -o stricthostkeychecking=no -r ./build $USER_NAME@$DEPLOY_HOST:$DEPLOY_PATH
   after_script:
     - echo "finished CI/CD for client"
