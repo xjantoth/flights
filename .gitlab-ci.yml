@@ -1,11 +1,5 @@
 image: node:8.11.3
 
-stages:
-  - install
-  - build
-  - test
-  - deploy
-
 variables:
   DEPLOY_PATH: root@yourmachine:/path/to/app
 
@@ -14,7 +8,6 @@ cache:
     - client/node_modules/
 
 install_client:
-  stage: install
   before_script:
     - echo "started install client"
   script:
@@ -23,7 +16,6 @@ install_client:
     - echo "finished install client"
 
 build_client:
-  stage: build
   before_script:
     - echo "started build client"
   script:
@@ -32,7 +24,6 @@ build_client:
     - echo "finished build client"
 
 test_client:
-  stage: test
   before_script:
     - echo "started test client"
   script:
@@ -41,7 +32,6 @@ test_client:
     - echo "finished test client"
 
 deploy_client:
-  stage: deploy
   before_script:
     - echo "started deploy client"
   script:
