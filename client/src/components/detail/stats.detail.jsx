@@ -19,8 +19,10 @@ const statsStyles = {
 
 const noteStyles = {
   paddingLeft: 24,
+  marginTop: 24,
   fontFamily: "monospace",
-  textAlign: "justify"
+  textAlign: "justify",
+  fontSize: "1.2em"
 };
 
 const headers = [

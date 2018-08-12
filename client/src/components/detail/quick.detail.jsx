@@ -58,19 +58,27 @@ class SimpleListMenu extends React.Component {
         />
         <Chip
           avatar={
-            <Avatar style={{ fontSize: 13 }}>{data.flights || "0"}</Avatar>
+            <Avatar style={{ color: "black", fontSize: 13 }}>
+              {data.flights || "0"}
+            </Avatar>
           }
           label="Flights"
           style={{ marginRight: 16 }}
         />
         <Chip
-          avatar={<Avatar style={{ fontSize: 13 }}>{data.crew || "0"}</Avatar>}
+          avatar={
+            <Avatar style={{ color: "black", fontSize: 13 }}>
+              {data.crew || "0"}
+            </Avatar>
+          }
           label="Crew"
           style={{ marginRight: 16 }}
         />
         <Chip
           avatar={
-            <Avatar style={{ fontSize: 13 }}>{data.quantity || "0"}</Avatar>
+            <Avatar style={{ color: "black", fontSize: 13 }}>
+              {data.quantity || "0"}
+            </Avatar>
           }
           label="Quantity"
           style={{ marginRight: 16 }}
@@ -85,7 +93,7 @@ class SimpleListMenu extends React.Component {
 
     return (
       <Paper className={classes.root}>
-        <List component="nav">
+        <List component="nav" style={{ marginTop: 8 }}>
           <ListItem
             button
             aria-haspopup="true"
@@ -93,7 +101,7 @@ class SimpleListMenu extends React.Component {
             aria-label="Rotation summary"
             onClick={this.handleClickListItem}
           >
-            <ListItemText primary="Rotation summary" />
+            <ListItemText secondary="Rotation summary" />
             {this.summary}
           </ListItem>
         </List>

@@ -23,7 +23,7 @@ class SimpleListMenu extends React.Component {
 
   state = {
     anchorEl: null,
-    selectedIndex: 1
+    selectedIndex: 0
   };
 
   handleClickListItem = event => {
@@ -54,8 +54,8 @@ class SimpleListMenu extends React.Component {
             onClick={this.handleClickListItem}
           >
             <ListItemText
-              primary="Day selected"
-              secondary={
+              secondary="Day selected"
+              primary={
                 options[this.state.selectedIndex]
                   ? options[this.state.selectedIndex].display
                   : ""

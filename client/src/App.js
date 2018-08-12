@@ -14,8 +14,8 @@ class App extends Component {
       <Fragment>
         <Route component={AppBar} />
         <Switch>
+          <Route exact path="/" component={Main} />
           <Route exact path="/login" component={Login} />
-          <Route exact path="/main" component={Main} />
           <Route exact path="/detail" component={Detail} />
           <Route
             render={() => {
