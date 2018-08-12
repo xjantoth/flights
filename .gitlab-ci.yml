@@ -1,0 +1,50 @@
+image: node:8.11.3
+
+stages:
+  - install
+  - build
+  - test
+  - deploy
+
+variables:
+  DEPLOY_PATH: root@yourmachine:/path/to/app
+
+cache:
+  paths:
+    - node_modules/
+
+install_client:
+  stage: install
+  before_script:
+    - echo "started install client"
+  script:
+    - npm install
+  after_script:
+    - echo "finished install client"
+
+build_client:
+  stage: build
+  before_script:
+    - echo "started build client"
+  script:
+    - npm run build
+  after_script:
+    - echo "finished build client"
+
+test_client:
+  stage: test
+  before_script:
+    - echo "started test client"
+  script:
+    - echo "running tests"
+  after_script:
+    - echo "finished test client"
+
+deploy_client:
+  stage: deploy
+  before_script:
+    - echo "started deploy client"
+  script:
+    - echo "deploy_all"
+  after_script:
+    - echo "finished deploy client"
