@@ -56,7 +56,7 @@ const DetailStats = ({ item }) => (
                 <Typography variant="body1">{item[k] || "---"}</Typography>
               </ListItemSecondaryAction>
             </ListItem>
-            {index % 3 == 2 && <Divider inset component="li" />}
+            {index % 3 === 2 && <Divider inset component="li" />}
           </Fragment>
         ))}
         <ListItem>

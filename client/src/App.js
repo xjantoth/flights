@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from "react";
-import { Route, Redirect, Link, Switch } from "react-router-dom";
+import { Route, Redirect, Switch } from "react-router-dom";
 import AppBar from "./components/appbar/appbar";
 import Detail from "./components/detail/detail";
 import Login from "./components/login/login";

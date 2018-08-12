@@ -48,6 +48,7 @@ class SimpleListMenu extends React.Component {
       data.quantity += r.Quantity;
       data.flights += 1;
       data.id = r.Route;
+      return 1;
     });
     return (
       <span>
@@ -89,7 +90,6 @@ class SimpleListMenu extends React.Component {
 
   render() {
     const { classes } = this.props;
-    const { anchorEl } = this.state;
 
     return (
       <Paper className={classes.root}>

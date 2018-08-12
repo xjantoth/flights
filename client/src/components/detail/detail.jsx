@@ -32,7 +32,7 @@ class Detail extends Component {
   }
 
   render() {
-    const { hovered } = this.state;
+    // const { hovered } = this.state;
 
     return (
       <div>
