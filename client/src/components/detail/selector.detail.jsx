@@ -12,9 +12,9 @@ const styles = theme => ({
   root: {
     width: "calc(100vw / 5)",
     minWidth: 300,
-    marginRight: 16,
-    backgroundColor: "#eee",
-    marginBottom: 16
+    marginRight: theme.spacing.unit * 2,
+    backgroundColor: theme.palette.background.paper,
+    marginBottom: theme.spacing.unit * 2
   }
 });
 
@@ -56,9 +56,11 @@ class SimpleListMenu extends React.Component {
             <ListItemText
               secondary="Day selected"
               primary={
-                options[this.state.selectedIndex]
-                  ? options[this.state.selectedIndex].display
-                  : ""
+                options[this.state.selectedIndex] ? (
+                  <b>{options[this.state.selectedIndex].display}</b>
+                ) : (
+                  ""
+                )
               }
             />
           </ListItem>

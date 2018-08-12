@@ -16,6 +16,7 @@ import ChevronRightIcon from "@material-ui/icons/ChevronRight";
 import { mainItems, otherItems } from "./drawerItems";
 import Detail from "../detail/detail";
 import { ClickAwayListener } from "@material-ui/core";
+import AirplanemodeActive from "@material-ui/icons/AirplanemodeActive";
 
 const drawerWidth = 240;
 
@@ -44,8 +45,8 @@ const styles = theme => ({
     })
   },
   menuButton: {
-    marginLeft: 12,
-    marginRight: 36
+    marginLeft: theme.spacing.unit * 2,
+    marginRight: theme.spacing.unit * 4
   },
   hide: {
     display: "none"
@@ -58,7 +59,7 @@ const styles = theme => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.enteringScreen
     }),
-    boxShadow: "0 0 4px #aaa"
+    boxShadow: `0 0 ${theme.spacing.unit}px ${theme.palette.background.paper}`
   },
   drawerPaperClose: {
     overflowX: "hidden",
@@ -75,7 +76,7 @@ const styles = theme => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "flex-end",
-    padding: "0 8px",
+    padding: `0 ${theme.spacing.unit}px`,
     ...theme.mixins.toolbar
   },
   content: {
@@ -87,7 +88,7 @@ const styles = theme => ({
 });
 
 class Main extends React.Component {
-  title = "";
+  title = "Two Wings";
   state = {
     open: false
   };
@@ -133,6 +134,7 @@ class Main extends React.Component {
                 >
                   <MenuIcon />
                 </IconButton>
+                <AirplanemodeActive style={{ marginRight: 8 }} />
                 <Typography variant="title" color="inherit" noWrap>
                   {this.title}
                 </Typography>
@@ -164,10 +166,6 @@ class Main extends React.Component {
             </Drawer>
             <main className={classes.content}>
               <div className={classes.toolbar} />
-              {/* <Typography noWrap>
-            {"You think water moves fast? You should see ice."}
-            
-          </Typography> */}
               <Detail />
             </main>
           </Fragment>

@@ -20,7 +20,7 @@ const styles = theme => ({
     minWidth: 1020
   },
   head: {
-    backgroundColor: "#eee",
+    backgroundColor: theme.palette.background.default,
     position: "sticky",
     zIndex: 9,
     top: 0
@@ -30,6 +30,15 @@ const styles = theme => ({
     overflowY: "auto",
     zIndex: 1,
     flexGrow: 1
+  },
+  highlighted: {
+    backgroundColor: `${theme.palette.primary.main}5`
+  },
+  faded: {
+    opacity: 0.33
+  },
+  focused: {
+    backgroundColor: theme.palette.primary.main
   }
 });
 
@@ -99,10 +108,10 @@ class EnhancedTable extends PureComponent {
             {data.map((item, index) => {
               let cls =
                 hovered && item.Route === hovered.Route
-                  ? "highlighted"
-                  : "faded";
+                  ? classes.highlighted
+                  : classes.faded;
               if (item === hovered) {
-                cls = "focused";
+                cls = classes.focused;
               }
               return (
                 <TableRow
@@ -111,7 +120,7 @@ class EnhancedTable extends PureComponent {
                   onClick={this.handleOnClick}
                   tabIndex={-1}
                   key={index}
-                  hover
+                  hover={this.state.hoverActive && cls === classes.faded}
                 >
                   {header.map(h => (
                     <TableCell padding={"dense"} key={h}>

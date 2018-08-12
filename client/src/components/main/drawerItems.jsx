@@ -11,7 +11,7 @@ import InsertChart from "@material-ui/icons/InsertChart";
 
 export const mainItems = (
   <div>
-    <ListItem button>
+    <ListItem button style={{ backgroundColor: "#555" }}>
       <ListItemIcon>
         <Today />
       </ListItemIcon>

@@ -10,9 +10,19 @@ import Avatar from "@material-ui/core/Avatar";
 
 const styles = theme => ({
   root: {
-    backgroundColor: "#eee",
+    backgroundColor: theme.palette.background.paper,
     marginBottom: 16,
     flexGrow: 1
+  },
+  list: {
+    marginTop: theme.spacing.unit
+  },
+  avatar: {
+    color: theme.palette.text.primary,
+    fontSize: 13
+  },
+  chip: {
+    marginRight: theme.spacing.unit * 2
   }
 });
 
@@ -50,39 +60,36 @@ class SimpleListMenu extends React.Component {
       data.id = r.Route;
       return 1;
     });
+
+    const { classes } = this.props;
+
     return (
       <span>
         <Chip
-          avatar={<Avatar style={{ fontSize: 13 }}>ID</Avatar>}
+          avatar={<Avatar className={classes.avatar}>ID</Avatar>}
           label={data.id}
-          style={{ marginRight: 16 }}
+          className={classes.chip}
         />
         <Chip
           avatar={
-            <Avatar style={{ color: "black", fontSize: 13 }}>
-              {data.flights || "0"}
-            </Avatar>
+            <Avatar className={classes.avatar}>{data.flights || "0"}</Avatar>
           }
           label="Flights"
-          style={{ marginRight: 16 }}
+          className={classes.chip}
         />
         <Chip
           avatar={
-            <Avatar style={{ color: "black", fontSize: 13 }}>
-              {data.crew || "0"}
-            </Avatar>
+            <Avatar className={classes.avatar}>{data.crew || "0"}</Avatar>
           }
           label="Crew"
-          style={{ marginRight: 16 }}
+          className={classes.chip}
         />
         <Chip
           avatar={
-            <Avatar style={{ color: "black", fontSize: 13 }}>
-              {data.quantity || "0"}
-            </Avatar>
+            <Avatar className={classes.avatar}>{data.quantity || "0"}</Avatar>
           }
           label="Quantity"
-          style={{ marginRight: 16 }}
+          className={classes.chip}
         />
       </span>
     );
@@ -93,7 +100,7 @@ class SimpleListMenu extends React.Component {
 
     return (
       <Paper className={classes.root}>
-        <List component="nav" style={{ marginTop: 8 }}>
+        <List component="nav" className={classes.list}>
           <ListItem
             button
             aria-haspopup="true"

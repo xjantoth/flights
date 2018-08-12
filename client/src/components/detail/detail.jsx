@@ -32,8 +32,6 @@ class Detail extends Component {
   }
 
   render() {
-    // const { hovered } = this.state;
-
     return (
       <div>
         <span style={{ display: "flex" }}>
