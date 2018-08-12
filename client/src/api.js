@@ -1,6 +1,7 @@
 const base = () =>
   process.env.NODE_ENV === "development"
-    ? "http://scaleway.linuxinuse.com"
+    ? // ? "http://scaleway.linuxinuse.com"
+      "http://localhost:5000"
     : "";
 
 export default {
