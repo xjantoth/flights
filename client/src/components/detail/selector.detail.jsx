@@ -10,11 +10,11 @@ import Paper from "@material-ui/core/Paper";
 
 const styles = theme => ({
   root: {
-    width: "calc(100vw / 4)",
+    width: "calc(100vw / 5)",
+    minWidth: 300,
+    marginRight: 16,
     backgroundColor: "#eee",
-    minWidth: 250,
-    marginBottom: 16,
-    marginRight: 16
+    marginBottom: 16
   }
 });
 

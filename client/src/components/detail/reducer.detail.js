@@ -4,7 +4,7 @@ import moment from "moment";
 
 const excludedHeaders = [
   "Aircraft",
-  "Route",
+  // "Route",
   "Extra Catering",
   "Note",
   "Meal",
@@ -13,6 +13,7 @@ const excludedHeaders = [
 ];
 
 const headerOrder = [
+  "Route",
   "Crew",
   "Quantity",
   "Direction",

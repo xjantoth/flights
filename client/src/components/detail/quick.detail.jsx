@@ -16,13 +16,6 @@ const styles = theme => ({
   }
 });
 
-const options = [
-  "Monday - Tuesday",
-  "Tuesday - Wednesday",
-  "Wednesday - Thursday",
-  "Thursday - Friday"
-];
-
 class SimpleListMenu extends React.Component {
   button = null;
 
@@ -47,15 +40,22 @@ class SimpleListMenu extends React.Component {
     const data = {
       crew: 0,
       quantity: 0,
-      flights: 0
+      flights: 0,
+      id: null
     };
     this.props.rotation.map(r => {
       data.crew += r.Crew;
       data.quantity += r.Quantity;
       data.flights += 1;
+      data.id = r.Route;
     });
     return (
       <span>
+        <Chip
+          avatar={<Avatar style={{ fontSize: 13 }}>ID</Avatar>}
+          label={data.id}
+          style={{ marginRight: 16 }}
+        />
         <Chip
           avatar={
             <Avatar style={{ fontSize: 13 }}>{data.flights || "0"}</Avatar>
@@ -90,7 +90,7 @@ class SimpleListMenu extends React.Component {
             button
             aria-haspopup="true"
             aria-controls="lock-menu"
-            aria-label="When device is locked"
+            aria-label="Rotation summary"
             onClick={this.handleClickListItem}
           >
             <ListItemText primary="Rotation summary" />

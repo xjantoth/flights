@@ -5,6 +5,7 @@ import * as actions from "./actions.detail";
 import Selector from "./selector.detail";
 import Quick from "./quick.detail";
 import Table from "./table.detail";
+import Stats from "./stats.detail";
 
 class Detail extends Component {
   state = {
@@ -42,11 +43,14 @@ class Detail extends Component {
           />
           <Quick rotation={this.rotation} />
         </span>
-        <Table
-          data={this.props.data}
-          header={this.props.header}
-          handleOnHover={this.handleOnHover}
-        />
+        <span style={{ display: "flex" }}>
+          <Stats item={this.state.hovered} />
+          <Table
+            data={this.props.data}
+            header={this.props.header}
+            handleOnHover={this.handleOnHover}
+          />
+        </span>
       </div>
     );
   }

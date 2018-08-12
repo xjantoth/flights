@@ -28,7 +28,8 @@ const styles = theme => ({
   tableWrapper: {
     height: "calc(100vh - 200px)",
     overflowY: "auto",
-    zIndex: 1
+    zIndex: 1,
+    flexGrow: 1
   }
 });
 
@@ -37,7 +38,7 @@ class EnhancedTable extends PureComponent {
     order: "asc",
     hovered: null,
     hoverActive: false,
-    orderBy: "name"
+    orderBy: "Route"
   };
 
   handleRequestSort = (event, property) => {
