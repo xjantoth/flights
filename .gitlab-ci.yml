@@ -1,24 +1,25 @@
 image: node:8.11.3
 
 stages:
-  - client
-
-variables:
-  DEPLOY_PATH: root@yourmachine:/path/to/app
+  - build
 
 cache:
   paths:
     - client/node_modules/
 
-client:
-  stage: client
+build_client:
+  stage: build
   before_script:
     - echo "started CI/CD for client"
+    - apt-get update -qq && apt-get install -y -qq sshpass
   script:
     - cd client
     - npm install
     - echo "running tests"
     - npm run build
+    - sshpass -V
+    - export SSHPASS=$USER_PASS
+    - sshpass -e scp -o stricthostkeychecking=no -r ./build $USER_NAME@$HOST:$PATH
   after_script:
     - echo "finished CI/CD for client"
   artifacts:
