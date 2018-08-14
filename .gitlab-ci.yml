@@ -25,7 +25,7 @@ build_client:
     - echo -e "Deploying python backend"
     - sshpass -e scp -o stricthostkeychecking=no -r ./backend ${DEPLOY_NAME}@${DEPLOY_HOST}:${BASE_PATH}/
     - cd backend
-    - sshpass -e ssh -o stricthostkeychecking=no ${DEPLOY_NAME}@${DEPLOY_HOST} 'chmod u+x /opt/serve/backend/restart_flask_backend.sh; bash /opt/serve/backend/restart_flask_backend.sh '
+    - sshpass -e ssh -o stricthostkeychecking=no ${DEPLOY_NAME}@${DEPLOY_HOST} 'export DEPLOY_PATH_BACKEND=${DEPLOY_PATH_BACKEND}; export PID_FILENAME=${PID_FILENAME}; export BASE_PATH=${BASE_PATH}; export VIRTUALENV_NAME=${VIRTUALENV_NAME}; export HOST=${HOST}; export PORT=${PORT}; export WORKERS_NUMBER=${WORKERS_NUMBER}; export ERROR_LOG_FILENAME=${ERROR_LOG_FILENAME}; chmod u+x /opt/serve/backend/restart_flask_backend.sh; bash /opt/serve/backend/restart_flask_backend.sh '
 #    - chmod +x restart_flask_backend.sh && ./restart_flask_backend.sh
 
   after_script:
