@@ -24,9 +24,7 @@ build_client:
     - cd ..
     - echo -e "Deploying python backend"
     - sshpass -e scp -o stricthostkeychecking=no -r ./backend ${DEPLOY_NAME}@${DEPLOY_HOST}:${BASE_PATH}/
-    - cd ${DEPLOY_PATH_BACKEND} && ${BASE_PATH}/${VIRTUALENV_NAME}/bin/python \
-    $BASE_PATH/$VIRTUALENV_NAME/bin/gunicorn --bind ${HOST}:${PORT} \
-    --workers=${WORKERS_NUMBER} wsgi:app -p ${PID_FILENAME}.pid  -D --error-logfile ${ERROR_LOG_FILENAME}.log
+    - chmod +x restart_flask_backend.sh && ./restart_flask_backend.sh
 
   after_script:
     - echo "finished CI/CD for client"
