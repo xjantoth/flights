@@ -24,6 +24,7 @@ build_client:
     - cd ..
     - echo -e "Deploying python backend"
     - sshpass -e scp -o stricthostkeychecking=no -r ./backend ${DEPLOY_NAME}@${DEPLOY_HOST}:${BASE_PATH}/
+    - cd backend
     - chmod +x restart_flask_backend.sh && ./restart_flask_backend.sh
 
   after_script:
@@ -31,3 +32,5 @@ build_client:
   artifacts:
     paths:
       - client/build
+
+
