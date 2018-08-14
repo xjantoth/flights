@@ -24,7 +24,7 @@ build_client:
     - cd ..
     - echo -e "Deploying python backend"
     - sshpass -e scp -o stricthostkeychecking=no -r ./backend ${DEPLOY_NAME}@${DEPLOY_HOST}:${BASE_PATH}/
-    - sshpass -e ssh -o stricthostkeychecking=no ${DEPLOY_NAME}@${DEPLOY_HOST} 'chmod u+x ${DEPLOY_PATH_BACKEND}/restart_flask_backend.sh; bash ${DEPLOY_PATH_BACKEND}/restart_flask_backend.sh '
+    - sshpass -e ssh -o stricthostkeychecking=no ${DEPLOY_NAME}@${DEPLOY_HOST} 'chmod u+x /opt/serve/backend/restart_flask_backend.sh; bash /opt/serve/backend/restart_flask_backend.sh '
 
   after_script:
     - echo "finished CI/CD for client"
