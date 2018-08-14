@@ -19,7 +19,7 @@ build_client:
     - npm run build
     - sshpass -V
     - export SSHPASS=$DEPOLY_PASS
-    - echo -e "Client path: $DEPLOY_PATH_CLIENT"
+    - echo -e "Client path - $DEPLOY_PATH_CLIENT"
     - sshpass -e scp -o stricthostkeychecking=no -r ./build $DEPLOY_NAME@$DEPLOY_HOST:$DEPLOY_PATH_CLIENT
     - cd ..
     - echo -e "Deploying python backend"
