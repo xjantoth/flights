@@ -19,8 +19,12 @@ build_client:
     - npm run build
     - sshpass -V
     - export SSHPASS=$DEPOLY_PASS
-    - echo $DEPLOY_PATH
-    - sshpass -e scp -o stricthostkeychecking=no -r ./build $DEPLOY_NAME@$DEPLOY_HOST:$DEPLOY_PATH
+    - echo -e "Client path: $DEPLOY_PATH_CLIENT"
+    - sshpass -e scp -o stricthostkeychecking=no -r ./build $DEPLOY_NAME@$DEPLOY_HOST:$DEPLOY_PATH_CLIENT
+    - cd ..
+    - echo -e "Deploying python backend"
+    - sshpass -e scp -o stricthostkeychecking=no -r ./backend $DEPLOY_NAME@$DEPLOY_HOST:$DEPLOY_PATH_BACKEND
+
   after_script:
     - echo "finished CI/CD for client"
   artifacts:

@@ -46,12 +46,24 @@ def timeit(method):
     return timed
 
 
+# @timeit
+# def get_data():
+#     try:
+#         raw_data = FlightData.query.order_by(FlightData.created.desc()).first_or_404().json_data
+#         decoded = raw_data.encode('utf-8', 'ignore').decode('utf-8')
+#         raw_data = json.loads(decoded)
+#         created_date = FlightData.query.order_by(FlightData.created.desc()).first_or_404().created
+#         return raw_data, created_date
+#
+#     except Exception as ee:
+#         print("{}".format(ee))
+#         return None
+
 @timeit
 def get_data():
     try:
         raw_data = FlightData.query.order_by(FlightData.created.desc()).first_or_404().json_data
-        decoded = raw_data.encode('utf-8', 'ignore').decode('utf-8')
-        raw_data = json.loads(decoded)
+        raw_data = json.loads(raw_data.decode('utf-8'))
         created_date = FlightData.query.order_by(FlightData.created.desc()).first_or_404().created
         return raw_data, created_date
 
