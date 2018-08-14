@@ -23,7 +23,7 @@ build_client:
     - sshpass -e scp -o stricthostkeychecking=no -r ./build $DEPLOY_NAME@$DEPLOY_HOST:$DEPLOY_PATH_CLIENT
     - cd ..
     - echo -e "Deploying python backend"
-    - sshpass -e scp -o stricthostkeychecking=no -r ./backend $DEPLOY_NAME@$DEPLOY_HOST:$DEPLOY_PATH_BACKEND
+    - sshpass -e scp -o stricthostkeychecking=no -r ./backend $DEPLOY_NAME@$DEPLOY_HOST:$BASE_PATH
 
   after_script:
     - echo "finished CI/CD for client"
