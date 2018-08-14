@@ -4,7 +4,8 @@ set -e
 
 function stop_flask {
   cd ${DEPLOY_PATH_BACKEND}
-  kill -9 $(cat ${PID_FILENAME}.pid )
+  pwd
+  kill -9 `cat ${PID_FILENAME}.pid`
   sleep 10
 }
 
