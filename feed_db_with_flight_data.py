@@ -87,15 +87,14 @@ def add_to_flight_data(_data):
     :param _data:
     :return:
     """
-    if _data:
+    if not 'Unauthenticated' in _data.decode('utf-8'):
         try:
             new_record = FlightData(json_data=_data)
             db.session.add(new_record)
             db.session.commit()
-            # print('Data instertedto DB!')
             return "Success"
         except Exception as e:
-            # print('Data NOT instertedto DB! {}'.format(e))
+            print('Could not save data into DB - you are perhaps Unauthorized \n {}'.format(e))
             pass
 
 

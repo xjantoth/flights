@@ -4,31 +4,32 @@ import json
 import time
 import auth
 import pytz
+import sqlite3
 import socket
 from flask import jsonify
 import datetime
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
 from pandas.io.json import json_normalize
-from flask_sqlalchemy import SQLAlchemy
+# from flask_sqlalchemy import SQLAlchemy
 pd.set_option('display.max_colwidth', -1)
 
 
-project_dir = os.path.dirname(os.path.abspath(__file__))
-database_file = "sqlite:///{}".format(os.path.join(project_dir, "2w.sqlite"))
+# project_dir = os.path.dirname(os.path.abspath(__file__))
+# database_file = "sqlite:///{}".format(os.path.join(project_dir, "2w.sqlite"))
 app = Flask(__name__)
-app.config["SQLALCHEMY_DATABASE_URI"] = database_file
-db = SQLAlchemy(app)
+# app.config["SQLALCHEMY_DATABASE_URI"] = database_file
+# db = SQLAlchemy(app)
 
 
-class FlightData(db.Model):
-
-    id = db.Column(db.Integer, primary_key=True)
-    created = db.Column(db.DateTime, default=datetime.datetime.now(pytz.timezone("Europe/Bratislava")))
-    json_data = db.Column(db.String())
-
-    def __init__(self, json_data):
-        self.json_data = json_data
+# class FlightData(db.Model):
+#
+#     id = db.Column(db.Integer, primary_key=True)
+#     created = db.Column(db.DateTime, default=datetime.datetime.now(pytz.timezone("Europe/Bratislava")))
+#     json_data = db.Column(db.String())
+#
+#     def __init__(self, json_data):
+#         self.json_data = json_data
 
 
 def timeit(method):
@@ -47,17 +48,18 @@ def timeit(method):
 
 
 @timeit
-def get_data():
-    try:
-        raw_data = FlightData.query.order_by(FlightData.created.desc()).first_or_404().json_data
-        raw_data = json.loads(raw_data.decode('utf-8'))
-        created_date = FlightData.query.order_by(FlightData.created.desc()).first_or_404().created
-        return raw_data, created_date
-
-    except Exception as ee:
-        print("{}".format(ee))
-        return None
-
+def get_data(limit_number=None):
+    if limit_number is None:
+        limit_number = 1
+    connection = sqlite3.connect('2w.sqlite')
+    cursor = connection.cursor()
+    query = "SELECT created, json_data FROM flight_data WHERE json_data NOT LIKE '%Unauthorized%' ORDER BY created DESC LIMIT ?;"
+    _data = cursor.execute(query, (limit_number,))
+    _fetched_data = _data.fetchone()
+    connection.close()
+    _created = _fetched_data[0]
+    _json_data = _fetched_data[1]
+    return _json_data, _created
 
 
 def determine_direction(x):
@@ -159,7 +161,8 @@ def get_unique_days(_data):
     """
     # _raw_data = json.loads((_data[0][0]).decode("utf-8"))
     # _raw_data = json_normalize(_data['data']['flight']['data'])
-    _df = json_normalize(_data['data']['flight']['data'])
+    _converted = json.loads(_data.decode('utf-8'))
+    _df = json_normalize(_converted['data']['flight']['data'])
     grouped = _df.groupby(['std_date'])
     _all_unique_days = []
     for day, group in grouped:
