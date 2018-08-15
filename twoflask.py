@@ -53,7 +53,7 @@ def get_data(limit_number=None):
         limit_number = 1
     connection = sqlite3.connect('2w.sqlite')
     cursor = connection.cursor()
-    query = "SELECT created, json_data FROM flight_data WHERE json_data NOT LIKE '%Unauthorized%' ORDER BY created DESC LIMIT ?;"
+    query = "SELECT created, json_data FROM flight_data WHERE json_data NOT LIKE '%Unauthenticated%' ORDER BY created DESC LIMIT ?;"
     _data = cursor.execute(query, (limit_number,))
     _fetched_data = _data.fetchone()
     connection.close()
