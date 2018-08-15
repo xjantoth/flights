@@ -3,11 +3,4 @@ login = {
     "username" : "...",
     "url_token": "...",
     "url_list": "...",
-    "win_template": "...",
-    "linux_template": "...",
-    "day_tamplate": "...",
-    "reg_template": "...",
-    "detail_list_view_tpl": "...",
-    "jumbo_tpl": "...",
-    "main_template": "...",
 }
