@@ -15,7 +15,7 @@ pd.set_option('display.max_colwidth', -1)
 
 
 project_dir = os.path.dirname(os.path.abspath(__file__))
-database_file = "sqlite:///{}".format(os.path.join(project_dir, "../2w.sqlite"))
+database_file = "sqlite:///{}".format(os.path.join(project_dir, "2w.sqlite"))
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = database_file
 db = SQLAlchemy(app)
@@ -46,19 +46,6 @@ def timeit(method):
     return timed
 
 
-# @timeit
-# def get_data():
-#     try:
-#         raw_data = FlightData.query.order_by(FlightData.created.desc()).first_or_404().json_data
-#         decoded = raw_data.encode('utf-8', 'ignore').decode('utf-8')
-#         raw_data = json.loads(decoded)
-#         created_date = FlightData.query.order_by(FlightData.created.desc()).first_or_404().created
-#         return raw_data, created_date
-#
-#     except Exception as ee:
-#         print("{}".format(ee))
-#         return None
-
 @timeit
 def get_data():
     try:
@@ -70,6 +57,7 @@ def get_data():
     except Exception as ee:
         print("{}".format(ee))
         return None
+
 
 
 def determine_direction(x):
@@ -416,18 +404,11 @@ def create_detail_list_json(_compare,
     print('list_view: {}'.format(list_view.shape[0]))
     tmpx = list_view
     tmpx = tmpx.groupby(['Meal', 'Direction']).count().iloc[:, 1]
-
-    u = list(set([i[0] for i in list(set(tmpx.to_dict().keys()))]))
-    default_quantity = {i: {'TAM': '', 'SPAT': ''} for i in u}
-    for i in list(set(tmpx.to_dict().keys())):
-        default_quantity[i[0]][i[1]] = '{}/{}'.format(tmpx.to_dict()[i], int(tmpx.to_dict()[i]) * 189)
-    # print(default_quantity)
-
     _special_quantity = {'   '.join(k): [v, int(v) * 189] for k, v in pd.DataFrame(tmpx).to_dict()['Depart'].items()}
     a_view = list_view.groupby(['Meal', 'Direction']).sum().to_dict(orient="records")
     l_view = list_view.sort_values(['Route', 'Depart'], ascending=[True, True]).drop(['Departure', ''], axis=1).to_dict(orient="records")
     print('_compare: {}'.format(_compare.shape[0]))
-    return {"special_quantity": _special_quantity, "aggregated": a_view, "list_view": l_view, "default_quantity": default_quantity}
+    return {"special_quantity": _special_quantity, "aggregated": a_view, "list_view": l_view}
 
 
 @timeit
