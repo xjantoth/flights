@@ -1,9 +1,7 @@
-import os
 from flask import Flask
 import json
 import time
 import auth
-import pytz
 import sqlite3
 import socket
 from flask import jsonify
@@ -11,25 +9,9 @@ import datetime
 import pandas as pd
 from jinja2 import Environment, FileSystemLoader
 from pandas.io.json import json_normalize
-# from flask_sqlalchemy import SQLAlchemy
 pd.set_option('display.max_colwidth', -1)
 
-
-# project_dir = os.path.dirname(os.path.abspath(__file__))
-# database_file = "sqlite:///{}".format(os.path.join(project_dir, "2w.sqlite"))
 app = Flask(__name__)
-# app.config["SQLALCHEMY_DATABASE_URI"] = database_file
-# db = SQLAlchemy(app)
-
-
-# class FlightData(db.Model):
-#
-#     id = db.Column(db.Integer, primary_key=True)
-#     created = db.Column(db.DateTime, default=datetime.datetime.now(pytz.timezone("Europe/Bratislava")))
-#     json_data = db.Column(db.String())
-#
-#     def __init__(self, json_data):
-#         self.json_data = json_data
 
 
 def timeit(method):
@@ -41,8 +23,7 @@ def timeit(method):
             name = kw.get('log_name', method.__name__.upper())
             kw['log_time'][name] = int((te - ts) * 1000)
         else:
-            print('%r  %2.2f ms' % \
-                  (method.__name__, (te - ts) * 1000))
+            print('{}  {} ms'.format(method.__name__, (te - ts) * 1000))
         return result
     return timed
 
@@ -159,8 +140,6 @@ def get_unique_days(_data):
     :param _data:
     :return:
     """
-    # _raw_data = json.loads((_data[0][0]).decode("utf-8"))
-    # _raw_data = json_normalize(_data['data']['flight']['data'])
     _converted = json.loads(_data.decode('utf-8'))
     _df = json_normalize(_converted['data']['flight']['data'])
     grouped = _df.groupby(['std_date'])
@@ -390,31 +369,6 @@ def create_detail_list(_compare,
 
 
 @timeit
-def create_detail_list_json(_compare,
-                            _all_unique_days,
-                            _day):
-
-    """
-
-    :param _compare:
-    :param _all_unique_days:
-    :param _day:
-    :return:
-    """
-
-    list_view = select_scoped_timeframe(_compare, _all_unique_days, _day)
-    list_view['Note'] = list_view['Note'].map(lambda x: str(x).replace('<div class="hoverable">', '').replace('</div>', ''))
-    print('list_view: {}'.format(list_view.shape[0]))
-    tmpx = list_view
-    tmpx = tmpx.groupby(['Meal', 'Direction']).count().iloc[:, 1]
-    _special_quantity = {'   '.join(k): [v, int(v) * 189] for k, v in pd.DataFrame(tmpx).to_dict()['Depart'].items()}
-    a_view = list_view.groupby(['Meal', 'Direction']).sum().to_dict(orient="records")
-    l_view = list_view.sort_values(['Route', 'Depart'], ascending=[True, True]).drop(['Departure', ''], axis=1).to_dict(orient="records")
-    print('_compare: {}'.format(_compare.shape[0]))
-    return {"special_quantity": _special_quantity, "aggregated": a_view, "list_view": l_view}
-
-
-@timeit
 def create_registration(_compare,
                         _all_unique_days,
                         _path_template,
@@ -454,34 +408,6 @@ def create_registration(_compare,
         return _data
     except Exception as e:
         pass
-
-
-@timeit
-def create_registration_json(_compare,
-                             _all_unique_days,
-                             _day,
-                             _r):
-    """
-
-    :param _compare:
-    :param _all_unique_days:
-    :param _day:
-    :param _r:
-    :return:
-    """
-
-    route_view = select_scoped_timeframe(_compare, _all_unique_days, _day)
-    _u_route = list(_compare['Route'].unique())
-    route_view = route_view.loc[route_view['Route'] == _r]
-    route_view_agg = route_view.groupby(['Meal', 'Direction']).sum().to_dict(orient="records")
-    route_view_list = route_view.sort_values(['Route', 'Depart'], ascending=[True, True]).drop(
-        ['Departure', ''], axis=1).to_dict(orient="records")
-    print({"unique_routes": _u_route,
-            "route_view_agg": route_view_agg,
-            "route_view_list": route_view_list})
-    return {"unique_routes": _u_route,
-            "route_view_agg": route_view_agg,
-            "route_view_list": route_view_list}
 
 
 win_template = auth.login["win_template"]
@@ -547,17 +473,6 @@ def get_all_unique_days_json():
     return jsonify(_allud)
 
 
-@app.route('/api/detail/<_day>')
-def get_detail_list_json(_day):
-    render, created_datetime = get_data()
-    udays, df_normalized = get_unique_days(render)
-    compare = render_tables(df_normalized)
-    detail_data_json = create_detail_list_json(compare,
-                                               udays,
-                                               _day)
-    return jsonify(detail_data_json)
-
-
 @app.route('/reg/<_day>/<_r>')
 def get_registration(_day, _r):
     render, created_datetime = get_data()
@@ -571,19 +486,6 @@ def get_registration(_day, _r):
         _day,
         _r)
     return registration_data
-
-
-@app.route('/api/reg/<_day>/<_r>')
-def get_registration_json(_day, _r):
-    render, created_datetime = get_data()
-    udays, df_normalized = get_unique_days(render)
-    compare = render_tables(df_normalized)
-    reg_data = create_registration_json(
-        compare,
-        udays,
-        _day,
-        _r)
-    return jsonify(reg_data)
 
 
 if __name__ == '__main__':
