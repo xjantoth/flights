@@ -41,7 +41,7 @@ class SimpleListMenu extends React.Component {
 
   render() {
     const { classes, options } = this.props;
-    const { anchorEl } = this.state;
+    const { selectedIndex, anchorEl } = this.state;
 
     return (
       <Paper className={classes.root}>
@@ -56,8 +56,8 @@ class SimpleListMenu extends React.Component {
             <ListItemText
               secondary="Day selected"
               primary={
-                options[this.state.selectedIndex] ? (
-                  <b>{options[this.state.selectedIndex].display}</b>
+                options[selectedIndex] ? (
+                  <b>{options[selectedIndex].display}</b>
                 ) : (
                   ""
                 )
@@ -74,7 +74,7 @@ class SimpleListMenu extends React.Component {
           {options.map((option, index) => (
             <MenuItem
               key={option.url}
-              selected={index === this.state.selectedIndex}
+              selected={index === selectedIndex}
               onClick={event => this.handleMenuItemClick(event, index)}
             >
               {option.display}
@@ -87,7 +87,9 @@ class SimpleListMenu extends React.Component {
 }
 
 SimpleListMenu.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
+  onItemSelected: PropTypes.func.isRequired,
+  options: PropTypes.arrayOf(PropTypes.object).isRequired
 };
 
 export default withStyles(styles)(SimpleListMenu);

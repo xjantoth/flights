@@ -17,7 +17,7 @@ const styles = theme => ({
     marginTop: theme.spacing.unit * 3
   },
   table: {
-    minWidth: 1020
+    minWidth: 900
   },
   head: {
     backgroundColor: theme.palette.background.default,
@@ -138,7 +138,11 @@ class EnhancedTable extends PureComponent {
 }
 
 EnhancedTable.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
+  // TODO: add objet shape
+  data: PropTypes.array.isRequired,
+  header: PropTypes.arrayOf(PropTypes.string).isRequired,
+  handleOnHover: PropTypes.func
 };
 
 export default withStyles(styles)(EnhancedTable);

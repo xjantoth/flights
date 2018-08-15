@@ -3,8 +3,8 @@ import PropTypes from "prop-types";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
-import TableSortLabel from "@material-ui/core/TableSortLabel";
 import Tooltip from "@material-ui/core/Tooltip";
+import TableSortLabel from "@material-ui/core/TableSortLabel";
 
 export default class EnhancedTableHead extends PureComponent {
   createSortHandler = property => event => {
@@ -49,6 +49,7 @@ export default class EnhancedTableHead extends PureComponent {
 }
 
 EnhancedTableHead.propTypes = {
+  classes: PropTypes.object.isRequired,
   columnData: PropTypes.arrayOf(PropTypes.string).isRequired,
   onRequestSort: PropTypes.func.isRequired,
   order: PropTypes.string.isRequired,

@@ -1,11 +1,12 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { bindActionCreators } from "redux";
-import * as actions from "./actions.detail";
+import PropTypes from "prop-types";
 import Selector from "./selector.detail";
 import Quick from "./quick.detail";
 import Table from "./table.detail";
 import Stats from "./stats.detail";
+import * as actions from "./actions.detail";
 
 class Detail extends Component {
   state = {
@@ -53,6 +54,15 @@ class Detail extends Component {
     );
   }
 }
+
+Detail.propTypes = {
+  // TODO: add day and daya shapes
+  days: PropTypes.arrayOf(PropTypes.object).isRequired,
+  data: PropTypes.arrayOf(PropTypes.object).isRequired,
+  header: PropTypes.arrayOf(PropTypes.string).isRequired,
+  detailRequest: PropTypes.func.isRequired,
+  allDaysRequest: PropTypes.func.isRequired
+};
 
 export default connect(
   (state, ownProps) => ({

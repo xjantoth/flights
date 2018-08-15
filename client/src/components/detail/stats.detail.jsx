@@ -1,5 +1,6 @@
 import React, { Fragment } from "react";
 import Paper from "@material-ui/core/Paper";
+import PropTypes from "prop-types";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
@@ -65,14 +66,16 @@ const DetailStats = ({ item, classes }) => (
               </Typography>
             }
           />
-          {/* <ListItemSecondaryAction> */}
-          {/* <Typography variant="body1">{item["Note"] || "---"}</Typography> */}
-          {/* </ListItemSecondaryAction> */}
         </ListItem>
         <div className={classes.noteStyles}>{item["Note"]}</div>
       </List>
     )}
   </Paper>
 );
+
+DetailStats.propTypes = {
+  classes: PropTypes.object.isRequired,
+  item: PropTypes.object
+};
 
 export default withStyles(styles, { withTheme: true })(DetailStats);
