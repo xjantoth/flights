@@ -2,30 +2,35 @@ import React from "react";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import Loop from "@material-ui/icons/Loop";
-import Help from "@material-ui/icons/Help";
+// import Loop from "@material-ui/icons/Loop";
+// import Help from "@material-ui/icons/Help";
 import Today from "@material-ui/icons/Today";
-import Logout from "@material-ui/icons/ExitToApp";
-import Feedback from "@material-ui/icons/Feedback";
+// import Logout from "@material-ui/icons/ExitToApp";
+// import Feedback from "@material-ui/icons/Feedback";
 import InsertChart from "@material-ui/icons/InsertChart";
+import { Link } from "react-router-dom";
 
 export const mainItems = (
   <div>
-    <ListItem button style={{ backgroundColor: "#555" }}>
+    <ListItem button>
       <ListItemIcon>
-        <Today />
+        <Link to="/app/detail">
+          <Today />
+        </Link>
       </ListItemIcon>
       <ListItemText primary="Day detail" />
     </ListItem>
-    <ListItem button>
+    {/* <ListItem button>
       <ListItemIcon>
         <Loop />
       </ListItemIcon>
       <ListItemText primary="Rotations" />
-    </ListItem>
+    </ListItem> */}
     <ListItem button>
       <ListItemIcon>
-        <InsertChart />
+        <Link to="/app/chart">
+          <InsertChart />
+        </Link>
       </ListItemIcon>
       <ListItemText primary="Aggregations" />
     </ListItem>
@@ -34,7 +39,7 @@ export const mainItems = (
 
 export const otherItems = (
   <div>
-    <ListItem button>
+    {/* <ListItem button>
       <ListItemIcon>
         <Help />
       </ListItemIcon>
@@ -51,6 +56,6 @@ export const otherItems = (
         <Logout />
       </ListItemIcon>
       <ListItemText primary="Logout" />
-    </ListItem>
+    </ListItem> */}
   </div>
 );

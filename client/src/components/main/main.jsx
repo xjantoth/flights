@@ -17,6 +17,9 @@ import { mainItems, otherItems } from "./drawerItems";
 import Detail from "../detail/detail";
 import { ClickAwayListener } from "@material-ui/core";
 import AirplanemodeActive from "@material-ui/icons/AirplanemodeActive";
+import { Route, Switch } from "react-router-dom";
+
+import Chart from "components/aggregations/aggregations";
 
 const drawerWidth = 240;
 
@@ -31,6 +34,7 @@ const styles = theme => ({
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
+    backgroundColor: "#252525",
     transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
@@ -161,12 +165,15 @@ class Main extends React.Component {
               </div>
               <Divider />
               <List>{mainItems}</List>
-              <Divider />
+              {/* <Divider /> */}
               <List>{otherItems}</List>
             </Drawer>
             <main className={classes.content}>
               <div className={classes.toolbar} />
-              <Detail />
+              <Switch>
+                <Route exact path="/app/detail" component={Detail} />
+                <Route exact path="/app/chart" component={Chart} />
+              </Switch>
             </main>
           </Fragment>
         </ClickAwayListener>

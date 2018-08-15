@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
@@ -32,5 +33,9 @@ const Specials = ({ data }) => (
     </Table>
   </Paper>
 );
+
+Specials.propTypes = {
+  data: PropTypes.array.isRequired
+};
 
 export default Specials;

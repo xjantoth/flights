@@ -47,21 +47,22 @@ class SimpleListMenu extends React.Component {
   };
 
   get summary() {
+    const { rotation, classes } = this.props;
+
     const data = {
       crew: 0,
       quantity: 0,
       flights: 0,
       id: null
     };
-    this.props.rotation.map(r => {
+
+    rotation.map(r => {
       data.crew += r.Crew;
       data.quantity += r.Quantity;
       data.flights += 1;
       data.id = r.Route;
       return 1;
     });
-
-    const { classes } = this.props;
 
     return (
       <span>
@@ -118,7 +119,8 @@ class SimpleListMenu extends React.Component {
 }
 
 SimpleListMenu.propTypes = {
-  classes: PropTypes.object.isRequired
+  classes: PropTypes.object.isRequired,
+  rotation: PropTypes.arrayOf(PropTypes.object)
 };
 
 export default withStyles(styles)(SimpleListMenu);
