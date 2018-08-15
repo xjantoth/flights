@@ -20,6 +20,7 @@ jantoth@ubuntu-ansible:~$ sudo chown -R jantoth.jantoth /opt/venv3
 jantoth@ubuntu-ansible:~$ source /opt/venv3/bin/activate
 (venv3) jantoth@ubuntu-ansible:/opt/venv3/2w$ cd /opt/venv3/2w
 (venv3) jantoth@ubuntu-ansible:/opt/venv3/2w$ python create_db.py
+# DELETE  FROM flight_data WHERE created <= '2018-08-01 17:56:02.523609';
 ```
 
 

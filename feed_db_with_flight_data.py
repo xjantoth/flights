@@ -5,9 +5,6 @@ import sqlite3
 import json
 import requests
 import datetime
-from flask import Flask
-
-app = Flask(__name__)
 
 
 def get_cred():
