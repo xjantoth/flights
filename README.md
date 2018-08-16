@@ -83,12 +83,17 @@ This is one time action when we do the deployment for the first time.
 #
 # ******************************************************************
 # old version
+*/10 * * * *  cd /opt/venv3/tflask && /opt/venv3/bin/python /opt/venv3/tflask/feed_db_with_flight_data.py >> /opt/venv3/tflask/error_log.log 2>&1
 @reboot  cd /opt/venv3/tflask && /opt/venv3/bin/python3.5 /opt/venv3/bin/gunicorn --bind 0.0.0.0:5000 --workers=3 wsgi:app -p flask_app.pid -D --error-logfile g_error_lofile.log
-*/2 * * * *  /opt/venv3/bin/python /opt/venv3/2w/feed_db_with_flight_data.py >> /opt/venv3/2w/error_log.log 2>&1
+
 
 # frontend - backend version 
-*/7 * * * *  /opt/serve/venv35/bin/python /opt/serve/backend/feed_db_with_flight_data.py >> /opt/serve/backend/db_error_log.log 2>&1
-@reboot cd /opt/serve/backend && /opt/serve/venv35/bin/python /opt/serve/venv35/bin/gunicorn --bind 127.0.0.1:4000 --workers=3 wsgi:app -p 2w_app.pid  -D --error-logfile gunicorn_error_lofile.log
+# m h  dom mon dow   command
+0 1 * * * /usr/bin/certbot renew & > /dev/null
+# frontend - backebd arch.
+@reboot  su - deploy -c "cd /opt/serve/backend && /opt/serve/venv35/bin/python /opt/serve/venv35/bin/gunicorn --bind 127.0.0.1:4000 --workers=3 wsgi:app -p 2w_app.pid  -D --error-logfile gunicorn_error_lofile.log"
+*/7 * * * * su - deploy -c "cd /opt/serve/backend && /opt/serve/venv35/bin/python /opt/serve/backend/feed_db_with_flight_data.py >> /opt/serve/backend/db_error_log.log 2>&1"
+
 ```
 
 
@@ -103,6 +108,13 @@ CREATE INDEX created_index_micka ON flight_data (created);
 CREATE INDEX fast_search_index ON flight_data (created);
 ```
 
+#### Delete from DB
+
+```bash
+DELETE  FROM flight_data WHERE created <= '2018-08-01 17:56:02.523609';
+vacuum;
+
+```
 
 #### Nginx
 ```bash
