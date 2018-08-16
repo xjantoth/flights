@@ -77,5 +77,6 @@ export default createReducer(initState, {
   }),
   [actions.DETAIL_ERROR]: (state, payload) => ({
     ...state
-  })
+  }),
+  [actions.CACHED_ACTION]: (state, payload) => state
 });
