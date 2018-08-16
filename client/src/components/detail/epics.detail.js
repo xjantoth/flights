@@ -3,28 +3,36 @@ import * as actions from "./actions.detail";
 import "rxjs/add/operator/switchMap";
 import api from "api";
 
-// const cacheMap = {
-//   [actions.DETAIL_REQUEST]: {},
-//   [actions.ALL_DAYS_REQUEST]: {}
-// };
+const cacheMap = {
+  [actions.DETAIL_REQUEST]: {},
+  [actions.ALL_DAYS_REQUEST]: {}
+};
 
-// const cached = action => {
-//   if (action.payload && action.payload.url) {
-//     if (cacheMap[action.type][action.payload.url]) {
-//       return cacheMap[action.type][action.payload.url];
-//     }
-//   }
-//   return false;
-// };
+const ttl = 10;
 
-// const setCache = (action, data) => {
-//   if (action.payload && action.payload.url) {
-//     if (cacheMap[action.type]) {
-//       cacheMap[action.type][action.payload.url] = data;
-//     }
-//   }
-//   return data;
-// };
+const isValidCache = cachedValue => (new Date() - cachedValue.at) / 1000 < ttl;
+
+const cached = action => {
+  if (action.payload && action.payload.url) {
+    const value = cacheMap[action.type][action.payload.url];
+    if (value && isValidCache(value)) {
+      return value.data;
+    }
+  }
+  return false;
+};
+
+const setCache = (action, data) => {
+  if (action.payload && action.payload.url) {
+    if (cacheMap[action.type]) {
+      cacheMap[action.type][action.payload.url] = {
+        data,
+        at: new Date()
+      };
+    }
+  }
+  return data;
+};
 
 // fetch list of all available days
 const allDaysRequest = action$ =>

@@ -40,32 +40,36 @@ def get_data(limit_number=None):
     return _json_data, _created
 
 
-def determine_direction(x):
-    """
+determine_direction = lambda x: "TAM" if str(x) in ["BTS", "KSC", "SLD", "TAT"] else "SPAT"
 
-    :param x:
-    :return:
-    """
-    x = str(x)
-    if x == "BTS" or x == "KSC" or x == "SLD" or x == "TAT":
-        return str("TAM")
-    else:
-        return str("SPAT")
+determine_production = lambda x: str(x) if str(x) in ["BTS", "KSC"] else "---"
+
+# def determine_direction(x):
+#     """
+
+#     :param x:
+#     :return:
+#     """
+#     x = str(x)
+#     if x == "BTS" or x == "KSC" or x == "SLD" or x == "TAT":
+#         return str("TAM")
+#     else:
+#         return str("SPAT")
 
 
-def determine_production(x):
-    """
+# def determine_production(x):
+#     """
 
-    :param x:
-    :return:
-    """
-    x = str(x)
-    if x == "BTS":
-        return str("BTS")
-    elif x == "KSC":
-        return str("KSC")
-    else:
-        return str("---")
+#     :param x:
+#     :return:
+#     """
+#     x = str(x)
+#     if x == "BTS":
+#         return str("BTS")
+#     elif x == "KSC":
+#         return str("KSC")
+#     else:
+#         return str("---")
 
 
 def extra_catering(x):
