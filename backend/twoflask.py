@@ -1,3 +1,4 @@
+import os
 import time
 import json
 import sqlite3
@@ -6,9 +7,14 @@ import pandas as pd
 from flask import Flask
 from flask import jsonify
 from pandas.io.json import json_normalize
+
 pd.set_option('display.max_colwidth', -1)
 
 app = Flask(__name__)
+
+determine_direction = lambda x: "TAM" if str(x) in ["BTS", "KSC", "SLD", "TAT"] else "SPAT"
+
+determine_production = lambda x: str(x) if str(x) in ["BTS", "KSC"] else "---"
 
 
 def timeit(method):
@@ -40,37 +46,8 @@ def get_data(limit_number=None):
     return _json_data, _created
 
 
-def determine_direction(x):
-    """
-
-    :param x:
-    :return:
-    """
-    x = str(x)
-    if x == "BTS" or x == "KSC" or x == "SLD" or x == "TAT":
-        return str("TAM")
-    else:
-        return str("SPAT")
-
-
-def determine_production(x):
-    """
-
-    :param x:
-    :return:
-    """
-    x = str(x)
-    if x == "BTS":
-        return str("BTS")
-    elif x == "KSC":
-        return str("KSC")
-    else:
-        return str("---")
-
-
 def extra_catering(x):
     """
-
     :param x:
     :return:
     """
@@ -81,45 +58,42 @@ def extra_catering(x):
 
 
 def split_data_at_time(_df, _time, is_last_day):
-    if 'xUID' not in _df:                                # temporarily create unique index, if does not exists
-        _df['xUID'] = range(_df.shape[0])
-
     """
     _df(data frame) we want to split 
-     --------
+    --------
     |        |
     |        |
     |    b   |
     |        |       
     |        | 
-     --------    <-- delimiter       _time: 2018-08-04 09:00:00 (for example)
+    --------    <-- delimiter       _time: 2018-08-04 09:00:00 (for example)
     |    a   |
-     --------
+    --------
+    
+    This function is called 2x because we always 
+    have START and END (from: 2018-08-04 09:00:00 to: 2018-08-04 22:20:00)
+    in this interval!
+    
+    if case we are processing the last interval
+    let's say we have these intervals:      2018-08-01 +
+                                            2018-08-02 +
+                                            2018-08-03 +
+                                            2018-08-04 +
+    
+    the last one would be:                  2018-08-04 +
+        
+    that means it would be this interval:   2018-08-04 09:00:00 to 2018-08-04 22:20:00
+    when we call this function 2nd time we want to make "delimiter" a part of 
+    "b-slice" from the image above.
+    
+    that's why we use "if-else statement" and b = _df[_df['xUID'] <= delimiter]
     """
+    if 'xUID' not in _df:                                # temporarily create unique index, if does not exists
+        _df['xUID'] = range(_df.shape[0])
     a = _df.loc[_time:, :]
     delimiter = a.iloc[:1].index.values[0]
     delimiter = _df[_df.index == delimiter].ix[0].xUID   # get unique index of first occurrence of delimiter
-    if is_last_day:
-        """
-        This function is called 2x because we always 
-        have START and END (from: 2018-08-04 09:00:00 to: 2018-08-04 22:20:00)
-        in this interval!
-        
-        if case we are processing the last interval
-        let's say we have these intervals:      2018-08-01 +
-                                                2018-08-02 +
-                                                2018-08-03 +
-                                                2018-08-04 +
-        
-        the last one would be:                  2018-08-04 +
-         
-        that means it would be this interval:   2018-08-04 09:00:00 to 2018-08-04 22:20:00
-        when we call this function 2nd time we want to make "delimiter" a part of 
-        "b-slice" from the image above.
-        
-        that's why we use "if-else statement" and b = _df[_df['xUID'] <= delimiter]
-        """
-
+    if is_last_day:    
         b = _df[_df['xUID'] <= delimiter]
     else:
         b = _df[_df['xUID'] < delimiter]
@@ -165,13 +139,11 @@ def get_unique_days(_data):
 
 
 @timeit
-def render_tables(_df_normalized):
+def render_tables(_df):
     """
-
-    :param _df_normalized:
+    :param _df:
     :return:
     """
-    _df = _df_normalized
     _compare = pd.DataFrame()
     _compare['Departure'] = pd.to_datetime(_df['std_date'] + ' ' + _df['std_time'])
     _compare['Depart'] = _compare['Departure']
@@ -200,12 +172,9 @@ def select_scoped_timeframe(_compare, _all_unique_days, _day):
     _day_dict_lookup = {i.replace(' ', '_').replace(':', '_'): i for i in _all_unique_days}
     DAY = _day_dict_lookup[_day]
     FT, ST = DAY.split('___')
-
     is_last_day = False
     valid, invalid, dm1 = split_data_at_time(_compare, FT, is_last_day)
-
     is_last_day = DAY == _all_unique_days[-1]
-
     extra, main, dm2 = split_data_at_time(valid, ST, is_last_day)
     valid_rids = get_unique_routes(valid)
     invalid_rids = get_unique_routes(invalid)
@@ -220,17 +189,13 @@ def select_scoped_timeframe(_compare, _all_unique_days, _day):
 def create_detail_list_json(_compare,
                             _all_unique_days,
                             _day):
-
     """
-
     :param _compare:
     :param _all_unique_days:
     :param _day:
     :return:
     """
-
     list_view = select_scoped_timeframe(_compare, _all_unique_days, _day)
-    list_view['Note'] = list_view['Note']
     tmpx = list_view
     tmpx = tmpx.groupby(['Meal', 'Direction']).count().iloc[:, 1]
     u = list(set([i[0] for i in list(set(tmpx.to_dict().keys()))]))
@@ -249,14 +214,12 @@ def create_registration_json(_compare,
                              _day,
                              _r):
     """
-
     :param _compare:
     :param _all_unique_days:
     :param _day:
     :param _r:
     :return:
     """
-
     route_view = select_scoped_timeframe(_compare, _all_unique_days, _day)
     _u_route = list(_compare['Route'].unique())
     route_view = route_view.loc[route_view['Route'] == _r]
