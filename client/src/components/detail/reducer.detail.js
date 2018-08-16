@@ -1,6 +1,7 @@
 import * as actions from "./actions.detail";
 import { createReducer } from "utils";
 import moment from "moment";
+import cache from "store/cache";
 
 const excludedHeaders = [
   "Aircraft",
@@ -44,7 +45,8 @@ const initState = {
   data: [],
   header: [],
   quantities: [],
-  specials: []
+  specials: [],
+  cache: cache([actions.DETAIL_REQUEST, actions.ALL_DAYS_REQUEST])
 };
 
 export default createReducer(initState, {
