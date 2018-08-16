@@ -6,9 +6,9 @@ DEPLOY_PATH_BACKEND="/opt/serve/backend"
 PID_FILENAME="2w_app"
 BASE_PATH="/opt/serve"
 VIRTUALENV_NAME="venv35"
-HOST="127.0.0.1"
-PORT="4000"
-WORKERS_NUMBER="3"
+HOST=127.0.0.1
+PORT=4000
+WORKERS_NUMBER=3
 ERROR_LOG_FILENAME="gunicorn_error_lofile"
 
 function stop_flask {
