@@ -108,6 +108,13 @@ CREATE INDEX created_index_micka ON flight_data (created);
 CREATE INDEX fast_search_index ON flight_data (created);
 ```
 
+#### Delete from DB
+
+```bash
+DELETE  FROM flight_data WHERE created <= '2018-08-01 17:56:02.523609';
+vacuum;
+
+```
 
 #### Nginx
 ```bash
