@@ -18,3 +18,6 @@ export const allDaysSuccess = createAction(ALL_DAYS_SUCCESS);
 
 export const ALL_DAYS_ERROR = "ALL_DAYS_ERROR";
 export const allDaysError = createAction(ALL_DAYS_ERROR);
+
+export const CACHED_ACTION = "CACHED_ACTION";
+export const cachedAction = createAction(CACHED_ACTION);
