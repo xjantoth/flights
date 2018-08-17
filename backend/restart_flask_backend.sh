@@ -13,10 +13,9 @@ ERROR_LOG_FILENAME="gunicorn_error_lofile"
 
 function stop_flask {
   cd ${DEPLOY_PATH_BACKEND}
-  PID_FILE=
   if [ -f ${PID_FILENAME}.pid ]; then
-    echo "Found this process: ${PROCESSE}"
-    echo "Killing pid: ${PIDE}"
+
+    echo "Killing pid: $(cat ${PID_FILENAME}.pid) from file: ${PID_FILENAME}.pid "
     kill -9 $(cat ${PID_FILENAME}.pid)
     sleep 20
   else
