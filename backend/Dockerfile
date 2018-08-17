@@ -27,8 +27,8 @@ docker run --name backend1 -d \
       -v /opt/serve/backend/files:/etc/letsencrypt \
       -v /opt/serve/backend:/code
       -p 4001:4000 \
-      -p 8077:80 \
-      -p 447:443   \
+      -p 80:80 \
+      -p 443:443   \
       backend:latest
 
 
