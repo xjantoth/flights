@@ -4,19 +4,19 @@ ENV PYTHONUNBUFFERED 1
 
 RUN apt-get update -y; apt-get install nginx supervisor -y && \
     mkdir -p /etc/supervisord /var/log/supervisord \
-    /code /etc/letsencrypt/live/scaleway.linuxinuse.com/&& \
+    /code /data /etc/letsencrypt/live/scaleway.linuxinuse.com/&& \
     rm /etc/nginx/sites-enabled/default && \
     sed -i '1idaemon off;' /etc/nginx/nginx.conf
 
 WORKDIR /code
 COPY nginx_backend_dockerized.conf /etc/nginx/sites-enabled/nginx_backend_dockerized.conf
-#COPY ["build", "requirement_backend.txt", "start_gunicorn.sh", "twoflask.py", "wsgi.py", "/code/"]
+COPY ["requirement_backend.txt", "start_gunicorn.sh", "/data/"]
 COPY supervisord.conf /etc
 
-RUN  pip install -r requirement_backend.txt && \
-     chmod +x /code/start_gunicorn.sh
+RUN  pip install -r /data/requirement_backend.txt && \
+     chmod +x /data/start_gunicorn.sh
 
-ENTRYPOINT ["/code/start_gunicorn.sh"]
+ENTRYPOINT ["/data/start_gunicorn.sh"]
 
 CMD ["supervisord", "-c", "/etc/supervisord.conf"]
 
