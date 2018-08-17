@@ -1,5 +1,3 @@
-import os
-import math
 import time
 import json
 import sqlite3
