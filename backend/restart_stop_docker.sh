@@ -41,4 +41,7 @@ docker run --name ${DOCKER_NAME} -d \
         fi
 }
 
-
+echo "Executing stop_docker function"
+stop_docker
+echo "Executing start_docker function"
+start_docker
