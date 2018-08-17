@@ -10,6 +10,7 @@ import EnhancedTableHead from "./header.detail";
 import ArrowForward from "@material-ui/icons/ArrowForward";
 import ArrowBack from "@material-ui/icons/ArrowBack";
 import { timeFormatter, getSorting } from "../../utils";
+import perf from "../../utils/perf";
 
 const styles = theme => ({
   root: {
@@ -94,7 +95,7 @@ class EnhancedTable extends PureComponent {
     const { classes, data, header } = this.props;
     const { order, orderBy, hovered } = this.state;
 
-    return (
+    return perf("table")(
       <Paper className={classes.tableWrapper}>
         <Table className={classes.table} aria-labelledby="tableTitle">
           <EnhancedTableHead
