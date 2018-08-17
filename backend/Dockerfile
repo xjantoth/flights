@@ -21,15 +21,13 @@ ENTRYPOINT ["/data/start_gunicorn.sh"]
 CMD ["supervisord", "-c", "/etc/supervisord.conf"]
 
 #docker build -t "backend:latest" .
-docker run --name backend1 -d \
-      -v /opt/serve/2w.sqlite:/2w.sqlite:ro \
-      -v /opt/serve/backend/ssl:/etc/letsencrypt/live/scaleway.linuxinuse.com \
-      -v /opt/serve/backend/files:/etc/letsencrypt \
-      -v /opt/serve/backend:/code
-      -p 4001:4000 \
-      -p 80:80 \
-      -p 443:443   \
-      backend:latest
+#docker run --name backend1 -d \
+#      -v /opt/serve/2w.sqlite:/2w.sqlite:ro \
+#      -v /opt/serve/backend/ssl:/etc/letsencrypt/live/scaleway.linuxinuse.com \
+#      -v /opt/serve/backend/files:/etc/letsencrypt \
+#      -v /opt/serve/backend:/code \
+#      --net=host \
+#      backend:latest
 
 
 
