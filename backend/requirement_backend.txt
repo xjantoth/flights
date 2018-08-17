@@ -10,12 +10,12 @@ Jinja2==2.10
 MarkupSafe==1.0
 numpy==1.14.5
 pandas==0.23.1
-pkg-resources==0.0.0
+#pkg-resources==0.0.0
 python-dateutil==2.7.3
 pytz==2018.4
 requests==2.19.1
 six==1.11.0
 SQLAlchemy==1.2.8
 urllib3==1.23
-uWSGI==2.0.17
+#uWSGI==2.0.17
 Werkzeug==0.14.1

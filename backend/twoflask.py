@@ -1,4 +1,5 @@
 import os
+import math
 import time
 import json
 import sqlite3
@@ -7,13 +8,11 @@ import pandas as pd
 from flask import Flask
 from flask import jsonify
 from pandas.io.json import json_normalize
-
 pd.set_option('display.max_colwidth', -1)
 
 app = Flask(__name__)
 
 determine_direction = lambda x: "TAM" if str(x) in ["BTS", "KSC", "SLD", "TAT"] else "SPAT"
-
 determine_production = lambda x: str(x) if str(x) in ["BTS", "KSC"] else "---"
 
 
@@ -152,15 +151,15 @@ def render_tables(_df):
     _compare['Aircraft'] = _df['aircraft_config']
     _compare['Reg'] = _df['aircraft_reg']
     _compare['Route'] = _df['route_id']
-    _compare["Meal"] = _df["catering_order.flight_meal_type"]
+    _compare["Meal"] = _df["catering_order.flight_meal_type"].fillna('')
     _compare['Direction'] = _df['departure_iata'].map(determine_direction)
     _compare['Production'] = _df['departure_iata'].map(determine_production)
     _compare['From'] = _df['departure_iata']
     _compare['To'] = _df['destination_iata']
     _compare['Quantity'] = _df['catering_order.quantity_y']
-    _compare['Crew'] = _df['catering_order.quantity_crew']
+    _compare['Crew'] = _df['catering_order.quantity_crew'].fillna('')
     _compare['Extra Catering'] = _df['extra_catering'].map(extra_catering)
-    _compare['Note'] = _df['catering_order.general_note']
+    _compare['Note'] = _df['catering_order.general_note'].fillna('')
     _compare['Quantity'] = _compare['Quantity'].fillna(0)
     _compare['Crew'] = _compare['Crew'].fillna(0)
     _compare.index = _compare['Departure']
@@ -235,7 +234,8 @@ def create_registration_json(_compare,
 def get_all_unique_days_json():
     render, created_datetime = get_data()
     _allud, _df_normalized = get_unique_days(render)
-    return jsonify(_allud)
+    _allud = [i.replace(' ', '_').replace(':', '_') for i in _allud]
+    return jsonify({"unique_days": _allud, "sqlite_datetime": created_datetime})
 
 
 @app.route('/api/detail/<_day>')

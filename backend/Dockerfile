@@ -20,8 +20,8 @@ ENTRYPOINT ["/code/start_gunicorn.sh"]
 CMD ["supervisord", "-c", "/etc/supervisord.conf"]
 
 #docker build -t "backend:latest" .
-#docker run --name backend1 -d \
-#      -v "../2w.sqlite":/2w.sqlite:ro \
-#      -p 4001:4000 \
-#      -p 8077:8077 \
-#      jantoth/mediawiki:v1
+docker run --name backend1 -d \
+      -v /opt/serve/2w.sqlite:/2w.sqlite:ro \
+      -p 4001:4000 \
+      -p 8077:8077 \
+      backend:latest
