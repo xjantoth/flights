@@ -13,18 +13,13 @@ ERROR_LOG_FILENAME="gunicorn_error_lofile"
 
 function stop_flask {
   cd ${DEPLOY_PATH_BACKEND}
-  PIDE=$(lsof -n -i :${PORT} | grep LISTEN | head -n 1 | awk -F" " '{print $2}')
-  PROCESSE=$(lsof -n -i :${PORT} | grep LISTEN | head -n 1)
   if [ -f ${PID_FILENAME}.pid ]; then
-    kill -9 `cat ${PID_FILENAME}.pid`
-    sleep 10
-  elif [ ! -z ${PIDE} ]; then
-    echo "${PID_FILENAME}.pid does not exist"
-    echo "Found this process: ${PROCESSE}"
-    echo "Killing pid: ${PIDE}"
-    kill -9 ${PIDE}
+
+    echo "Killing pid: $(cat ${PID_FILENAME}.pid) from file: ${PID_FILENAME}.pid "
+    kill -9 $(cat ${PID_FILENAME}.pid)
+    sleep 20
   else
-    echo 'Process on port :${PORT} is probably not running. No action needed.'
+    echo -e 'Process on port :${PORT} is probably not running. No action needed.'
   fi
 
 }
