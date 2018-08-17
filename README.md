@@ -177,3 +177,9 @@ server {
 ```
 
 
+### Add deploy user to docker group
+
+```bash
+usermod -aG docker deplo
+```
+
