@@ -232,6 +232,13 @@ def create_registration_json(_compare,
 def get_all_unique_days_json():
     render, created_datetime = get_data()
     _allud, _df_normalized = get_unique_days(render)
+    return jsonify(_allud)
+
+
+@app.route('/api/alludx')
+def get_all_unique_days_jsonx():
+    render, created_datetime = get_data()
+    _allud, _df_normalized = get_unique_days(render)
     _allud = [i.replace(' ', '_').replace(':', '_') for i in _allud]
     return jsonify({"unique_days": _allud, "sqlite_datetime": created_datetime})
 
