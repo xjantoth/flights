@@ -11,7 +11,7 @@ function stop_docker {
     echo "executing: docker stop ${DOCKER_NAME} ..."
     docker stop ${DOCKER_NAME}
     CONTAINER_ID=$(docker ps -aqf "name=${DOCKER_NAME}")
-    echo "executing: docker rmi -f ${CONTAINER_ID} ..."
+    echo "executing: docker rm -f ${CONTAINER_ID} ..."
     docker rm -f ${CONTAINER_ID}
 }
 
