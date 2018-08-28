@@ -3,14 +3,102 @@ import json
 import sqlite3
 import datetime
 import pandas as pd
-from flask import Flask
-from flask import jsonify
+from flask import Flask, jsonify
 from pandas.io.json import json_normalize
+
+from flask_restful import Api
+# from flask_jwt import JWT
+from flask_jwt_extended import JWTManager, jwt_required
+
+# from security import authenticate, identity
+from resources import (UserRegister,
+                        User,
+                        UserLogin,
+                        TokenRefresh,
+                        UserLogout)
+from models import (FlightData, UserModel)
+from blacklist import BLACKLIST
+# from db import db
+
+
 pd.set_option('display.max_colwidth', -1)
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../data.db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///data.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['PROPAGATE_EXCEPTIONS'] = True # To allow flask propagating exception even if debug is set to false on app
+app.secret_key = 'jose'  # this is flask_jwt related
+app.config['JWT_SECRET_KEY'] = 'tanicka' # this is flask_jwt_extended related
+app.config['JWT_BLACKLIST_ENABLED'] = True
+app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
+
+api = Api(app)
+jwt = JWTManager(app) # this is not creating /auth endpoint
+
+
+@jwt.user_claims_loader
+def add_claim_to_jwt(identity):
+    if identity == 1:  # Instead of hard-coding, you should read it from config
+        return {'is_admin': True}
+    return {'is_admin': False}
+
+
+@jwt.token_in_blacklist_loader
+def check_if_token_in_blacklist(decrypted_token):
+    return decrypted_token['jti'] in BLACKLIST
+
+
+@jwt.expired_token_loader
+def exipred_token_callback():
+    return jsonify(
+        {
+            'description': 'The token has expired',
+            'error': 'token_expired'
+        }
+    ), 401
+
+
+@jwt.invalid_token_loader
+def invalid_token_callback(error):
+    return jsonify({'description': 'Signature verification failed.',
+                    'error': 'invalid_token'
+                    }
+                   ), 401
+
+
+@jwt.unauthorized_loader
+def missing_token_callback(error):
+    return jsonify({'description': 'Request does not contain an access token.',
+                    'error': 'authorization_required'
+                    }
+                   ), 401
+
+
+@jwt.needs_fresh_token_loader
+def token_not_fresh_callback():
+    return jsonify({'description': 'The token is not fresh.',
+                    'error': 'fresh_token_required'
+                    }
+                   ), 401
+
+
+@jwt.revoked_token_loader
+def revoked_token_callback():
+    return jsonify({'description': 'The token has been revoked.',
+                    'error': 'token_revoked'
+                    }
+                   ), 401
+
+
+@app.before_first_request
+def create_tables():
+    # from db import db
+    db.create_all()
+
 
 determine_direction = lambda x: "TAM" if str(x) in ["BTS", "KSC", "SLD", "TAT"] else "SPAT"
+
 determine_production = lambda x: str(x) if str(x) in ["BTS", "KSC"] else "---"
 
 
@@ -29,18 +117,8 @@ def timeit(method):
 
 
 @timeit
-def get_data(limit_number=None):
-    if limit_number is None:
-        limit_number = 1
-    connection = sqlite3.connect('../2w.sqlite')
-    cursor = connection.cursor()
-    query = "SELECT created, json_data FROM flight_data ORDER BY created DESC LIMIT ?;"
-    _data = cursor.execute(query, (limit_number,))
-    _fetched_data = _data.fetchone()
-    connection.close()
-    _created = _fetched_data[0]
-    _json_data = _fetched_data[1]
-    return _json_data, _created
+def get_data():
+    return FlightData.find_latest()
 
 
 def extra_catering(x):
@@ -229,43 +307,64 @@ def create_registration_json(_compare,
 
 
 @app.route('/api/allud')
+@jwt_required
 def get_all_unique_days_json():
-    render, created_datetime = get_data()
-    _allud, _df_normalized = get_unique_days(render)
-    return jsonify(_allud)
+    data = get_data()
+    if not data:
+        return '', 404
+    _allud, _df_normalized = get_unique_days(data.json_data)
+    return jsonify({'data': _allud, 'updated': data.created})
 
 
 @app.route('/api/alludx')
+@jwt_required
 def get_all_unique_days_jsonx():
-    render, created_datetime = get_data()
-    _allud, _df_normalized = get_unique_days(render)
+    data = get_data()
+    if not data:
+        return '', 404
+    _allud, _df_normalized = get_unique_days(data.json_data)
     _allud = [i.replace(' ', '_').replace(':', '_') for i in _allud]
-    return jsonify({"unique_days": _allud, "sqlite_datetime": created_datetime})
+    return jsonify({"data": _allud, "updated": data.created})
 
 
 @app.route('/api/detail/<_day>')
+@jwt_required
 def get_detail_list_json(_day):
-    render, created_datetime = get_data()
-    udays, df_normalized = get_unique_days(render)
+    data = get_data()
+    if not data:
+        return '', 404
+    udays, df_normalized = get_unique_days(data.json_data)
     compare = render_tables(df_normalized)
     detail_data_json = create_detail_list_json(compare,
                                                udays,
                                                _day)
-    return jsonify(detail_data_json)
+    return jsonify({'data': detail_data_json, 'updated': data.created})
 
 
 @app.route('/api/reg/<_day>/<_r>')
+@jwt_required
 def get_registration_json(_day, _r):
-    render, created_datetime = get_data()
-    udays, df_normalized = get_unique_days(render)
+    data = get_data()
+    if not data:
+        return '', 404
+    udays, df_normalized = get_unique_days(data.json_data)
     compare = render_tables(df_normalized)
     reg_data = create_registration_json(
         compare,
         udays,
         _day,
         _r)
-    return jsonify(reg_data)
+    return jsonify({'data': reg_data, 'updated': data.created})
+
+
+api.add_resource(UserRegister, '/register')
+api.add_resource(User, '/user/<int:user_id>')
+api.add_resource(UserLogin, '/login')
+api.add_resource(TokenRefresh, '/refresh')
+api.add_resource(UserLogout, '/logout')
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    from db import db
+    db.init_app(app)
+    app.run(host='0.0.0.0', debug=True)

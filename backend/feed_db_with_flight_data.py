@@ -5,6 +5,9 @@ import sqlite3
 import json
 import requests
 import datetime
+import models
+from twoflask import app
+from db import db
 
 
 def get_cred():
@@ -57,25 +60,31 @@ def get_data(_token, _url_list):
         return None
 
 
-def add_to_flight_data(_data, _db):
+def add_to_flight_data(_data):
     _time = datetime.datetime.now(pytz.timezone("Europe/Bratislava"))
     try:
         if 'Unauthenticated' not in _data.decode('utf-8') and _data is not None:
-            connection = sqlite3.connect(_db)
-            cursor = connection.cursor()
-            query = "INSERT INTO flight_data VALUES (NULL, ?, ?);"
-            cursor.execute(query, (_time, _data ,))
-            connection.commit()
-            connection.close()
+            with app.app_context():
+                db.init_app(app)
+                fd = models.FlightData(_data, _time)
+                fd.save_to_db()
+
+                user = auth.defaultDBUser
+                if not models.UserModel.find_by_username(user['username']):
+                    models.UserModel(
+                        username=user['username'],
+                        password=user['password']
+                    ).save_to_db()
+
             print('{} - Data inserted to SQLITE!'.format(_time))
         else:
             print('{} - Could not insert data to SQLITE!'.format(_time))
     except Exception as e:
-        print('{} - Panic: Could not insert data to SQLITE!'.format(_time))
+        print('{} - Panic: Could not insert data to SQLITE!'.format(e))
         pass
 
 
 auth_data, url_token, url_list = get_cred()
 token = get_token(auth_data, url_token)
 data, duration = get_data(token, url_list)
-add_to_flight_data(data, '../2w.sqlite')
+add_to_flight_data(data)
