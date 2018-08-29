@@ -21,3 +21,11 @@ six==1.11.0
 SQLAlchemy==1.2.8
 urllib3==1.23
 Werkzeug==0.14.1
+
+
+
+
+curl --header "Content-Type: application/json" \
+  --request POST \
+  --data '{"username":"admin","password":"2w123#"}' \
+  http://localhost:4000/login

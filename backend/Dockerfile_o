@@ -1,0 +1,47 @@
+FROM python:3-alpine
+
+MAINTAINER JAN TOTH <toth.janci@gmail.com>
+
+RUN apk update && \
+    apk upgrade && \
+    addgroup -g 1000 -S www-data \
+    && adduser -u 1000 -D -S -G www-data www-data \
+    && mkdir -p /var/lib/nginx/data \
+    && mkdir -p /var/tmp/nginx \
+    && chown -R www-data.www-data /var/tmp/nginx \
+    && chown -R www-data.www-data /var/lib/nginx/data \
+    apk add --no-cache libstdc++ && \
+    apk add --no-cache --virtual=build_deps g++ gfortran  supervisor nginx && \
+    ln -s /usr/include/locale.h /usr/include/xlocale.h && \
+    pip install --no-cache-dir pandas && \
+    mkdir -p /run/nginx && \
+    mkdir -p /etc/supervisord /var/log/supervisord \
+    /code /data /etc/letsencrypt/live/scaleway.linuxinuse.com/&& \
+    sed -i '1idaemon off;' /etc/nginx/nginx.conf && \
+    rm /usr/include/xlocale.h && \
+    apk del build_deps
+
+# rm /etc/nginx/sites-enabled/default && \
+
+WORKDIR /code
+#COPY nginx_backend_dockerized.conf /etc/nginx/sites-enabled/nginx_backend_dockerized.conf
+COPY ["requirement_backend.txt", "start_gunicorn.sh", "/data/"]
+COPY supervisord.conf /etc
+
+RUN  pip install -r /data/requirement_backend.txt && \
+     chmod +x /data/start_gunicorn.sh
+
+#ENTRYPOINT ["/data/start_gunicorn.sh"]
+
+CMD ["supervisord", "-c", "/etc/supervisord.conf"]
+
+#docker build -t "backend:lite" .
+#docker run --name backend1 -d \
+#      -v /opt/serve/backend/ssl:/etc/letsencrypt/live/scaleway.linuxinuse.com \
+#      -v /opt/serve/backend/files:/etc/letsencrypt \
+#      -v /opt/serve/backend:/code \
+#      --net=host \
+#      backend:lite
+
+
+
