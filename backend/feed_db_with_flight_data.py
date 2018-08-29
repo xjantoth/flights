@@ -1,7 +1,6 @@
 import time
 import auth
 import pytz
-import sqlite3
 import json
 import requests
 import datetime

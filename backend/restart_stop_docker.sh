@@ -19,7 +19,6 @@ function stop_docker {
 function start_docker {
     echo -e "Starting Docker image:
 docker run --name ${DOCKER_NAME} -d \
-  -v /opt/serve/${DATABASE_FILE}:/${DATABASE_FILE}:ro \
   -v /opt/serve/backend/ssl:/etc/letsencrypt/live/scaleway.linuxinuse.com \
   -v /opt/serve/backend/files:/etc/letsencrypt \
   -v /opt/serve/backend:/code \
@@ -27,7 +26,6 @@ docker run --name ${DOCKER_NAME} -d \
   ${DOCKER_IMAGE}"
 
     docker run --name ${DOCKER_NAME} -d \
-          -v /opt/serve/${DATABASE_FILE}:/${DATABASE_FILE}:ro \
           -v /opt/serve/backend/ssl:/etc/letsencrypt/live/scaleway.linuxinuse.com \
           -v /opt/serve/backend/files:/etc/letsencrypt \
           -v /opt/serve/backend:/code \

@@ -1,6 +1,5 @@
 import time
 import json
-import sqlite3
 import datetime
 import pandas as pd
 from flask import Flask, jsonify
@@ -18,13 +17,12 @@ from resources import (UserRegister,
                         UserLogout)
 from models import (FlightData, UserModel)
 from blacklist import BLACKLIST
-# from db import db
 
 
 pd.set_option('display.max_colwidth', -1)
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../data.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'
 # app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///data.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROPAGATE_EXCEPTIONS'] = True # To allow flask propagating exception even if debug is set to false on app
@@ -93,8 +91,10 @@ def revoked_token_callback():
 
 @app.before_first_request
 def create_tables():
-    # from db import db
-    db.create_all()
+    from db import db
+    with app.app_context():
+        db.init_app(app)
+        db.create_all()
 
 
 determine_direction = lambda x: "TAM" if str(x) in ["BTS", "KSC", "SLD", "TAT"] else "SPAT"
