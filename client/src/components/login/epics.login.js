@@ -6,8 +6,9 @@ import api from "api";
 
 export const loginRequest = action$ =>
   action$.ofType(actions.LOGIN_REQUEST).switchMap(action =>
-    fetch(api.LOGIN, objectToForm(action.payload))
-      .then(response => response.json())
+    api.Client.post(api.LOGIN, action.payload)
+      // .then(response => response.data.)
+      .then(response => response.data)
       .then(actions.loginSuccess)
       .catch(actions.loginError)
   );

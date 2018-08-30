@@ -18,7 +18,7 @@ import Detail from "../detail/detail";
 import { ClickAwayListener } from "@material-ui/core";
 import AirplanemodeActive from "@material-ui/icons/AirplanemodeActive";
 import { Route, Switch } from "react-router-dom";
-
+import auth from "services/auth";
 import Chart from "components/aggregations/aggregations";
 
 const drawerWidth = 240;
@@ -105,6 +105,11 @@ class Main extends React.Component {
     this.setState({ open: false });
   };
 
+  componentDidMount = () => {
+    if (!auth.isAuthenticated) {
+      this.props.history.push("/");
+    }
+  };
   render() {
     const { classes, theme } = this.props;
 

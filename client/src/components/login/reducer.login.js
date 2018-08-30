@@ -11,20 +11,18 @@ const initState = {
 export default createReducer(initState, {
   [actions.LOGIN_REQUEST]: (state, payload) => ({
     ...state,
-    isLoading: false,
-    isError: false,
-    error: null
+    isLoading: true,
+    isAuthenticated: false
   }),
   [actions.LOGIN_SUCCESS]: (state, payload) => ({
     ...state,
     isLoading: false,
-    isError: false,
-    error: null
+    isAuthenticated: true
   }),
   [actions.LOGIN_ERROR]: (state, payload) => ({
     ...state,
     isLoading: false,
-    isError: true,
-    error: payload
+    isAuthenticated: true,
+    isError: true
   })
 });
