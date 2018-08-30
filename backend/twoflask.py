@@ -357,11 +357,11 @@ def get_registration_json(_day, _r):
     return jsonify({'data': reg_data, 'updated': data.created})
 
 
-api.add_resource(UserRegister, '/register')
-api.add_resource(User, '/user/<int:user_id>')
-api.add_resource(UserLogin, '/login')
-api.add_resource(TokenRefresh, '/refresh')
-api.add_resource(UserLogout, '/logout')
+api.add_resource(UserRegister, '/api/register')
+api.add_resource(User, '/api/user/<int:user_id>')
+api.add_resource(UserLogin, '/api/login')
+api.add_resource(TokenRefresh, '/api/refresh')
+api.add_resource(UserLogout, '/api/logout')
 
 
 if __name__ == '__main__':
