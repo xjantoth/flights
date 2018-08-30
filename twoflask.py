@@ -157,7 +157,7 @@ def get_unique_days(_data):
     final = []
     a = start
     while True:
-        b = (a + datetime.timedelta(1)).replace(hour=9, minute=0)
+        b = (a + datetime.timedelta(1)).replace(hour=1, minute=0)
         if b > end:
             b = end
             final.append('{}___{}'.format(str(a), str(b)))
@@ -410,7 +410,7 @@ def create_registration(_compare,
         pass
 
 
-win_template = auth.login["win_template"]
+win_template = auth.login["f_template"]
 linux_template = auth.login["linux_template"]
 day_tamplate = auth.login["day_tamplate"]
 reg_template = auth.login["reg_template"]
@@ -420,7 +420,7 @@ main_template = auth.login["main_template"]
 
 
 path_template = win_template
-if socket.gethostname() != "nb-jantoth":
+if socket.gethostname() != "localhost.localdomain":
     path_template = linux_template
 
 
