@@ -116,7 +116,7 @@ class Main extends React.Component {
     }
   };
 
-  componentWillUpdate = () => {
+  componentDidUpdate = () => {
     if (!this.props.isAuthenticated) {
       auth.logout();
       this.props.history.push("/");

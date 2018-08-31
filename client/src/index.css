@@ -38,5 +38,16 @@ tr {
 }
 
 .loginInput > div:before {
-  border-bottom-color: #666;
+  border-bottom-color: #777;
+}
+
+.loginInput > label {
+  width: 100%;
+  text-align: center;
+  transform-origin: top center;
+}
+
+.loginInput input {
+  width: 100%;
+  text-align: center;
 }
