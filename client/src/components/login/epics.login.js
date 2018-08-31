@@ -7,10 +7,16 @@ import api from "api";
 export const loginRequest = action$ =>
   action$.ofType(actions.LOGIN_REQUEST).switchMap(action =>
     api.Client.post(api.LOGIN, action.payload)
-      // .then(response => response.data.)
       .then(response => response.data)
       .then(actions.loginSuccess)
       .catch(actions.loginError)
+  );
+
+export const logoutRequest = action$ =>
+  action$.ofType(actions.LOGOUT_REQUEST).switchMap(action =>
+    api.Client.post(api.LOGOUT)
+      .then(actions.logoutSuccess)
+      .catch(actions.logoutError)
   );
 
 export const recoveryRequest = (action$, store) =>
@@ -21,4 +27,4 @@ export const recoveryRequest = (action$, store) =>
       .catch(actions.recoveryError)
   );
 
-export default combineEpics(loginRequest, recoveryRequest);
+export default combineEpics(loginRequest, logoutRequest, recoveryRequest);

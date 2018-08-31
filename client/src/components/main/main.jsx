@@ -20,6 +20,10 @@ import AirplanemodeActive from "@material-ui/icons/AirplanemodeActive";
 import { Route, Switch } from "react-router-dom";
 import auth from "services/auth";
 import Chart from "components/aggregations/aggregations";
+import { logoutRequest } from "../login/actions.login";
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+// import auth from "services/auth";
 
 const drawerWidth = 240;
 
@@ -105,14 +109,22 @@ class Main extends React.Component {
     this.setState({ open: false });
   };
 
-  componentDidMount = () => {
-    if (!auth.isAuthenticated) {
+  componentWillMount = () => {
+    if (!this.props.isAuthenticated) {
+      auth.logout();
       this.props.history.push("/");
     }
   };
+
+  componentWillUpdate = () => {
+    if (!this.props.isAuthenticated) {
+      auth.logout();
+      this.props.history.push("/");
+    }
+  };
+
   render() {
     const { classes, theme } = this.props;
-
     return (
       <div className={classes.root}>
         <Backdrop
@@ -169,7 +181,9 @@ class Main extends React.Component {
                 </IconButton>
               </div>
               <Divider />
-              <List>{mainItems}</List>
+              <List>
+                {mainItems({ handleLogoutClick: this.props.logoutRequest })}
+              </List>
               {/* <Divider /> */}
               <List>{otherItems}</List>
             </Drawer>
@@ -192,4 +206,9 @@ Main.propTypes = {
   theme: PropTypes.object.isRequired
 };
 
-export default withStyles(styles, { withTheme: true })(Main);
+export default connect(
+  (state, ownProps) => ({
+    isAuthenticated: state.login.isAuthenticated
+  }),
+  dispatch => bindActionCreators({ logoutRequest }, dispatch)
+)(withStyles(styles, { withTheme: true })(Main));

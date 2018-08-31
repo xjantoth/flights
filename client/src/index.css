@@ -23,7 +23,6 @@ body {
 
 tbody tr > td {
   opacity: 1;
-  /* transition: 250ms opacity ease; */
   cursor: pointer;
 }
 
@@ -37,19 +36,7 @@ tr {
   flex-direction: row;
   transition: 150ms background-color ease;
 }
-/* 
-tbody tr.faded > td {
-  opacity: 0.33;
-} */
-/* 
-tbody tr:hover > td {
-  background-color: #1ad;
-} */
-/* 
-tbody tr.focused > td {
-  background-color: #1ad;
-} */
 
-/* tbody tr.highlighted > td {
-  background-color: rgba(25, 180, 220, 0.3);
-} */
+.loginInput > div:before {
+  border-bottom-color: #666;
+}

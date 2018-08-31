@@ -10,7 +10,7 @@ import Logout from "@material-ui/icons/ExitToApp";
 import InsertChart from "@material-ui/icons/InsertChart";
 import { Link } from "react-router-dom";
 
-export const mainItems = (
+export const mainItems = props => (
   <div>
     <ListItem button>
       <ListItemIcon>
@@ -34,7 +34,7 @@ export const mainItems = (
       </ListItemIcon>
       <ListItemText primary="Aggregations" />
     </ListItem>
-    <ListItem button>
+    <ListItem button onClick={props.handleLogoutClick}>
       <ListItemIcon>
         <Logout />
       </ListItemIcon>

@@ -17,6 +17,9 @@ const styles = theme => ({
   },
 
   Modal: {
+    backgroundColor: theme.palette.background.paper,
+    borderRadius: theme.spacing.unit / 2,
+    boxShadow: theme.shadows[4],
     position: "absolute",
     top: "30%"
   },
@@ -27,9 +30,9 @@ const styles = theme => ({
 
   Subheader: {
     width: 350,
-    textAlign: "center",
-    height: theme.spacing.unit * 8,
-    padding: `0px ${theme.spacing.unit * 3}px`
+    backgroundColor: "#353535",
+    height: theme.spacing.unit * 12,
+    padding: theme.spacing.unit * 4
   },
 
   Submit: {
@@ -60,9 +63,15 @@ class Login extends PureComponent {
     recoveryRequest: PropTypes.func.isRequired
   };
 
-  handleSubmit = event => this.props.loginRequest(this.state);
+  handleKeyPress = event => {
+    if (event.key === "Enter") {
+      this.handleSubmit();
+    }
+  };
 
-  handlePasswordRecovery = event =>
+  handleSubmit = () => this.props.loginRequest(this.state);
+
+  handlePasswordRecovery = () =>
     this.props.recoveryRequest({ username: this.state.username });
 
   componentWillUpdate = () => {
@@ -83,11 +92,15 @@ class Login extends PureComponent {
       >
         <div className={classes.Modal}>
           <div className={classes.Subheader}>
-            <Typography variant="display1">Login</Typography>
+            <Typography variant="headline">Sign In</Typography>
           </div>
-          <form className={classes.Form} onSubmit={this.handleSubmit}>
+          <form
+            className={classes.Form}
+            onSubmit={this.handleSubmit}
+            onKeyPress={this.handleKeyPress}
+          >
             <TextField
-              className={classes.Black}
+              className={"loginInput"}
               id="username"
               label="Username"
               type="text"
@@ -99,7 +112,7 @@ class Login extends PureComponent {
               fullWidth
             />
             <TextField
-              className={classes.Black}
+              className={"loginInput"}
               id="password"
               label="Password"
               type="password"

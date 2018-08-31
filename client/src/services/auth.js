@@ -5,21 +5,24 @@ const auth = {
   get isAuthenticated() {
     return auth.tokens.access && auth.tokens.refresh;
   },
-
-  refreshToken() {},
-
+  logout() {
+    sessionStorage.removeItem(ACCESS_TOKEN);
+    delete sessionStorage.ACCESS_TOKEN;
+    sessionStorage.removeItem(REFRESH_TOKEN);
+    delete sessionStorage.REFRESH_TOKEN;
+  },
   tokens: {
     get access() {
-      return localStorage.getItem(ACCESS_TOKEN);
+      return sessionStorage.getItem(ACCESS_TOKEN);
     },
     set access(value) {
-      localStorage.setItem(ACCESS_TOKEN, value);
+      sessionStorage.setItem(ACCESS_TOKEN, value);
     },
     get refresh() {
-      return localStorage.getItem(REFRESH_TOKEN);
+      return sessionStorage.getItem(REFRESH_TOKEN);
     },
     set refresh(value) {
-      localStorage.setItem(REFRESH_TOKEN, value);
+      sessionStorage.setItem(REFRESH_TOKEN, value);
     }
   }
 };

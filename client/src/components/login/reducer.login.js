@@ -24,5 +24,10 @@ export default createReducer(initState, {
     isLoading: false,
     isAuthenticated: true,
     isError: true
+  }),
+  [actions.LOGOUT_SUCCESS]: (state, payload) => ({
+    ...state,
+    isLoading: false,
+    isAuthenticated: false
   })
 });
