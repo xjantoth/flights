@@ -15,6 +15,9 @@ const styles = theme => ({
     marginRight: theme.spacing.unit * 2,
     backgroundColor: theme.palette.background.paper,
     marginBottom: theme.spacing.unit * 2
+  },
+  day: {
+    textAlign: "center"
   }
 });
 
@@ -54,6 +57,7 @@ class SimpleListMenu extends React.Component {
             onClick={this.handleClickListItem}
           >
             <ListItemText
+              className={classes.day}
               secondary="Day selected"
               primary={
                 options[selectedIndex] ? (

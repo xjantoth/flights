@@ -6,23 +6,23 @@ const auth = {
     return auth.tokens.access && auth.tokens.refresh;
   },
   logout() {
-    sessionStorage.removeItem(ACCESS_TOKEN);
-    delete sessionStorage.ACCESS_TOKEN;
-    sessionStorage.removeItem(REFRESH_TOKEN);
-    delete sessionStorage.REFRESH_TOKEN;
+    localStorage.removeItem(ACCESS_TOKEN);
+    delete localStorage.ACCESS_TOKEN;
+    localStorage.removeItem(REFRESH_TOKEN);
+    delete localStorage.REFRESH_TOKEN;
   },
   tokens: {
     get access() {
-      return sessionStorage.getItem(ACCESS_TOKEN);
+      return localStorage.getItem(ACCESS_TOKEN);
     },
     set access(value) {
-      sessionStorage.setItem(ACCESS_TOKEN, value);
+      localStorage.setItem(ACCESS_TOKEN, value);
     },
     get refresh() {
-      return sessionStorage.getItem(REFRESH_TOKEN);
+      return localStorage.getItem(REFRESH_TOKEN);
     },
     set refresh(value) {
-      sessionStorage.setItem(REFRESH_TOKEN, value);
+      localStorage.setItem(REFRESH_TOKEN, value);
     }
   }
 };
