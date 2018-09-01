@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React from "react";
 import Paper from "@material-ui/core/Paper";
 import PropTypes from "prop-types";
 import Table from "@material-ui/core/Table";
@@ -29,16 +29,6 @@ const styles = theme => ({
     whiteSpace: "pre-wrap"
   }
 });
-
-const headers = [
-  "Aircraft",
-  "Reg",
-  "Route",
-  "Meal",
-  "Production",
-  "Extra Catering"
-  // "Note"
-];
 
 const Aggregations = ({ data, classes }) => (
   <Paper className={classes.statsStyles}>

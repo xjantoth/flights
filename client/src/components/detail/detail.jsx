@@ -40,7 +40,6 @@ const styles = theme => ({
     color: "white"
   },
   icon: {
-    // fontSize: 52
     width: "100%",
     height: "100%"
   }
@@ -80,7 +79,7 @@ class Detail extends Component {
   render() {
     const { classes } = this.props;
     const { displayAggregations } = this.state;
-    console.log(this.props);
+
     return (
       <div>
         <span style={{ display: "flex" }}>
