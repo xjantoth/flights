@@ -54,8 +54,8 @@ const styles = theme => ({
 
 class Login extends PureComponent {
   state = {
-    username: 'admin',
-    password: '2w123#'
+    username: process.env.NODE_ENV === "development" ? 'admin' : null,
+    password: process.env.NODE_ENV === "development" ? '2w123#' : null
   };
 
   static propTypes = {
