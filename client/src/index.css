@@ -29,6 +29,7 @@ tbody tr > td {
 td,
 th {
   text-align: center !important;
+  padding: 4px 8px 4px 8px!important;
 }
 
 tr {

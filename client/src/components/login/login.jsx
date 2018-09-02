@@ -54,8 +54,8 @@ const styles = theme => ({
 
 class Login extends PureComponent {
   state = {
-    username: null,
-    password: null
+    username: 'admin',
+    password: '2w123#'
   };
 
   static propTypes = {
@@ -108,6 +108,7 @@ class Login extends PureComponent {
               onChange={event =>
                 this.setState({ username: event.target.value })
               }
+              value={this.state.username}
               autoFocus
               fullWidth
             />
@@ -120,6 +121,7 @@ class Login extends PureComponent {
               onChange={event =>
                 this.setState({ password: event.target.value })
               }
+              value={this.state.password}
               fullWidth
             />
             <br />

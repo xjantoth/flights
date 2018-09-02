@@ -17,9 +17,9 @@ import { mainItems, otherItems } from "./drawerItems";
 import Detail from "../detail/detail";
 import { ClickAwayListener } from "@material-ui/core";
 import AirplanemodeActive from "@material-ui/icons/AirplanemodeActive";
-import { Route, Switch } from "react-router-dom";
+// import { Route, Switch } from "react-router-dom";
 import auth from "services/auth";
-import Chart from "components/aggregations/aggregations";
+// import Chart from "components/aggregations/aggregations";
 import { logoutRequest } from "../login/actions.login";
 import { bindActionCreators } from "redux";
 import { connect } from "react-redux";
@@ -189,10 +189,11 @@ class Main extends React.Component {
             </Drawer>
             <main className={classes.content}>
               <div className={classes.toolbar} />
-              <Switch>
-                <Route exact path="/app/detail" component={Detail} />
-                <Route exact path="/app/chart" component={Chart} />
-              </Switch>
+              {/* <Switch> */}
+                  <Detail />
+                {/* <Route exact path="/app/detail" component={Detail} /> */}
+                {/* <Route exact path="/app/chart" component={Chart} /> */}
+              {/* </Switch> */}
             </main>
           </Fragment>
         </ClickAwayListener>

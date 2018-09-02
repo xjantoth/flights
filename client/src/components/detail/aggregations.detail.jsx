@@ -15,9 +15,16 @@ const styles = theme => ({
     width: "calc(100vw / 5)",
     minWidth: 300,
     marginRight: theme.spacing.unit * 2,
-    zIndex: 1,
-    paddingTop: theme.spacing.unit * 2,
-    paddingRight: theme.spacing.unit * 2
+    zIndex: 1
+  },
+  head: {
+    backgroundColor: theme.palette.background.default,
+    position: "sticky",
+    zIndex: 9,
+    top: 0
+  },
+  cell: {
+    borderBottom: '1px solid transparent'
   },
   noteStyles: {
     color: theme.palette.text.primary,
@@ -33,20 +40,20 @@ const styles = theme => ({
 const Aggregations = ({ data, classes }) => (
   <Paper className={classes.statsStyles}>
     <Table className={classes.table} fullWidth>
-      <TableHead>
+      <TableHead className={classes.head}>
         <TableRow>
-          <TableCell>Meal</TableCell>
-          <TableCell numeric>Spat</TableCell>
-          <TableCell numeric>Tam</TableCell>
+          <TableCell className={classes.cell}><b>Meal</b></TableCell>
+          <TableCell className={classes.cell}>Spat</TableCell>
+          <TableCell className={classes.cell}>Tam</TableCell>
         </TableRow>
       </TableHead>
       <TableBody>
-        {Object.keys(data).map((key, index) => {
+        {data && Object.keys(data).map((key, index) => {
           return (
             <TableRow key={index}>
-              <TableCell>{key}</TableCell>
-              <TableCell>{data[key].SPAT}</TableCell>
-              <TableCell>{data[key].TAM}</TableCell>
+              <TableCell className={classes.cell}><b>{key}</b></TableCell>
+              <TableCell className={classes.cell}>{data[key].SPAT}</TableCell>
+              <TableCell className={classes.cell}>{data[key].TAM}</TableCell>
             </TableRow>
           );
         })}

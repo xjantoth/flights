@@ -48,14 +48,15 @@ const styles = theme => ({
 class Detail extends Component {
   state = {
     hovered: null,
-    displayAggregations: false
+    show: 'agg',
+    // showDetail: false,
   };
 
   handleOnHover = hovered => this.setState({ hovered });
 
   handleSubNavClick = value => {
     this.setState({
-      displayAggregations: value
+      show: value
     });
   };
 
@@ -78,33 +79,33 @@ class Detail extends Component {
 
   render() {
     const { classes } = this.props;
-    const { displayAggregations } = this.state;
+    const { show } = this.state;
 
     return (
       <div>
         <span style={{ display: "flex" }}>
           <Paper
             className={
-              displayAggregations ? classes.defaultIcon : classes.activeIcon
+              show === 'detail' ? classes.activeIcon : classes.defaultIcon
             }
           >
             <IconButton
               className={classes.icon}
               disableRipple={true}
-              onClick={() => this.handleSubNavClick(false)}
+              onClick={() => this.handleSubNavClick(show === 'detail' ? null : 'detail')}
             >
               <DetailIcon />
             </IconButton>
           </Paper>
           <Paper
             className={
-              displayAggregations ? classes.activeIcon : classes.defaultIcon
+              show === 'agg' ? classes.activeIcon : classes.defaultIcon
             }
           >
             <IconButton
               className={classes.icon}
               disableRipple={true}
-              onClick={() => this.handleSubNavClick(true)}
+              onClick={() => this.handleSubNavClick(show === 'agg' ? null : 'agg')}
             >
               <InsertChartIcon />
             </IconButton>
@@ -116,11 +117,8 @@ class Detail extends Component {
           <Quick rotation={this.rotation} />
         </span>
         <span style={{ display: "flex" }}>
-          {displayAggregations ? (
-            <Aggregations data={this.props.aggregated} />
-          ) : (
-            <Stats item={this.state.hovered} />
-          )}
+          {show === 'agg' && <Aggregations data={this.props.aggregated} />}
+          {show === 'detail' && <Stats item={this.state.hovered} />}
           <Table
             data={this.props.data}
             header={this.props.header}
