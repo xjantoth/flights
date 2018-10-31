@@ -195,7 +195,12 @@ def get_unique_days(_data):
         maximum = group['std_time'].max()
         _all_unique_days.append((day, minimum, maximum))
 
-    start, end = _all_unique_days[::len(_all_unique_days) - 1]
+    if len(_all_unique_days) == 1:
+        start = _all_unique_days[0]
+        end = _all_unique_days[0]
+    else:
+        start, end = _all_unique_days[::len(_all_unique_days) - 1]
+
     start = list(start[:2])
     end = list(end[::len(end) - 1])
     start = datetime.datetime.strptime(start[0] + ' ' + start[1], '%Y-%m-%d %H:%M:%S')
