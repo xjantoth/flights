@@ -71,7 +71,7 @@ def add_to_flight_data(_data, _db):
         else:
             print('{} - Could not insert data to SQLITE!'.format(_time))
     except Exception as e:
-        print('{} - Panic: Could not insert data to SQLITE!'.format(_time))
+        print('{} - Panic: Could not insert data to SQLITE! Ended up with error: {}'.format(_time, e))
         pass
 
 
