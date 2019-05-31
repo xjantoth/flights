@@ -1,3 +1,30 @@
+#### Run current app version
+
+```
+cd /opt/venv3/tflask && \ 
+/opt/venv3/bin/python3.5 \ 
+/opt/venv3/bin/gunicorn \
+--bind 0.0.0.0:5000 \
+--workers=3 \
+wsgi:app \
+-p flask_app.pid \
+-D \
+--error-logfile g_error_lofile.log
+```
+
+#### Check SQLITE3 database records
+
+```
+cd /opt/venv3/tflask
+ sqlite3 2w.sqlite
+SQLite version 3.11.0 2016-02-15 17:29:24
+Enter ".help" for usage hints.
+sqlite> select created from flight_data ORDER BY created DESC LIMIT 2;
+2019-05-31 13:10:03.515183+02:00
+2019-05-31 13:00:02.462766+02:00
+sqlite> 
+```
+
 #### How to create virtual environment Windows
 
 Run this simple command:

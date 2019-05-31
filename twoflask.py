@@ -161,7 +161,7 @@ def get_unique_days(_data):
     final = []
     a = start
     while True:
-        b = (a + datetime.timedelta(1)).replace(hour=13, minute=0)
+        b = (a + datetime.timedelta(1)).replace(hour=0, minute=0)
         if b > end:
             b = end
             final.append('{}___{}'.format(str(a), str(b)))

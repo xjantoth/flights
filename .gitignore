@@ -10,3 +10,5 @@ Untitled.ipynb
 assesment.py
 venv
 .vscode/
+*.pid
+*.log
