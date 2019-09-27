@@ -6,8 +6,8 @@ import api from "api";
 // fetch list of all available days
 const allDaysRequest = action$ =>
   action$.ofType(actions.ALL_DAYS_REQUEST).switchMap(action =>
-    fetch(api.DAYS_LIST)
-      .then(response => response.json())
+    api.Client.get(api.DAYS_LIST)
+      .then(response => response.data.data)
       .then(actions.allDaysSuccess)
       .catch(actions.allDaysError)
   );
@@ -17,19 +17,10 @@ const detailRequest = (action$, store) =>
   action$
     .ofType(actions.ALL_DAYS_SUCCESS, actions.DETAIL_REQUEST)
     .switchMap(action => {
-      const cache = store.getState().detail.cache;
-      const cachedValue = cache.get(action);
-      if (cachedValue) {
-        return [actions.detailSuccess(cachedValue)];
-      }
-
       const selectedDay = action.payload && action.payload.url;
       const day = selectedDay || store.getState().detail.days[0].url;
-      return fetch(`${api.DAY}${day}`)
-        .then(data => data.text())
-        .then(data => data.replace(/NaN/g, "null"))
-        .then(data => JSON.parse(data))
-        .then(data => cache.set(action, data))
+      return api.Client.get(`${api.DAY}${day}`)
+        .then(response => response.data.data)
         .then(actions.detailSuccess)
         .catch(actions.detailError);
     });

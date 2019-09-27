@@ -75,6 +75,7 @@ export default createReducer(initState, {
     data: payload.list_view,
     header: headerProcessor(Object.keys(payload.list_view[0])),
     quantities: payload.aggregated,
+    aggregated: payload.default_quantity,
     specials: payload.special_quantity
   }),
   [actions.DETAIL_ERROR]: (state, payload) => ({

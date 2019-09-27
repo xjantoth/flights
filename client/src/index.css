@@ -23,13 +23,13 @@ body {
 
 tbody tr > td {
   opacity: 1;
-  /* transition: 250ms opacity ease; */
   cursor: pointer;
 }
 
 td,
 th {
   text-align: center !important;
+  padding: 4px 8px 4px 8px!important;
 }
 
 tr {
@@ -37,19 +37,18 @@ tr {
   flex-direction: row;
   transition: 150ms background-color ease;
 }
-/* 
-tbody tr.faded > td {
-  opacity: 0.33;
-} */
-/* 
-tbody tr:hover > td {
-  background-color: #1ad;
-} */
-/* 
-tbody tr.focused > td {
-  background-color: #1ad;
-} */
 
-/* tbody tr.highlighted > td {
-  background-color: rgba(25, 180, 220, 0.3);
-} */
+.loginInput > div:before {
+  border-bottom-color: #777;
+}
+
+.loginInput > label {
+  width: 100%;
+  text-align: center;
+  transform-origin: top center;
+}
+
+.loginInput input {
+  width: 100%;
+  text-align: center;
+}

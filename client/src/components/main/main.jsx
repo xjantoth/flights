@@ -2,24 +2,21 @@ import React, { Fragment } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
 import { withStyles } from "@material-ui/core/styles";
-import Drawer from "@material-ui/core/Drawer";
 import Backdrop from "@material-ui/core/Backdrop";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
-import List from "@material-ui/core/List";
 import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
-import IconButton from "@material-ui/core/IconButton";
-import MenuIcon from "@material-ui/icons/Menu";
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
-import { mainItems, otherItems } from "./drawerItems";
 import Detail from "../detail/detail";
 import { ClickAwayListener } from "@material-ui/core";
 import AirplanemodeActive from "@material-ui/icons/AirplanemodeActive";
-import { Route, Switch } from "react-router-dom";
+import auth from "services/auth";
+import { logoutRequest } from "../login/actions.login";
+import { bindActionCreators } from "redux";
+import { connect } from "react-redux";
+import Button from "@material-ui/core/Button";
+import LogoutIcon from "@material-ui/icons/ExitToApp";
+import RegisterIcon from "@material-ui/icons/PersonAdd";
 
-import Chart from "components/aggregations/aggregations";
 
 const drawerWidth = 240;
 
@@ -34,7 +31,7 @@ const styles = theme => ({
   },
   appBar: {
     zIndex: theme.zIndex.drawer + 1,
-    backgroundColor: "#252525",
+    backgroundColor: theme.palette.grey[900],
     transition: theme.transitions.create(["width", "margin"], {
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
@@ -86,8 +83,23 @@ const styles = theme => ({
   content: {
     flexGrow: 1,
     backgroundColor: theme.palette.background.default,
-    marginLeft: theme.spacing.unit * 8,
+    // marginLeft: theme.spacing.unit * 8,
     padding: theme.spacing.unit * 3
+  },
+  logout: {
+    position: 'absolute',
+    right: theme.spacing.unit * 3,
+    background: theme.palette.grey[900],
+    color: theme.palette.grey[300]
+  },
+  register: {
+    position: 'absolute',
+    right: theme.spacing.unit * 18,
+    background: theme.palette.grey[900],
+    color: theme.palette.grey[300]
+  },
+  extendedIcon: {
+    marginRight: theme.spacing.unit
   }
 });
 
@@ -105,9 +117,26 @@ class Main extends React.Component {
     this.setState({ open: false });
   };
 
-  render() {
-    const { classes, theme } = this.props;
+  componentWillMount = () => {
+    if (!this.props.isAuthenticated) {
+      auth.logout();
+      this.props.history.push("/");
+    }
+  };
 
+  componentDidUpdate = () => {
+    if (!this.props.isAuthenticated) {
+      auth.logout();
+      this.props.history.push("/");
+    }
+  };
+
+  handleRegistration = () => {
+
+  }
+
+  render() {
+    const { classes } = this.props;
     return (
       <div className={classes.root}>
         <Backdrop
@@ -127,53 +156,23 @@ class Main extends React.Component {
               )}
             >
               <Toolbar disableGutters={!this.state.open}>
-                <IconButton
-                  color="inherit"
-                  aria-label="Open drawer"
-                  onClick={this.handleDrawerOpen}
-                  className={classNames(
-                    classes.menuButton,
-                    this.state.open && classes.hide
-                  )}
-                >
-                  <MenuIcon />
-                </IconButton>
-                <AirplanemodeActive style={{ marginRight: 8 }} />
+                <AirplanemodeActive style={{ marginRight: 16, marginLeft: 36 }} />
                 <Typography variant="title" color="inherit" noWrap>
                   {this.title}
                 </Typography>
+                <Button aria-label="Register" className={classes.register} onClick={this.handleRegistration}>
+                  <RegisterIcon className={classes.extendedIcon} />
+                  Register
+                </Button>
+                <Button aria-label="Logout" className={classes.logout} onClick={this.props.logoutRequest}>
+                  <LogoutIcon className={classes.extendedIcon} />
+                  Logout
+                </Button>
               </Toolbar>
             </AppBar>
-            <Drawer
-              variant="permanent"
-              classes={{
-                paper: classNames(
-                  classes.drawerPaper,
-                  !this.state.open && classes.drawerPaperClose
-                )
-              }}
-              open={this.state.open}
-            >
-              <div className={classes.toolbar}>
-                <IconButton onClick={this.handleDrawerClose}>
-                  {theme.direction === "rtl" ? (
-                    <ChevronRightIcon />
-                  ) : (
-                    <ChevronLeftIcon />
-                  )}
-                </IconButton>
-              </div>
-              <Divider />
-              <List>{mainItems}</List>
-              {/* <Divider /> */}
-              <List>{otherItems}</List>
-            </Drawer>
             <main className={classes.content}>
               <div className={classes.toolbar} />
-              <Switch>
-                <Route exact path="/app/detail" component={Detail} />
-                <Route exact path="/app/chart" component={Chart} />
-              </Switch>
+                <Detail />
             </main>
           </Fragment>
         </ClickAwayListener>
@@ -187,4 +186,9 @@ Main.propTypes = {
   theme: PropTypes.object.isRequired
 };
 
-export default withStyles(styles, { withTheme: true })(Main);
+export default connect(
+  (state, ownProps) => ({
+    isAuthenticated: state.login.isAuthenticated
+  }),
+  dispatch => bindActionCreators({ logoutRequest }, dispatch)
+)(withStyles(styles, { withTheme: true })(Main));

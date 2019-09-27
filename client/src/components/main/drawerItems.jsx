@@ -5,12 +5,12 @@ import ListItemText from "@material-ui/core/ListItemText";
 // import Loop from "@material-ui/icons/Loop";
 // import Help from "@material-ui/icons/Help";
 import Today from "@material-ui/icons/Today";
-// import Logout from "@material-ui/icons/ExitToApp";
+import Logout from "@material-ui/icons/ExitToApp";
 // import Feedback from "@material-ui/icons/Feedback";
 import InsertChart from "@material-ui/icons/InsertChart";
 import { Link } from "react-router-dom";
 
-export const mainItems = (
+export const mainItems = props => (
   <div>
     <ListItem button>
       <ListItemIcon>
@@ -33,6 +33,12 @@ export const mainItems = (
         </Link>
       </ListItemIcon>
       <ListItemText primary="Aggregations" />
+    </ListItem>
+    <ListItem button onClick={props.handleLogoutClick}>
+      <ListItemIcon>
+        <Logout />
+      </ListItemIcon>
+      <ListItemText primary="Logout" />
     </ListItem>
   </div>
 );

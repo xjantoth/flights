@@ -10,6 +10,15 @@ export const loginSuccess = createAction(LOGIN_SUCCESS);
 export const LOGIN_ERROR = "LOGIN_ERROR";
 export const loginError = createAction(LOGIN_ERROR);
 
+export const LOGOUT_REQUEST = "LOGOUT_REQUEST";
+export const logoutRequest = createAction(LOGOUT_REQUEST);
+
+export const LOGOUT_SUCCESS = "LOGOUT_SUCCESS";
+export const logoutSuccess = createAction(LOGOUT_SUCCESS);
+
+export const LOGOUT_ERROR = "LOGOUT_ERROR";
+export const logoutError = createAction(LOGOUT_ERROR);
+
 export const RECOVERY_REQUEST = "RECOVERY_REQUEST";
 export const recoveryRequest = createAction(RECOVERY_REQUEST);
 
