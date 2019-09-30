@@ -1,209 +1,117 @@
+# Install necessary packages
 
-## RUN
-
-```
-export FLIGHT_PATH=/tmp/flights && \
-cd $FLIGHT_PATH && /tmp/venv3/bin/python \
-/tmp/venv3/bin/gunicorn \
---bind 0.0.0.0:4000 \
---workers=3 \
-wsgi:app -p flask_app.pid \
--D --error-logfile g_error_lofile.log
+```bash
+yum install git vim wget curl gcc python3 python3-devel -y
 ```
 
+## Clone project from github
 
-#### Run current app version
-
+```bash
+# Project will be automatically cloned to "/opt/flights" directory
+git clone https://github.com/xjantoth/flights.git /opt/flights
 ```
-cd /opt/venv3/tflask && \ 
-/opt/venv3/bin/python3.5 \ 
+
+## Create or fill in conf/auth.py file
+
+```bash
+# Linux example
+login = {
+    "username" : "...",
+    "password" : "...",
+    "url_token": "...",
+    "url_list": "...",
+    "day_tamplate": "particular_day_navbar.tpl",
+    "reg_template": "particular_day.tpl",
+    "detail_list_view_tpl": "detail_list_view.tpl",
+    "jumbo_tpl": "jumbo.tpl",
+    "main_template": "main.tpl",
+    "database_path": "/opt/2w.sqlite",
+    "app_home": "/opt/flights"
+}
+
+#  Windows example
+login = {
+    "username" : "...",
+    "password" : "...",
+    "url_token": "...",
+    "url_list": "...",
+    "day_tamplate": "particular_day_navbar.tpl",
+    "reg_template": "particular_day.tpl",
+    "detail_list_view_tpl": "detail_list_view.tpl",
+    "jumbo_tpl": "jumbo.tpl",
+    "main_template": "main.tpl",
+    "database_path": "C:\\users\\some-username\\flights\\2w.sqlite",
+    "app_home": "C:\\users\\some-username\\flights"
+}
+```
+
+## Export where you cloned project
+
+```bash
+# Export variables
+FLIGHT_PATH=/opt/flights 
+CRON=/var/spool/cron/root
+```
+
+## Create and activate Python 3 virtualenv
+
+```bash
+cd /opt && python3 -m venv venv3
+source /opt/venv3/bin/activate
+cd ${FLIGHT_PATH}
+git checkout production
+pip install -r requirement.txt
+```
+
+
+## Start flights app
+
+```bash
+cd ${FLIGHT_PATH} 
+/opt/venv3/bin/python \
 /opt/venv3/bin/gunicorn \
 --bind 0.0.0.0:5000 \
 --workers=3 \
 wsgi:app \
 -p flask_app.pid \
 -D \
---error-logfile g_error_lofile.log
+--error-logfile error.log
 ```
 
-#### Check SQLITE3 database records
-
-```
-cd /opt/venv3/tflask
- sqlite3 2w.sqlite
-SQLite version 3.11.0 2016-02-15 17:29:24
-Enter ".help" for usage hints.
-sqlite> select created from flight_data ORDER BY created DESC LIMIT 2;
-2019-05-31 13:10:03.515183+02:00
-2019-05-31 13:00:02.462766+02:00
-sqlite> 
-```
-
-#### How to create virtual environment Windows
-
-Run this simple command:
+## Call app at port 5000 from browser or from cmd 
 
 ```bash
-conda create -p ./venv python=3.5
-conda activate ./venv
-pip install -r requirement.txt
-python create_db.py
-python feed_db_with_flight_data.py
+# This will create initial database in /opt/2w.sqlite
+curl http://localhost:5000/ &>  /dev/null || :
 ```
 
+## Create initial record in database
 
-
-#### Create database
-
-```sh
-jantoth@ubuntu-ansible:~$ virtualenv -p python3.5 /opt/venv3
-jantoth@ubuntu-ansible:~$ sudo chown -R jantoth.jantoth /opt/venv3
-jantoth@ubuntu-ansible:~$ source /opt/venv3/bin/activate
-(venv3) jantoth@ubuntu-ansible:/opt/venv3/2w$ cd /opt/venv3/2w
-(venv3) jantoth@ubuntu-ansible:/opt/venv3/2w$ python create_db.py
-# DELETE  FROM flight_data WHERE created <= '2018-08-01 17:56:02.523609';
-```
-
-
-#### Create auth.py file out of auth.py.model
-
-```sh
-vim  auth.py
-login = {
-    "password" : "...",
-    "username" : "...",
-    "url_token": "...",
-    "url_list": "..."
-}
-
-```
-
-#### Install sqlite3 if you do not already have it
-
-```sh
-(venv3) jantoth@ubuntu-ansible:/opt/venv3/bin$ sudo apt-get install sqlite
-```
-
-#### Insert first sample (created, json_data) entry and test
-
-Insert first entry to database manually by running this command:
-
-```sh
-/opt/venv3/bin/python /opt/venv3/2w/feed_db_with_flight_data.py
-```
-
-Login to `sqlite` database from command line and check the entry
-
-```sh
-(venv3) jantoth@ubuntu-ansible:/opt/venv3/2w$ sqlite3 2w.sqlite
-SQLite version 3.11.0 2016-02-15 17:29:24
-Enter ".help" for usage hints.
-sqlite>
-
-# list tables in your database
-sqlite> .tables
-flight_data
-
-# try to do following select
-sqlite> select *  from flight_data;
-1|2018-06-22 14:05:24.747339|{
-    "data": {
-        "flight": {
-            "meta": {
-                "dataset": {
-...
-...
-```
-
-#### Setup crontab for the first time
-
-This is one time action when we do the deployment for the first time.
-```sh
-# ******************************************************************
-#      - this command retrives data from API every 2 min
-#      - saves data to sqlite database
-#
-# ******************************************************************
-# old version
-@reboot  cd /opt/venv3/tflask && /opt/venv3/bin/python3.5 /opt/venv3/bin/gunicorn --bind 0.0.0.0:5000 --workers=3 wsgi:app -p flask_app.pid -D --error-logfile g_error_lofile.log
-*/2 * * * *  /opt/venv3/bin/python /opt/venv3/2w/feed_db_with_flight_data.py >> /opt/venv3/2w/error_log.log 2>&1
-
-# frontend - backend version 
-*/7 * * * *  /opt/serve/venv35/bin/python /opt/serve/backend/feed_db_with_flight_data.py >> /opt/serve/backend/db_error_log.log 2>&1
-@reboot cd /opt/serve/backend && /opt/serve/venv35/bin/python /opt/serve/venv35/bin/gunicorn --bind 127.0.0.1:4000 --workers=3 wsgi:app -p 2w_app.pid  -D --error-logfile gunicorn_error_lofile.log
-```
-
-
-
-#### Create index in Sqlite3
-
-```sh
-# gunicorn --bind 0.0.0.0:5000 --workers=3  wsgi:app -p flas_app.pid -D
-
-(venv3) jantoth@ubuntu-ansible:/opt/venv3/tflask$ sqlite3 2w.sqlite
-CREATE INDEX created_index_micka ON flight_data (created);
-CREATE INDEX fast_search_index ON flight_data (created);
-```
-
-
-#### Nginx
 ```bash
-cat    /etc/nginx/sites-enabled/default
-##
-# You should look at the following URL's in order to grasp a solid understanding
-# of Nginx configuration files in order to fully unleash the power of Nginx.
-# http://wiki.nginx.org/Pitfalls
-# http://wiki.nginx.org/QuickStart
-# http://wiki.nginx.org/Configuration
-#
-# Generally, you will want to move this file somewhere, and start with a clean
-# file but keep this around for reference. Or just disable in sites-enabled.
-#
-# Please see /usr/share/doc/nginx-doc/examples/ for more detailed examples.
-##
-
-
-
-server {
-
-        root /opt/serve/client/build;
-        index index.html index.htm index.nginx-debian.html;
-
-        server_name scaleway.linuxinuse.com;
-
-        location / {
-                try_files $uri /index.html;
-        }
-        location /api {
-        proxy_pass http://127.0.0.1:4000;
-        }
-
-        listen 443 ssl; # managed by Certbot
-        ssl_certificate /etc/letsencrypt/live/scaleway.linuxinuse.com/fullchain.pem; # managed by Certbot
-        ssl_certificate_key /etc/letsencrypt/live/scaleway.linuxinuse.com/privkey.pem; # managed by Certbot
-        include /etc/letsencrypt/options-ssl-nginx.conf; # managed by Certbot
-        ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem; # managed by Certbot
-
-}
-
-
-
-
-server {
-    if ($host = scaleway.linuxinuse.com) {
-        return 301 https://$host$request_uri;
-    } # managed by Certbot
-
-
-        listen 80;
-
-        server_name scaleway.linuxinuse.com;
-    return 404; # managed by Certbot
-
-
-}
-
-
+/opt/venv3/bin/python /opt/flights/feed_db_with_flight_data.py
 ```
 
+## Create periodic cronjob to retrieve data from external source
 
+```bash
+CMD_PATH="PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/root/bin"
+JOB1="@reboot FLIGHT_PATH=/opt/flights cd $FLIGHT_PATH && /opt/venv3/bin/python /opt/venv3/bin/gunicorn --bind 0.0.0.0:5000 --workers=3 wsgi:app -p flask_app.pid -D --error-logfile error.log"
+JOB2="*/5 * * * *  /opt/venv3/bin/python /opt/flights/feed_db_with_flight_data.py >> /opt/flights/error_log.log 2>&1"
+echo "$CMD_PATH" >> $CRON
+echo "$JOB1" >> $CRON
+echo "$JOB2" >> $CRON
+```
+
+## Create index in SQLite
+
+```bash
+sqlite3 /opt/2w.sqlite "CREATE INDEX fast_search_index ON flight_data (created) exit"
+```
+
+## Clean database if necessary
+
+```bash
+Delete from DB
+DELETE  FROM flight_data WHERE created <= '2018-08-01 17:56:02.523609';
+vacuum;
+```
