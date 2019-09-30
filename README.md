@@ -1,3 +1,17 @@
+
+## RUN
+
+```
+export FLIGHT_PATH=/tmp/flights && \
+cd $FLIGHT_PATH && /tmp/venv3/bin/python \
+/tmp/venv3/bin/gunicorn \
+--bind 0.0.0.0:4000 \
+--workers=3 \
+wsgi:app -p flask_app.pid \
+-D --error-logfile g_error_lofile.log
+```
+
+
 #### Run current app version
 
 ```

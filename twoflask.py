@@ -16,7 +16,7 @@ from flask_restful import Api
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{db_path}'.format(db_path=auth.login['database_path'])
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-api.Api(app)
+api =  Api(app)
 
 @app.before_first_request
 def create_tables():
