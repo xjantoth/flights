@@ -79,4 +79,4 @@ def add_to_flight_data(_data, _db):
 auth_data, url_token, url_list = get_cred()
 token = get_token(auth_data, url_token)
 data, duration = get_data(token, url_list)
-add_to_flight_data(data, '/opt/2w.sqlite')
+add_to_flight_data(data, auth.login['database_path'])

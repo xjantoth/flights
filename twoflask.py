@@ -10,8 +10,20 @@ import pandas as pd
 from jinja2 import Environment, FileSystemLoader
 from pandas.io.json import json_normalize
 pd.set_option('display.max_colwidth', -1)
+from models import FlightData
+from flask_restful import Api
 
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///{db_path}'.format(db_path=auth.login['database_path'])
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+api.Api(app)
+
+@app.before_first_request
+def create_tables():
+    from db import db
+    with app.app_context():
+        db.init_app(app)
+        db.create_all()
 
 
 def timeit(method):
@@ -32,7 +44,7 @@ def timeit(method):
 def get_data(limit_number=None):
     if limit_number is None:
         limit_number = 1
-    connection = sqlite3.connect('/opt/2w.sqlite')
+    connection = sqlite3.connect(auth.login['database_path'])
     cursor = connection.cursor()
     query = "SELECT created, json_data FROM flight_data WHERE json_data NOT LIKE '%Unauthenticated%' ORDER BY created DESC LIMIT ?;"
     _data = cursor.execute(query, (limit_number,))
@@ -414,8 +426,6 @@ def create_registration(_compare,
         pass
 
 
-win_template = auth.login["f_template"]
-linux_template = auth.login["linux_template"]
 day_tamplate = auth.login["day_tamplate"]
 reg_template = auth.login["reg_template"]
 detail_list_view_tpl = auth.login["detail_list_view_tpl"]
@@ -423,7 +433,8 @@ jumbo_tpl = auth.login["jumbo_tpl"]
 main_template = auth.login["main_template"]
 
 
-path_template = linux_template
+
+path_template = os.path.join(auth.login['app_home'], "templates")
 
 
 @app.route('/jumbo')
@@ -491,4 +502,6 @@ def get_registration(_day, _r):
 
 
 if __name__ == '__main__':
+    from db import db
+    db.init_app(app)
     app.run(host='0.0.0.0')

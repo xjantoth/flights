@@ -3,11 +3,14 @@ login = {
     "password" : "...",
     "url_token": "...",
     "url_list": "...",
-    "f_template": "C:\\Users\\username\\Documents\\wings\\templates",
-    "linux_template": "/opt/flights/templates/",
     "day_tamplate": "particular_day_navbar.tpl",
     "reg_template": "particular_day.tpl",
     "detail_list_view_tpl": "detail_list_view.tpl",
     "jumbo_tpl": "jumbo.tpl",
     "main_template": "main.tpl",
+    "database_path": "/opt/2w.sqlite",
+    "app_home": "/opt/flights"
 }
+
+#  Windows example
+# "app_home": "C:\\users\\some-username"
