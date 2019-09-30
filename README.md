@@ -11,7 +11,18 @@ yum install git vim wget curl gcc python3 python3-devel -y
 git clone https://github.com/xjantoth/flights.git /opt/flights
 ```
 
-## Create or fill in conf/auth.py file
+## Mandatory fields in auth.py file
+
+| NAME          | EXAMPLE       | DESCRIPTION  |
+| ------------- | ------------- | -------------------- |
+| username      | \<username\>    | Find in en email |
+| password      | \<password\>    | Find in an email|
+| url_token     | https://app.xyz.net/xyz/api/v1/user/user/authenticate | Authentication URL - find in email|
+| url_list      | https://app.xyz.net/abc/api/v1/abs/xyz/list  | List URL - find in an email |
+| database_path | /opt/2w.sqlite  | Desired location for your database |
+| app_home      | /opt/flights  | Location where github project is cloned|
+
+## Create or fill in auth.py file from auth.py.model
 
 ```bash
 # Linux example
