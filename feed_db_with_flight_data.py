@@ -7,6 +7,7 @@ import requests
 import datetime
 from twoflask import app
 from db import db
+import  models 
 
 def get_cred():
     _password = auth.login['password']
@@ -84,13 +85,6 @@ def add_to_flight_data(_data):
                 db.init_app(app)
                 fd = models.FlightData(_data, _time)
                 fd.save_to_db()
-
-                user = auth.defaultDBUser
-                if not models.UserModel.find_by_username(user['username']):
-                    models.UserModel(
-                        username=user['username'],
-                        password=user['password']
-                    ).save_to_db()
 
             print('{} - Data inserted to SQLITE!'.format(_time))
         else:

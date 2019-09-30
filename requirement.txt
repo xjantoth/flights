@@ -18,3 +18,4 @@ urllib3
 uwsgi
 Werkzeug
 flask_sqlalchemy
+flask_restful
