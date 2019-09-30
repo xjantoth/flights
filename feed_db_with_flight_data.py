@@ -32,6 +32,7 @@ def get_token(_auth_data, _url_token):
         data=_auth_data
     )
     _token = _response.json()['data']['user']['data']['auth_token']
+    #print(_response.json()['data']['user']['data'])
     return _token
 
 
@@ -78,4 +79,4 @@ def add_to_flight_data(_data, _db):
 auth_data, url_token, url_list = get_cred()
 token = get_token(auth_data, url_token)
 data, duration = get_data(token, url_list)
-add_to_flight_data(data, '2w.sqlite')
+add_to_flight_data(data, '/opt/2w.sqlite')

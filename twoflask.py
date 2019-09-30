@@ -32,7 +32,7 @@ def timeit(method):
 def get_data(limit_number=None):
     if limit_number is None:
         limit_number = 1
-    connection = sqlite3.connect('2w.sqlite')
+    connection = sqlite3.connect('/opt/2w.sqlite')
     cursor = connection.cursor()
     query = "SELECT created, json_data FROM flight_data WHERE json_data NOT LIKE '%Unauthenticated%' ORDER BY created DESC LIMIT ?;"
     _data = cursor.execute(query, (limit_number,))
@@ -423,9 +423,7 @@ jumbo_tpl = auth.login["jumbo_tpl"]
 main_template = auth.login["main_template"]
 
 
-path_template = win_template
-if socket.gethostname() == "devopsinuse":
-    path_template = linux_template
+path_template = linux_template
 
 
 @app.route('/jumbo')

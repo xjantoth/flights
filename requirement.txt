@@ -10,7 +10,6 @@ Jinja2
 MarkupSafe
 numpy
 pandas
-python
 pytz
 requests
 six
@@ -18,3 +17,4 @@ SQLAlchemy
 urllib3
 uwsgi
 Werkzeug
+flask_sqlalchemy
