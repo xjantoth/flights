@@ -43,14 +43,19 @@
                 </a>
                 <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                     <ul class="navbar-nav">
-                        {% for _day in unique_days %}
-{#                            <li class="nav-item">#}
-{#                                <a class="nav-link" href="#" id="jb" onclick="main_jumbo()">Two Wings</a>#}
-{#                            </li>#}
-                            <li class="nav-item">
-                                <a class="nav-link" href="#" id="{{ _day[0] }}" onclick="reply_click(this.id)">{{_day[1]}}</a>
-                            </li>
-                        {% endfor %}
+                        
+                        {% if unique_days is not none %}   
+                            {% for _day in unique_days %}
+
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#" id="{{ _day[0] }}" onclick="reply_click(this.id)">{{_day[1]}}</a>
+                                </li>
+                            {% endfor %}
+                        {% else %}
+                                No dates for flights have been received from server...
+                        {%endif %}
+
+
                         <li class="nav-item">
                             <a class="nav-link" href="#" id="timeStamp">{{timeStamp}}</a>
                         </li>
@@ -63,18 +68,21 @@
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown">Detailed daily view</a>
                             <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+
+                            {% if unique_days is not none %}   
                                 {% for _day in unique_days %}
                                     <a class="dropdown-item" href="#" id="{{ _day[0] }}_drop" onclick="set_drop_menu(this.id)">{{_day[1]}}</a>
                                 {% endfor %}
+                            {% else %}
+                                empty
+                            {%endif %}
+                            
                             </div>
                         </li>
                     </ul>
                 </div>
             </nav>
-{#            <div class="resp-container">#}
-{#                <iframe class="resp-iframe" src="jumbo.tpl" frameborder="0" allowfullscreen></iframe>#}
-{#            </div>#}
-            <!-- 16:9 aspect ratio -->
+
             <div class="embed-responsive embed-responsive-16by9">
                 <iframe class="embed-responsive-item" src="/jumbo" frameborder="0" allowfullscreen></iframe>
             </div>

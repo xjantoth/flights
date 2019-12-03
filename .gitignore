@@ -12,3 +12,4 @@ venv
 .vscode/
 *.pid
 *.log
+venv3

@@ -1,16 +1,17 @@
 import os
-from flask import Flask
 import json
 import time
 import auth
-import sqlite3
 import socket
-from flask import jsonify
+import sqlite3
 import datetime
 import pandas as pd
-from jinja2 import Environment, FileSystemLoader
+
+from collections import namedtuple
+from flask import (Flask, jsonify)
 from pandas.io.json import json_normalize
-pd.set_option('display.max_colwidth', -1)
+from jinja2 import Environment, FileSystemLoader
+# pd.set_option('display.max_colwidth', -1)
 from models import FlightData
 from flask_restful import Api
 
@@ -153,35 +154,48 @@ def get_unique_days(_data):
     :param _data:
     :return:
     """
-    _converted = json.loads(_data.decode('utf-8'))
-    _df = json_normalize(_converted['data']['flight']['data'])
-    grouped = _df.groupby(['std_date'])
-    _all_unique_days = []
-    for day, group in grouped:
-        minimum = group['std_time'].min()
-        maximum = group['std_time'].max()
-        _all_unique_days.append((day, minimum, maximum))
 
-    if len(_all_unique_days) == 1:
-        start = _all_unique_days[0]
-        end = _all_unique_days[0]
-    else:
-        start, end = _all_unique_days[::len(_all_unique_days) - 1]
-    start = list(start[:2])
-    end = list(end[::len(end) - 1])
-    start = datetime.datetime.strptime(start[0] + ' ' + start[1], '%Y-%m-%d %H:%M:%S')
-    end = datetime.datetime.strptime(end[0] + ' ' + end[1], '%Y-%m-%d %H:%M:%S')
-    final = []
-    a = start
-    while True:
-        b = (a + datetime.timedelta(1)).replace(hour=0, minute=0)
-        if b > end:
-            b = end
-            final.append('{}___{}'.format(str(a), str(b)))
-            break
-        final.append('{}___{}'.format(str(a), str(b)))
-        a = b
-    return final, _df
+    processed_unique_days = {
+        "unique_days": None,
+        "normalized_json_data": None,   
+    }
+    try:
+        _converted = json.loads(_data.decode('utf-8'))
+        normalized_json_data = json_normalize(_converted['data']['flight']['data'])
+        grouped = normalized_json_data.groupby(['std_date'])
+        _all_unique_days = []
+        for day, group in grouped:
+            minimum = group['std_time'].min()
+            maximum = group['std_time'].max()
+            _all_unique_days.append((day, minimum, maximum))
+
+        if len(_all_unique_days) == 1:
+            start = _all_unique_days[0]
+            end = _all_unique_days[0]
+        else:
+            start, end = _all_unique_days[::len(_all_unique_days) - 1]
+        start = list(start[:2])
+        end = list(end[::len(end) - 1])
+        start = datetime.datetime.strptime(start[0] + ' ' + start[1], '%Y-%m-%d %H:%M:%S')
+        end = datetime.datetime.strptime(end[0] + ' ' + end[1], '%Y-%m-%d %H:%M:%S')
+        unique_days = []
+        a = start
+        while True:
+            b = (a + datetime.timedelta(1)).replace(hour=0, minute=0)
+            if b > end:
+                b = end
+                unique_days.append('{}___{}'.format(str(a), str(b)))
+                break
+            unique_days.append('{}___{}'.format(str(a), str(b)))
+            a = b
+        # return unique_days, normalized_json_data
+        processed_unique_days["unique_days"] = unique_days
+        processed_unique_days["normalized_json_data"] = normalized_json_data
+
+        return processed_unique_days
+    except Exception as e:
+        print("Could not unpack data: {error}".format(error=e))
+        return processed_unique_days
 
 
 colors = ["#000000", "#FFFF00", "#1CE6FF", "#FF34FF", "#FF4A46", "#008941", "#006FA6", "#A30059", "#FFDBE5", "#7A4900",
@@ -303,11 +317,21 @@ def create_main(_path_template,
     :return:
     """
     j2_env = Environment(loader=FileSystemLoader(_path_template))
-    _unique_days_double = [[i.replace(' ', '_').replace(':', '_'), '{} +'.format(i.split('__')[0].split(' ')[0])] for i in _unique_days]
+    
+    if _unique_days:
+        _unique_days_double = [
+            [i.replace(' ', '_').replace(':', '_'), '{} +'.format(i.split('__')[0].split(' ')[0])] 
+            for i in _unique_days
+            ]
+        _data = j2_env.get_template(_main_tamplate).render(
+            unique_days=_unique_days_double,
+            timeStamp="")
+        return _data, _unique_days_double
+    
     _data = j2_env.get_template(_main_tamplate).render(
-        unique_days=_unique_days_double,
-        timeStamp="")
-    return _data, _unique_days_double
+            unique_days=_unique_days,
+            timeStamp="")
+    return _data, None
 
 
 @timeit
@@ -448,32 +472,38 @@ def get_jumbo():
 @app.route('/')
 def get_main_page():
     render, created_datetime = get_data()
-    udays, df_normalized = get_unique_days(render)
-    data, udd = create_main(path_template, main_template, udays)
+    processed_unique_days = get_unique_days(render)
+    data, udd = create_main(
+        path_template, 
+        main_template, 
+        processed_unique_days["unique_days"]
+        )
     return data
 
 
 @app.route('/day/<_day>')
 def particular_main_date(_day):
     render, created_datetime = get_data()
-    udays, df_normalized = get_unique_days(render)
-    compare = render_tables(df_normalized)
-    part_data = create_files_main_dates(compare,
-                                        udays,
-                                        path_template,
-                                        day_tamplate,
-                                        _day,
-                                        created_datetime)
+    processed_unique_days = get_unique_days(render)
+    compare = render_tables(processed_unique_days["normalized_json_data"])
+    part_data = create_files_main_dates(
+        compare,
+        processed_unique_days["unique_days"],
+        path_template,
+        day_tamplate,
+        _day,
+        created_datetime
+        )
     return part_data
 
 
 @app.route('/detail/<_day>')
 def get_detail_list(_day):
     render, created_datetime = get_data()
-    udays, df_normalized = get_unique_days(render)
-    compare = render_tables(df_normalized)
+    processed_unique_days = get_unique_days(render)
+    compare = render_tables(processed_unique_days["normalized_json_data"])
     detail_data = create_detail_list(compare,
-                                     udays,
+                                     processed_unique_days["unique_days"],
                                      path_template,
                                      detail_list_view_tpl,
                                      _day)
@@ -483,18 +513,18 @@ def get_detail_list(_day):
 @app.route('/api/allud')
 def get_all_unique_days_json():
     render, created_datetime = get_data()
-    _allud, _df_normalized = get_unique_days(render)
-    return jsonify(_allud)
+    processed_unique_days = get_unique_days(render)
+    return jsonify(processed_unique_days["unique_days"])
 
 
 @app.route('/reg/<_day>/<_r>')
 def get_registration(_day, _r):
     render, created_datetime = get_data()
-    udays, df_normalized = get_unique_days(render)
-    compare = render_tables(df_normalized)
+    processed_unique_days = get_unique_days(render)
+    compare = render_tables(processed_unique_days["normalized_json_data"])
     registration_data = create_registration(
         compare,
-        udays,
+        processed_unique_days["unique_days"],
         path_template,
         reg_template,
         _day,

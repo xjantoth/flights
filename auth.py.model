@@ -3,11 +3,11 @@ login = {
     "password" : "...",
     "url_token": "...",
     "url_list": "...",
-    "day_tamplate": "particular_day_navbar.tpl",
-    "reg_template": "particular_day.tpl",
-    "detail_list_view_tpl": "detail_list_view.tpl",
-    "jumbo_tpl": "jumbo.tpl",
-    "main_template": "main.tpl",
+    "day_tamplate": "particular_day_navbar.jinja",
+    "reg_template": "particular_day.jinja",
+    "detail_list_view_tpl": "detail_list_view.jinja",
+    "jumbo_tpl": "jumbo.jinja",
+    "main_template": "main.jinja",
     "database_path": "/opt/2w.sqlite",
     "app_home": "/opt/flights"
 }

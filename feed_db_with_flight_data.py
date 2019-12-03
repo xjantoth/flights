@@ -46,13 +46,13 @@ def get_data(_token, _url_list):
     :return:
     """
     _headers = {'Authorization': 'token' + ' ' + _token}
-    start = time.clock()
+    start = time.time()
     try:
         _r = requests.post(
             _url_list,
             headers=_headers
         )
-        request_time = time.clock() - start
+        request_time = time.time() - start
         print("Request completed in {0:.0f}ms".format(request_time))
         return _r.content, request_time
     except Exception as ee:
